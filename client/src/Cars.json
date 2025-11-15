@@ -1,0 +1,92 @@
+[
+    {
+        "id":"1",
+        "name":"Toyota Camry",
+        "type":"Sedan",
+        "image":"https://images.unsplash.com/photo-1511914265871-7b9c6d1d0c4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dG95b3RhJTIwY2FtfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "seats":5,
+        "transmission":"Automatic",
+        "speed":"200 km/h",
+        "price":"50"
+    },
+    {
+        "id":"2",
+        "name":"Honda CR-V",
+        "type":"SUV",
+        "image":"https://images.unsplash.com/photo-1502877338535-766e1452684a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG9uZGEgY3J2fGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "seats":7,
+        "transmission":"Automatic",
+        "speed":"180 km/h",
+        "price":"70"
+    },
+    {
+        "id":"3",
+        "name":"Ford Mustang",
+        "type":"Coupe",
+        "image":"https://images.unsplash.com/photo-1501594907352-04cda38ebc29?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Zm9yZCUyMG11c3Rhbmd8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
+        "seats":4,
+        "transmission":"Manual",
+        "speed":"250 km/h",
+        "price":"90"
+    },
+    {
+        "id":"4",
+        "name":"Chevrolet Tahoe",
+        "type":"SUV",
+        "image":"https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2hldm9sZXQlMjB0YWhvZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "seats":8,
+        "transmission":"Automatic",
+        "speed":"190 km/h",
+        "price":"80"
+    },
+    {
+        "id":"5",
+        "name":"BMW 3 Series",
+        "type":"Sedan",
+        "image":"https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Ym13JTIwMyUyMHNlcmllc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "seats":5,
+        "transmission":"Automatic",
+        "speed":"240 km/h", 
+        "price":"100"
+    },
+    {
+        "id":"6",
+        "name":"Audi Q5",
+        "type":"SUV",
+        "image":"https://images.unsplash.com/photo-1500534623283-312aade485b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXVkaSUyMHElMjA1fGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "seats":5,
+        "transmission":"Automatic",
+        "speed":"220 km/h",
+        "price":"95"
+    },
+    {
+        "id":"7",
+        "name":"Mercedes-Benz C-Class",
+        "type":"Sedan",
+        "image":"https://images.unsplash.com/photo-1518655048521-f130df041f66?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWVyY2VkZXMlMjBiZW56JTIwYy1jbGFzc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "seats":5,
+        "transmission":"Automatic",
+        "speed":"230 km/h",
+        "price":"110"
+    },
+    {
+        "id":"8",
+        "name":"Volkswagen Golf",
+        "type":"Hatchback",
+        "image":"https://images.unsplash.com/photo-1549924231-f129b911e442?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dm9sd2FnZW4lMjBnb2xmfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "seats":5,
+        "transmission":"Manual",
+        "speed":"210 km/h",
+        "price":"60"
+    },
+    {
+        "id":"9",
+        "name":"Volk Golf",
+        "type":"Hatchback",
+        "image":"https://images.unsplash.com/photo-1549924231-f129b911e442?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dm9sd2FnZW4lMjBnb2xmfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "seats":5,
+        "transmission":"Manual",
+        "speed":"210 km/h",
+        "price":"60"
+    }
+]

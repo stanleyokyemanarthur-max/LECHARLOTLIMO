@@ -1,0 +1,72 @@
+/* src/Components/loader.css */
+
+/* Fullscreen overlay wrapper */
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 10, 0.45);
+  z-index: 9999;
+  padding: 1rem;
+}
+
+/* Inline (non-fullscreen) loader */
+.loader-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Box for the spinner + text */
+.loader-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255,255,255,0.02);
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+  color: #fff;
+}
+
+/* spinner SVG */
+.loader-spinner {
+  width: 56px;
+  height: 56px;
+  animation: rotate 1s linear infinite;
+}
+
+/* spinner circle */
+.loader-spinner .path {
+  stroke: #facc00; /* your brand yellow */
+  stroke-linecap: round;
+  stroke-dasharray: 90,150;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: dash 1.2s ease-in-out infinite;
+}
+
+.loader-message {
+  font-size: 0.95rem;
+  color: #e6e6e6;
+  text-align: center;
+}
+
+/* animations */
+@keyframes rotate {
+  100% { transform: rotate(360deg); }
+}
+@keyframes dash {
+  0% { stroke-dasharray: 1,150; stroke-dashoffset: 0; }
+  50% { stroke-dasharray: 90,150; stroke-dashoffset: -35; }
+  100% { stroke-dasharray: 90,150; stroke-dashoffset: -124; }
+}
+
+/* optional: smaller inline styling override */
+@media (max-width: 640px) {
+  .loader-box { padding: 0.75rem; border-radius: 10px; }
+  .loader-spinner { width: 48px; height: 48px; }
+}

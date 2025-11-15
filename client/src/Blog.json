@@ -1,0 +1,82 @@
+[
+    {
+        "id":"1",
+        "name":"Documenats required for care rental",
+        "image":"https://images.unsplash.com/photo-1501594907352-04cda38ebc29?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZG9jdW1lbnRzfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "date":"October 23 2025",
+        "auther":"John Doe",
+        "category":"Cars"
+    },
+    {
+        "id":"2",
+        "name":"Top 10 cars for family trips",
+        "image":"https://images.unsplash.com/photo-1502877338535-766e1452684a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFtaWx5JTIwY2Fyc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "date":"November 15 2025",
+        "auther":"Jane Smith",
+        "category":"Cars"
+    },
+    {
+        "id":"3",
+        "name":"How to choose the right car rental service",
+        "image":"https://images.unsplash.com/photo-1511914265871-7b9c6d1d0c4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FyJTIwcmVudGFsJTIwc2VydmljZXN8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
+        "date":"December 5 2025",
+        "auther":"Alice Johnson",
+        "category":"Cars"
+    },
+    {
+        "id":"4",
+        "name":"Benefits of renting a car for your vacation",
+        "image":"https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dmFjYXRpb24lMjBjYXJzfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "date":"January 10 2026",
+        "auther":"Bob Brown",
+        "category":"Cars"
+    },
+    {
+        "id":"5",
+        "name":"Tips for a smooth car rental experience",
+        "image":"https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FyJTIwcmlkZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
+        "date":"February 20 2026",
+        "auther":"Charlie Davis",
+        "category":"Cars"
+    },
+    {
+        "id":"6",
+        "name":"Exploring scenic routes with a rental car",
+        "image":"https://images.unsplash.com/photo-1500534623283-312aade485b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2NlbmljJTIwcm91dGVzfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "date":"March 15 2026",
+        "auther":"Diana Evans",
+        "category":"Cars"
+    },
+    {
+        "id":"7",
+        "name":"Understanding car rental insurance options",
+        "image":"https://images.unsplash.com/photo-1518655048521-f130df041f66?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FyJTIwaW5zdXJhbmNlfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "date":"April 5 2026",
+        "auther":"Ethan Foster",
+        "category":"Cars"
+    },
+    {
+        "id":"8",
+        "name":"Eco-friendly car rental options",
+        "image":"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZWNvJTIwZnJpZW5kbHklMjBjYXJzfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+        "date":"May 12 2026",
+        "auther":"Fiona Green",
+        "category":"Cars"
+    },
+    {
+        "id":"9",
+        "name":"Luxury car rentals: What to expect",
+        "image":"https://images.unsplash.com/photo-1502877338535-766e1452684a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bHV4dXJ5JTIwY2Fyc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "date":"June 18 2026",
+        "auther":"George Harris",
+        "category":"Cars"
+    },
+    {
+        "id":"10",
+        "name":"Car rental vs. ride-sharing: Pros and cons",
+        "image":"https://images.unsplash.com/photo-1511914265871-7b9c6d1d0c4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FyJTIwcmVudGFsJTIwdmlydHVhbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
+        "date":"July 22 2026",
+        "auther":"Hannah Irving",
+        "category":"Cars"
+    }
+]
