@@ -66,18 +66,18 @@ function Footer() {
                 </li>
                 <li>
                   <Link
-                    to="/Cars"
+                    to="/contact"
                     className="hover:text-[#d8c305c5] relative transition duration-300 font-bricolage"
                   >
-                    Cars
+                    Contact
                   </Link>
                 </li>
                 <li>
                   <Link
-                    to="/Blog"
+                    to="/fleet"
                     className="hover:text-[#d8c305c5] relative transition duration-300 font-bricolage"
                   >
-                    Blogs
+                    Fleet
                   </Link>
                 </li>
               </ul>
@@ -91,7 +91,7 @@ function Footer() {
                     href="tel:+1234567890"
                     className="flex items-center gap-2 text-[#999] px-3 py-2 rounded-lg "
                   >
-                    📞 +1 234 567 890
+                    📞 +1 (404) 405-3738
                   </a>
 
                   <a

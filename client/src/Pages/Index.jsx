@@ -248,7 +248,7 @@ function Index() {
 
         <div className="mt-6">
           <p className="text-lg md:text-xl font-semibold text-yellow-600 mb-2">
-            For Instant Booking: <span className="text-white">(800) 431 0313</span>
+            For Instant Booking: <span className="text-white">(404) 405-3738</span>
           </p>
           <p className="text-gray-300 mb-6">
             For complete reservation please click below

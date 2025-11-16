@@ -47,7 +47,7 @@ function ReservationForm() {
               href="tel:+18004310313"
               className="text-gray-900 hover:text-[#d4af37] transition-colors duration-200"
             >
-              (800) 431 0313
+              (404) 405-3738
             </a>
           </div>
         </div>
