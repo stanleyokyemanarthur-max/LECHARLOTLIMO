@@ -12,7 +12,8 @@ function ReservationForm() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-[#faf7f2] to-white text-gray-900 pt-24 pb-24 font-['Inter']">
+    <div className="min-h-screen bg-gradient-to-b from-white via-white to-white text-gray-900 pt-24 pb-24 font-['Inter']">
+
       <div className="max-w-7xl mx-auto px-6 text-center">
         {/* Header */}
         <h1 className="text-4xl lg:text-5xl font-['Playfair_Display'] font-semibold text-gray-900 mb-4 tracking-wide">

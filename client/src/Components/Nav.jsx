@@ -31,6 +31,8 @@ function Nav() {
   };
 
   return (
+    <>
+    
     <nav
       className={`fixed top-0 left-0 w-full z-[9999] transition-all duration-300 ${isScrolled ? "bg-[#111111] shadow-md" : "bg-transparent"
         }`}
@@ -101,6 +103,7 @@ function Nav() {
         </ul>
       </div>
     </nav>
+    </>
   );
 }
 
