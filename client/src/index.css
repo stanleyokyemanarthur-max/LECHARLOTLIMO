@@ -6,7 +6,7 @@
 
 /* Root Variables */
 :root {
-    --prim-color: #d8c305c5;
+    --prim-color: #B8860B;
     --section-dark: #0f172a;
     --section-light-bg: #222222;
     --text-light: #999;
@@ -35,7 +35,7 @@ html, body {
     cursor: default;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3, h4,span,.nav-link,p {
     font-family: 'Playfair Display', serif;
 }
 
@@ -46,7 +46,7 @@ h1, h2, h3, h4 {
 .font-luxury-gold {
     font-family: 'Playfair Display', serif;
     font-weight: 700;
-    color: #D4AF37;
+    color: #B8860B;
     letter-spacing: -0.5px;
 }
 
@@ -66,7 +66,7 @@ nav {
     display: inline-block;
 }
 @media (min-width: 768px) { .logo { font-size: 2.5rem; } }
-.logo span { color: #D4AF37; margin-left: 4px; }
+.logo span { color: #B8860B; margin-left: 4px; }
 
 .menu {
     transform: var(--transition-regular)!important;
@@ -102,7 +102,7 @@ nav {
     color: white;
     transition: color 0.3s ease;
 }
-.nav-link:hover { color: #d4af37; }
+.nav-link:hover { color: #B8860B; }
 .nav-link::after {
     content: "";
     position: absolute;
@@ -110,7 +110,7 @@ nav {
     bottom: -3px;
     width: 0%;
     height: 2px;
-    background-color: #d4af37;
+    background-color: #B8860B;
     transition: width 0.3s ease;
 }
 .nav-link:hover::after { width: 100%; }
@@ -247,10 +247,10 @@ input[placeholder="Drop-off Location"] {
     background-color: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center;
     z-index: 1000; backdrop-filter: blur(2px);
 }
-.ant-spin-dot-item { background-color: #d8c305c5 !important; }
+.ant-spin-dot-item { background-color: #B8860B !important; }
 
 /* Cards & Buttons */
 .grid .motion-div:hover { transform: scale(1.03); transition: transform 0.3s ease-in-out; }
-.text-price { color: #D4AF37; font-weight: 700; }
+.text-price { color: #B8860B; font-weight: 700; }
 button { transition: 0.3s all ease-in-out; }
 button:hover { cursor: pointer; }

@@ -2,7 +2,7 @@ const ChauffeurData = [
   // 1. Airport Transportation
   {
     id: 1,
-    title: "Airport Transportation",
+    title: "Airport Transpers",
     slug: "airport-transportation",
     hero: {
       image: "/images/Air.jpg",
@@ -28,7 +28,7 @@ const ChauffeurData = [
   // 2. FBO Airport Transportation
   {
     id: 2,
-    title: "FBO Airport Transportation",
+    title: "Private Transpers",
     slug: "fbo-airport-transportation",
     hero: {
       image: "/images/fbo.jpg",
@@ -127,7 +127,7 @@ const ChauffeurData = [
   // 5. Night in Town
   {
     id: 5,
-    title: "Night in Town",
+    title: "Night Outs",
     slug: "night-in-town",
     hero: {
       image: "/images/night.jpg",

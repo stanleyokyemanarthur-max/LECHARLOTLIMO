@@ -77,8 +77,8 @@ function Index() {
               transition={{ duration: 1 }}
             >
               <div className='hero-content text-white lg:w-[60%]'>
-                <span className='font-bricolage text-xs sm:text-sm lg:text-md uppercase tracking-widest bg-[#867e05] px-2 py-1 rounded-sm'>
-                  - Comfort & Class
+                <span className='font-bricolage text-xs sm:text-sm lg:text-md uppercase tracking-widest bg-[#B8860B] px-2 py-1 rounded-sm'>
+                  Comfort & Class
                 </span>
                 <h1 className='font-bricolage text-3xl sm:text-5xl md:text-6xl xl:text-7xl xxl:text-8xl font-medium hero-title'>
                   Drive in Style, Arrive in Comfort
@@ -87,13 +87,13 @@ function Index() {
                   Every mile with us is a promise of sophistication and peace of mind.
                 </p>
                 <p className='my-5 xl:my-7 lg:w-[60%] hero-pere text-gray-300'>
-                  Whether it’s airport pickup or a red-carpet event, our chauffeurs ensure your arrival
+                  Whether it’s airport pickup or a red-carpet event, our chauffeurs ensure your arrival<br/>
                   feels as premium as the destination.
                 </p>
                 <div className='hero-btns flex flex-wrap gap-4 mt-5 lg:mt-8'>
                   <button
                     onClick={() => navigate("/reservation-form")}
-                    className="make-reservation-btn group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-yellow-600 px-8 py-3 text-lg font-semibold transition-all duration-300 hover:scale-105 "
+                    className="make-reservation-btn group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-[#B8860B] px-8 py-3 text-lg font-semibold transition-all duration-300 hover:scale-105 "
                   >
                     <span className="relative z-10 font-bricolage tracking-wide uppercase">
                       Make Reservation&nbsp; <i className="bi bi-arrow-up-right"></i>
@@ -114,23 +114,23 @@ function Index() {
               transition={{ duration: 1 }}
             >
               <div className='hero-content text-white lg:w-[60%]'>
-                <span className='font-bricolage text-xs sm:text-sm lg:text-md uppercase tracking-widest bg-[#867e05] px-2 py-1 rounded-sm'>
-                  - Exclusive Luxury
+                <span className='font-bricolage text-xs sm:text-sm lg:text-md uppercase tracking-widest bg-[#B8860B] px-2 py-1 rounded-sm'>
+                  Exclusive Luxury
                 </span>
                 <h1 className='font-bricolage text-3xl sm:text-5xl md:text-6xl xl:text-7xl xxl:text-8xl font-medium hero-title'>
-                  Enjoy seamless journeys crafted with elegance, precision, and class.
+                  Enjoy seamless journeys crafted with elegance, and class.
                 </h1>
                 <p className='my-2 text-lg lg:text-2xl font-bricolage hero-subtitle text-gray-300'>
                   Experience the perfect fusion of elegance and performance on every ride.
                 </p>
                 <p className='my-5 xl:my-7 lg:w-[60%] hero-pere text-gray-300'>
-                  From business trips to special occasions, our premium cars redefine your journey
+                  From business trips to special occasions, our premium cars redefine your journey<br/>
                   with unmatched class and comfort.
                 </p>
                 <div className='hero-btns flex flex-wrap gap-4 mt-5 lg:mt-8'>
                   <button
                     onClick={() => navigate("/reservation-form")}
-                    className="make-reservation-btn group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-yellow-600 px-8 py-3 text-lg font-semibold transition-all duration-300 hover:scale-105 "
+                    className="make-reservation-btn group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-[#B8860B] px-8 py-3 text-lg font-semibold transition-all duration-300 hover:scale-105 "
                   >
                     <span className="relative z-10 font-bricolage tracking-wide uppercase">
                       Make Reservation&nbsp; <i className="bi bi-arrow-up-right"></i>
@@ -151,23 +151,27 @@ function Index() {
               transition={{ duration: 1 }}
             >
               <div className='hero-content text-white lg:w-[60%]'>
-                <span className='font-bricolage text-xs sm:text-sm lg:text-md uppercase tracking-widest bg-[#867e05] px-2 py-1 rounded-sm'>
-                  - Premium
+                <span className='font-bricolage text-xs sm:text-sm lg:text-md uppercase tracking-widest bg-[#B8860B] px-2 py-1 rounded-sm'>
+                  Elite Service
                 </span>
+
                 <h1 className='font-bricolage text-3xl sm:text-5xl md:text-6xl xl:text-7xl xxl:text-8xl font-medium hero-title'>
-                  Drive in Style, Arrive in Comfort
+                  Luxury Rides for Every Occasion
                 </h1>
+
                 <p className='my-2 text-lg lg:text-2xl font-bricolage hero-subtitle text-gray-300'>
-                  You can Rent any of our Luxurious Cars.
+                  Choose from our collection of premium, chauffeur-driven vehicles.
                 </p>
+
                 <p className='my-5 xl:my-7 lg:w-[60%] hero-pere text-gray-300'>
-                  LeCharlot Limousine makes car rental simple, fast, and affordable. Choose from a wide
-                  range of vehicles to suit your journey.
+                  Le Charlot Limousine delivers elegance, comfort, and reliability.<br/>
+                  Enjoy a seamless travel experience designed to match your style and needs.
                 </p>
+
                 <div className='hero-btns flex flex-wrap gap-4 mt-5 lg:mt-8'>
                   <button
                     onClick={() => navigate("/reservation-form")}
-                    className="make-reservation-btn group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-yellow-600 px-8 py-3 text-lg font-semibold transition-all duration-300 hover:scale-105 "
+                    className="make-reservation-btn group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-[#B8860B] px-8 py-3 text-lg font-semibold transition-all duration-300 hover:scale-105 "
                   >
                     <span className="relative z-10 font-bricolage tracking-wide uppercase">
                       Make Reservation&nbsp; <i className="bi bi-arrow-up-right"></i>
@@ -175,6 +179,7 @@ function Index() {
                   </button>
                 </div>
               </div>
+
             </motion.div>
           </SwiperSlide>
         </Swiper>
@@ -189,19 +194,14 @@ function Index() {
               alt="About us"
               className="rounded-3xl w-full h-full object-contain md:object-cover"
             />
-            <div className=' curv bg-[#111111] '>
-              <div className='about-item-curv section-item-curv'>
-                <i className='ri-play-line text-xl'></i>
-              </div>
-            </div>
+           
           </div>
           <div>
-            <p className="uppercase text-xs md:text-sm tracking-widest text-yellow-600 mb-2">
-              - LE.CHARLOT LIMOUSINE
+            <p className="uppercase text-xs md:text-sm tracking-widest text-[#B8860B] mb-2">
+              LE CHARLOT LIMOUSINE
             </p>
             <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
-              Luxury is more than a vehicle <br />
-              <span className="text-yellow-600 font-bricolage">it’s the way you’re treated</span>
+              Luxury is more than a vehicle it’s the way you’re treated.
             </h2>
             <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
               At Le Charlot Limousine, our mission is to deliver more than transportation —
@@ -213,14 +213,14 @@ function Index() {
             </p>
             <div className="space-y-4 mb-10">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-[#d8c305c5]">
+                <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-[#B8860B]">
                   <i className="ri-check-double-line"></i>
                 </div>
                 <span className="text-white">Service with a Smile</span>
               </div>
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-[#222] flex
-                   items-center justify-center text-yellow-600">
+                   items-center justify-center text-[#B8860B]">
                   <i className="ri-check-double-line"></i>
                 </div>
                 <span className="text-white">On-Time Guarantee</span>
@@ -233,11 +233,11 @@ function Index() {
 
       {/* ================= Banner Section ================= */}
       <div className="banner-section lg:px-[12%] px-[8%] py-[60px] lg:py-[100px] text-center text-white">
-        <p className="uppercase text-sm tracking-[5px] text-yellow-600 mb-2">
-          - Reserve Now
+        <p className="uppercase text-sm tracking-[5px] text-[#B8860B] mb-2">
+          Reserve Now
         </p>
 
-        <h2 className="text-4xl md:text-5xl text-yellow-600 font-bold mb-4 font-bricolage">
+        <h2 className="text-4xl md:text-5xl text-[#B8860B] font-bold mb-4 font-bricolage">
           We Offer Flexible & Quick Booking Methods
         </h2>
 
@@ -247,15 +247,15 @@ function Index() {
         </p>
 
         <div className="mt-6">
-          <p className="text-lg md:text-xl font-semibold text-yellow-600 mb-2">
+          <p className="text-lg md:text-xl font-semibold text-[#B8860B] mb-2">
             For Instant Booking: <span className="text-white">(404) 405-3738</span>
           </p>
           <p className="text-gray-300 mb-6">
             For complete reservation please click below
           </p>
 
-          <button onClick={() => navigate("/reservation-form")} className="bg-yellow-600 text-black font-semibold py-3 px-8 rounded-full transition duration-300">
-            Detailed Reservation
+          <button onClick={() => navigate("/reservation-form")} className="bg-[#B8860B] text-black font-semibold py-3 px-8 rounded-full transition duration-300">
+             Reservation
           </button>
         </div>
       </div>
@@ -268,38 +268,38 @@ function Index() {
             We Make Sure Your Every Trip is Safe & Special
           </h3>
           <p className="text-gray-400 text-sm md:text-base">
-            Experience premium comfort, style, and reliability — wherever you go.
+            Experience premium comfort, style, and reliability wherever you go.
           </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
           <div className="flex flex-col items-center">
-            <p className="font-medium text-lg mb-1 text-yellow-500">🚘</p>
+            <p className="font-medium text-lg mb-1 text-[#B8860B]">🚘</p>
             <p className="font-medium">Luxury Cars</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <p className="font-medium text-lg mb-1 text-yellow-500">🕐</p>
+            <p className="font-medium text-lg mb-1 text-[#B8860B]">🕐</p>
             <p className="font-medium">24/7 Support</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <p className="font-medium text-lg mb-1 text-yellow-500">⚡</p>
+            <p className="font-medium text-lg mb-1 text-[#B8860B]">⚡</p>
             <p className="font-medium">Instant Booking</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <p className="font-medium text-lg mb-1 text-yellow-500">🧼</p>
+            <p className="font-medium text-lg mb-1 text-[#B8860B]">🧼</p>
             <p className="font-medium">Sanitized</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <p className="font-medium text-lg mb-1 text-yellow-500">💳</p>
+            <p className="font-medium text-lg mb-1 text-[#B8860B]">💳</p>
             <p className="font-medium">Flexible Payments</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <p className="font-medium text-lg mb-1 text-yellow-500">👔</p>
+            <p className="font-medium text-lg mb-1 text-[#B8860B]">👔</p>
             <p className="font-medium">Professional Drivers</p>
           </div>
         </div>
@@ -309,7 +309,7 @@ function Index() {
       <LandingFleetSection />
       <ChauffeurServices />
       {/* Brands */}
-      <div className="bg-[#222222] w-full lg:px-[12%] px-[8%] py-[50px]">
+      {/* <div className="bg-[#222222] w-full lg:px-[12%] px-[8%] py-[50px]">
         <Swiper
           modules={[Autoplay]}
           slidesPerView={6} // ✅ was "sliderPerView"
@@ -407,13 +407,13 @@ function Index() {
 
         </Swiper>
 
-      </div>
+      </div> */}
 
       {/* Vision, Mission, Values Section */}
       <div className="our-service lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]">
         <div className="our-service-content mb-20 text-center text-white">
-          <p className="uppercase text-sm tracking-[5px] text-[#d8c305c5] mb-2">
-            - Our Philosophy
+          <p className="uppercase text-sm tracking-[5px] text-[#B8860B] mb-2">
+            Our Philosophy
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-3 font-bricolage">
             Our Vision & Mission
@@ -432,7 +432,7 @@ function Index() {
                 To redefine luxury transportation by providing safe, seamless, and exceptional experiences that exceed expectations for every journey.
               </p>
               <div className="curv absolute left-0 bottom-0">
-                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#d8c305c5] flex items-center justify-center text-white text-lg font-bold shadow-md">
+                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B8860B] flex items-center justify-center text-white text-lg font-bold shadow-md">
                   1
                 </div>
               </div>
@@ -447,7 +447,7 @@ function Index() {
                 To deliver premium transportation services with professionalism, reliability, and comfort, ensuring that every client feels valued and cared for.
               </p>
               <div className="curv absolute left-0 bottom-0">
-                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#d8c305c5] flex items-center justify-center text-white text-lg font-bold shadow-md">
+                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B8860B] flex items-center justify-center text-white text-lg font-bold shadow-md">
                   2
                 </div>
               </div>
@@ -462,7 +462,7 @@ function Index() {
                 Integrity, excellence, and customer focus guide everything we do. We aim to create memorable journeys built on trust, safety, and attention to detail.
               </p>
               <div className="curv absolute left-0 bottom-0">
-                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#d8c305c5] flex items-center justify-center text-white text-lg font-bold shadow-md">
+                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B8860B] flex items-center justify-center text-white text-lg font-bold shadow-md">
                   3
                 </div>
               </div>
@@ -478,8 +478,8 @@ function Index() {
       {/* Testimonials */}
       <section className='testimonials lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]'>
         <div className="testimonials-content mb-20 text-center text-white">
-          <p className="uppercase text-sm tracking-[5px] text-[#d8c305c5] mb-2">
-            - Testimonials
+          <p className="uppercase text-sm tracking-[5px] text-[#B8860B] mb-2">
+            Testimonials
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-3 font-bricolage">
             Trusted by Thousands
@@ -522,7 +522,7 @@ function Index() {
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#d8c305c5]">Tyler R</p>
+                  <p className="font-bricolage text-xl text-[#B8860B]">Tyler R</p>
                   <p className="text-[#999] text-sm font-bricolage">Traveler, Miami FL</p>
                 </div>
               </div>
@@ -534,12 +534,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#d8c305c5] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl text-[#B8860B] mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#d8c305c5]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl text-[#B8860B]"></i>
                   ))}
                 </div>
               </div>
@@ -547,7 +547,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 Booking online was super easy, and the car was in perfect condition when we arrived. I’ll definitely book again!
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#d8c305c5]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B8860B]"></i>
               </div>
 
               {/* User Info */}
@@ -562,7 +562,7 @@ function Index() {
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#d8c305c5]">Mr Raymond Mendes</p>
+                  <p className="font-bricolage text-xl text-[#B8860B]">Mr Raymond Mendes</p>
                   <p className="text-[#999] text-sm font-bricolage">Leisure Traveler</p>
                 </div>
               </div>
@@ -583,7 +583,7 @@ function Index() {
 
               {/* Review Text */}
               <div className="text-white text-lg mb-6 font-bricolage">
-                We hired their limo for our wedding day — absolutely flawless experience.
+                We hired their limo for our wedding day absolutely flawless experience.
                 The car looked stunning and the chauffeur went above and beyond.
               </div>
 
@@ -595,7 +595,7 @@ function Index() {
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#d8c305c5]">Sophia </p>
+                  <p className="font-bricolage text-xl text-[#B8860B]">Sophia </p>
                   <p className="text-[#999] text-sm font-bricolage">Bride, Chicago IL</p>
                 </div>
               </div>
@@ -627,7 +627,7 @@ function Index() {
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#d8c305c5]">Michael & Renee T</p>
+                  <p className="font-bricolage text-xl text-[#B8860B]">Michael & Renee T</p>
                   <p className="text-[#999] text-sm font-bricolage">Los Angeles, CA</p>
                 </div>
               </div>

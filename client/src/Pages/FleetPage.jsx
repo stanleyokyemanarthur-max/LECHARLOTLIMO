@@ -43,7 +43,7 @@ const fleetData = [
     slug: "sprinter-van",
     title: "Sprinter Van",
     subtitle: "SPRINTER VAN (11 OR 14 PASSENGER)",
-    image: "/images/black.png",
+    image: "/images/van.png",
     specs: [
       { icon: <Users className="w-4 h-4 text-yellow-600" />, text: "11-14 passengers" },
       { icon: <Briefcase className="w-4 h-4 text-yellow-600" />, text: "Luggage 10-12 Large or 12-14 Small" },
@@ -86,7 +86,7 @@ function FleetPage() {
   return (
     <section className="bg-gray-50 min-h-screen py-16 px-6 md:px-12">
       {/* Title */}
-      <div className="text-center mb-12">
+      <div className="text-center mt-16">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
           Our Luxurious Fleet
         </h1>

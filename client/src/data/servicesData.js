@@ -65,7 +65,7 @@ Enjoy the anticipation of your voyage while we handle the details. From Manhatta
   },
   {
     id: 8,
-    title: "Night in Town",
+    title: "Night Outs",
     slug: "night-in-town",
     description:
       "Experience the city’s nightlife with elegance. Whether it’s dinner, a concert, or a night out with friends, Le Charlot Limousine ensures a safe, stylish, and memorable evening on the town.",

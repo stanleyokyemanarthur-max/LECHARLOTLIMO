@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 const services = [
   {
     id: 1,
-    title: "Airport Transportation",
+    title: "Airport Transpers",
     slug: "airport-transportation",
     image: "/images/Air.jpg",
     description:
@@ -12,7 +12,7 @@ const services = [
   },
   {
     id: 2,
-    title: "FBO Airport Transportation",
+    title: "Private Transpers",
     slug: "fbo-airport-transportation",
     image: "/images/fbo.jpg",
     description:
@@ -36,7 +36,7 @@ const services = [
   },
   {
     id: 5,
-    title: "Night in Town",
+    title: "Night Outs",
     slug: "night-in-town",
     image: "/images/night.jpg",
     description:

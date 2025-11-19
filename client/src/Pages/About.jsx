@@ -76,54 +76,58 @@ function About() {
         </div>
       </div>
 
-      {/* About Section 2 */}
-      <div className="about text-white lg:px-[10%] px-[8%] py-[50px] lg:py-[90px]">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-          <div className="relative w-auto sm:h-[450px] lg:h-[600px]">
-            <img
-              src="/images/airport.jpeg"
-              alt="Chauffeur service at the airport"
-              className="rounded-3xl w-full h-full object-contain md:object-cover"
-            />
+    {/* About Section 2 - Landing Page */}
+<div className="about text-white lg:px-[10%] px-[8%] py-[50px] lg:py-[90px]">
+  <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+    
+    {/* Image */}
+    <div className="relative w-auto sm:h-[450px] lg:h-[600px]">
+      <img
+        src="/images/driver.jpg"
+        alt="Chauffeur service at the airport"
+        className="rounded-3xl w-full h-full object-contain md:object-cover"
+      />
+    </div>
+
+    {/* Text Content */}
+    <div>
+      <p className="uppercase text-xs md:text-sm tracking-widest text-yellow-600 mb-2">
+        LE CHARLOT LIMOUSINE
+      </p>
+      <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
+        Travel in Style <br />
+        <span className="text-yellow-600 font-bricolage">
+          Experience comfort from start to finish
+        </span>
+      </h2>
+      <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
+        At Le Charlot Limousine, we know that your time is valuable. Our professional chauffeurs
+        provide seamless rides with attention to every detail, ensuring a luxurious
+        experience for every journey whether it’s a city trip or a quick airport transfer.
+      </p>
+      <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
+        From punctual pick-ups to clean, premium vehicles, we combine reliability
+        with sophistication to make every ride feel effortless and memorable.
+      </p>
+      <div className="space-y-4 mb-10">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-yellow-600">
+            <i className="ri-check-double-line"></i>
           </div>
-          <div>
-            <p className="uppercase text-xs md:text-sm tracking-widest text-yellow-600 mb-2">
-              - LE.CHARLOT LIMOUSINE
-            </p>
-            <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
-              Luxury is more than a vehicle <br />
-              <span className="text-yellow-600 font-bricolage">
-                it’s the way you’re treated
-              </span>
-            </h2>
-            <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
-              Every guest is a VIP at Le Charlot. From the first call to the final drop-off,
-              we focus on providing warmth, punctuality, and absolute comfort. Our chauffeurs
-              are trained to anticipate your needs — whether that’s a quiet ride, a scenic
-              route, or timely airport arrival.
-            </p>
-            <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
-              Founded by Pierre Charlot, our company embodies a vision of excellence and
-              sophistication, ensuring that every ride reflects the prestige and comfort
-              our clients deserve.
-            </p>
-            <div className="space-y-4 mb-10">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-yellow-600">
-                  <i className="ri-check-double-line"></i>
-                </div>
-                <span className="text-white">Service with a Personal Touch</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-yellow-600">
-                  <i className="ri-check-double-line"></i>
-                </div>
-                <span className="text-white">Guaranteed On-Time Arrivals</span>
-              </div>
-            </div>
+          <span className="text-white">Fast and Reliable Service</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-yellow-600">
+            <i className="ri-check-double-line"></i>
           </div>
+          <span className="text-white">Clean, Luxury Vehicles Every Time</span>
         </div>
       </div>
+    </div>
+
+  </div>
+</div>
+
 
       {/* NEW SECTION - Why Choose Us */}
       <div className="about text-white lg:px-[10%] px-[8%] py-[50px] lg:py-[90px] bg-[#1a1a1a]">
@@ -131,7 +135,7 @@ function About() {
           {/* Text Section */}
           <div>
             <p className="uppercase text-xs md:text-sm tracking-widest text-yellow-600 mb-2">
-              - WHY CHOOSE US
+               WHY CHOOSE US
             </p>
             <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
               Driven by <br />
@@ -139,7 +143,7 @@ function About() {
             </h2>
             <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
               Choosing Le Charlot Limousine means choosing an experience that blends luxury
-              with precision. We operate with a simple promise — your comfort, safety,
+              with precision. We operate with a simple promise your comfort, safety,
               and time are our top priorities. Whether you’re traveling for business,
               leisure, or a special celebration, we tailor every detail to meet your expectations.
             </p>
@@ -174,7 +178,7 @@ function About() {
       <div className="our-service lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]">
         <div className="our-service-content mb-20 text-center text-white">
           <p className="uppercase text-sm tracking-[5px] text-yellow-600 mb-2">
-            - Our Philosophy
+             Our Philosophy
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-3 font-bricolage">
             Our Vision & Mission
