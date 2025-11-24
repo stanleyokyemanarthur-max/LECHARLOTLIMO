@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "../slices/authSlice"; // ✅ from Redux slice
+import { setCredentials } from "../slices/authSlice"; // Redux slice
 import Spinner from "../Components/Spinner.jsx";
+
 function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -30,18 +31,26 @@ function Login() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // 🔥 Save user + token to Redux and localStorage
+      // 🔥 Case 1: TOTP required → redirect to EnableAuthenticator
+      if (data.mfa === "TOTP_REQUIRED") {
+        navigate("/enable-totp", { state: { email: form.email } });
+        return;
+      }
+
+      // 🔥 Case 2: Email OTP required (optional)
+      if (data.message === "OTP sent" || data.message === "OTP sent to your email") {
+        navigate("/verify-otp", { state: { email: form.email } });
+        return;
+      }
+
+      // 🔥 Case 3: Direct login
       dispatch(setCredentials({ user: data.user || data, token: data.token }));
 
-      // 🎯 Redirect user based on role
       const role = data.user?.role || data.role;
-      if (role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (role === "driver") {
-        navigate("/driver/dashboard");
-      } else {
-        navigate("/"); // customer default
-      }
+      if (role === "admin") navigate("/admin/dashboard");
+      else if (role === "driver") navigate("/driver/dashboard");
+      else navigate("/");
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -54,7 +63,7 @@ function Login() {
       className="login-page flex justify-center items-center min-h-screen bg-cover bg-center relative"
       style={{ backgroundImage: "url('/images/limo-bg.jpg')" }}
     >
-      {loading && (<Spinner/>)}
+      {loading && <Spinner />}
       <div className="absolute inset-0 bg-black/60"></div>
 
       <div className="relative z-10 bg-[#111111]/90 text-white shadow-lg rounded-2xl p-8 w-full max-w-md border border-[#d8c305c5]">

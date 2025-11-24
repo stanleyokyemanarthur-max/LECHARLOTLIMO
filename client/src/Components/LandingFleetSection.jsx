@@ -21,7 +21,7 @@ function LandingFleetSection() {
     </h2>
 
     <p className="text-gray-700 text-base md:text-lg leading-relaxed max-w-md mx-auto md:mx-0">
-      Premier Chauffeured Services in the USA. We value the time and quality
+      Premier Chauffeured Services. We value the time and quality
       of travel for each of our clients. Explore our luxury cars and book a
       ride for the ultimate experience.
     </p>

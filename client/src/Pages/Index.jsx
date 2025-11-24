@@ -416,20 +416,19 @@ function Index() {
             Our Philosophy
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-3 font-bricolage">
-            Our Vision & Mission
+            Our Mision & Value
           </h2>
         </div>
 
         <div className="our-service-wrapper">
-          <div className="grid w-full gap-12 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
-
-            {/* Vision */}
+          <div className="grid w-full gap-12 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-2">
+            {/* Mission */}
             <div className="service-item relative text-white rounded-[20px] bg-[#222222] p-6 w-full">
-              <h5 className="font-semibold text-3xl mb-3 font-bricolage">
-                Our Vision
-              </h5>
+              <h1 className="font-semibold text-3xl mb-3 font-bricolage">
+                Our Mission
+              </h1>
               <p className="text-[#999] text-md leading-relaxed">
-                To redefine luxury transportation by providing safe, seamless, and exceptional experiences that exceed expectations for every journey.
+                At Le Charlot Limousine, our Mission is to deliver more than just transportation. We create unforgettable journeys define bt elegance, comfort, and personalized care.
               </p>
               <div className="curv absolute left-0 bottom-0">
                 <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B8860B] flex items-center justify-center text-white text-lg font-bold shadow-md">
@@ -438,32 +437,17 @@ function Index() {
               </div>
             </div>
 
-            {/* Mission */}
-            <div className="service-item relative text-white rounded-[20px] bg-[#222222] p-6 w-full">
-              <h5 className="font-semibold text-3xl mb-3 font-bricolage">
-                Our Mission
-              </h5>
-              <p className="text-[#999] text-md leading-relaxed">
-                To deliver premium transportation services with professionalism, reliability, and comfort, ensuring that every client feels valued and cared for.
-              </p>
-              <div className="curv absolute left-0 bottom-0">
-                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B8860B] flex items-center justify-center text-white text-lg font-bold shadow-md">
-                  2
-                </div>
-              </div>
-            </div>
-
             {/* Values */}
             <div className="service-item relative text-white rounded-[20px] bg-[#222222] p-6 w-full">
-              <h5 className="font-semibold text-3xl mb-3 font-bricolage">
+              <h1 className="font-semibold text-3xl mb-3 font-bricolage">
                 Our Values
-              </h5>
+              </h1>
               <p className="text-[#999] text-md leading-relaxed">
                 Integrity, excellence, and customer focus guide everything we do. We aim to create memorable journeys built on trust, safety, and attention to detail.
               </p>
               <div className="curv absolute left-0 bottom-0">
                 <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B8860B] flex items-center justify-center text-white text-lg font-bold shadow-md">
-                  3
+                  2
                 </div>
               </div>
             </div>
@@ -497,38 +481,6 @@ function Index() {
             0: { slidesPerView: 1 },
           }}
         >
-          <SwiperSlide>
-            <div className="rounded-[38px] bg-[#222] text-left p-8 shadow-md flex flex-col justify-between">
-              {/* Quote + Stars */}
-              <div className="flex items-start justify-between mb-6">
-                <span className="text-4xl text-white mr-4 fa-solid fa-quote-left"></span>
-                <div className="flex space-x-1">
-                  {Array(5).fill().map((_, i) => (
-                    <span key={i} className="text-white text-xl fa-solid fa-star"></span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Review Text */}
-              <div className="text-white text-lg mb-6 font-bricolage">
-                I visited Miami for vacation and the chauffeur service made it unforgettable. Great music, comfort, and vibes all the way.
-              </div>
-
-              {/* User Info */}
-              <div className="flex items-center mt-6">
-                <div className="curv">
-                  <div className="">
-                    <img src='/images/ian.jpg' alt="user" className="rounded-full h-16 w-16  object-cover mr-4 " />
-                  </div>
-                </div>
-                <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#B8860B]">Tyler R</p>
-                  <p className="text-[#999] text-sm font-bricolage">Traveler, Miami FL</p>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-
           <SwiperSlide>
             <div className="rounded-[38px] bg-[#222] text-left p-8 shadow-md flex flex-col justify-between">
               {/* Quote + Stars */}
@@ -568,72 +520,84 @@ function Index() {
               </div>
             </div>
           </SwiperSlide>
-
           <SwiperSlide>
             <div className="rounded-[38px] bg-[#222] text-left p-8 shadow-md flex flex-col justify-between">
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
-                <span className="text-4xl text-white mr-4 fa-solid fa-quote-left"></span>
+                {/* Opening Quote */}
+                <i className="fa-solid fa-quote-left text-4xl text-[#B8860B] mr-4"></i>
+
+                {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <span key={i} className="text-white text-xl fa-solid fa-star"></span>
+                    <i key={i} className="fa-solid fa-star text-xl text-[#B8860B]"></i>
                   ))}
                 </div>
               </div>
 
-              {/* Review Text */}
-              <div className="text-white text-lg mb-6 font-bricolage">
-                We hired their limo for our wedding day absolutely flawless experience.
-                The car looked stunning and the chauffeur went above and beyond.
+              {/* Review Text with Closing Quote */}
+              <div className="text-white text-lg mb-6 font-bricolage italic relative">
+                Booking online was super easy, and the car was in perfect condition when we arrived. I’ll definitely book again!
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B8860B]"></i>
               </div>
 
               {/* User Info */}
-              <div className="flex items-center mt-6">
+              <div className="flex items-center mt-10">
                 <div className="curv">
-                  <div className="">
-                    <img src='/images/math.jpg' alt="user" className="rounded-full h-16 w-16 mr-4" />
+                  <div>
+                    <img
+                      src="/images/set (2).jpg"
+                      alt="user"
+                      className="rounded-full h-16 w-16 object-cover mr-4"
+                    />
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#B8860B]">Sophia </p>
-                  <p className="text-[#999] text-sm font-bricolage">Bride, Chicago IL</p>
+                  <p className="font-bricolage text-xl text-[#B8860B]">Mr Raymond Mendes</p>
+                  <p className="text-[#999] text-sm font-bricolage">Leisure Traveler</p>
                 </div>
               </div>
             </div>
           </SwiperSlide>
-
           <SwiperSlide>
             <div className="rounded-[38px] bg-[#222] text-left p-8 shadow-md flex flex-col justify-between">
-
+              {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
-                <span className="text-4xl text-white mr-4 fa-solid fa-quote-left"></span>
+                {/* Opening Quote */}
+                <i className="fa-solid fa-quote-left text-4xl text-[#B8860B] mr-4"></i>
+
+                {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <span key={i} className="text-white text-xl fa-solid fa-star"></span>
+                    <i key={i} className="fa-solid fa-star text-xl text-[#B8860B]"></i>
                   ))}
                 </div>
               </div>
 
-              {/* Review Text */}
-              <div className="text-white text-lg mb-6 font-bricolage">
-                We booked a limo for our anniversary and it was perfect! The driver was professional and the ride felt truly luxurious.
+              {/* Review Text with Closing Quote */}
+              <div className="text-white text-lg mb-6 font-bricolage italic relative">
+                Booking online was super easy, and the car was in perfect condition when we arrived. I’ll definitely book again!
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B8860B]"></i>
               </div>
 
               {/* User Info */}
-              <div className="flex items-center mt-6">
+              <div className="flex items-center mt-10">
                 <div className="curv">
-                  <div className="">
-                    <img src='/images/har.jpg' alt="user" className="rounded-full h-16 w-16 mr-4" />
+                  <div>
+                    <img
+                      src="/images/set (2).jpg"
+                      alt="user"
+                      className="rounded-full h-16 w-16 object-cover mr-4"
+                    />
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#B8860B]">Michael & Renee T</p>
-                  <p className="text-[#999] text-sm font-bricolage">Los Angeles, CA</p>
+                  <p className="font-bricolage text-xl text-[#B8860B]">Mr Raymond Mendes</p>
+                  <p className="text-[#999] text-sm font-bricolage">Leisure Traveler</p>
                 </div>
               </div>
             </div>
           </SwiperSlide>
-
         </Swiper>
 
       </section>

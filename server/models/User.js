@@ -11,6 +11,18 @@ const userSchema = new mongoose.Schema(
     profileImage: { type: String },
     isVerified: { type: Boolean, default: false },
     status: { type: String, enum: ["active", "blocked"], default: "active" },
+
+    // 🔹 Password reset fields
+    resetToken: { type: String },
+    resetTokenExpiry: { type: Date },
+
+    // 🔹 MFA / OTP fields
+    mfaCode: { type: String },
+    mfaCodeExpiry: { type: Date },
+    totpSecret: { type: String },          // Base32 secret
+    isTOTPEnabled: { type: Boolean, default: false },
+    backupCodes: [{ type: String }]        // optional
+
   },
   { timestamps: true }
 );

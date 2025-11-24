@@ -52,10 +52,10 @@ function Contact() {
       {/* Banner */}
       <div className="banner-section flex justify-center items-center h-[358px] lg:h-[550px]">
         <div className="banner-section-content text-center z-10">
-          <h6 className="uppercase text-sm lg:text-xl text-white font-bricolage">
-            GET <span className="text-[#d8c305c5]">IN TOUCH</span>
-          </h6>
-          <h1 className="text-4xl lg:text-5xl xl:text-8xl font-semibold font-bricolage text-[#d8c305c5]">
+          <h1 className="uppercase text-sm lg:text-xl text-white font-bricolage">
+            GET <span className="text-[#B8860B]">IN TOUCH</span>
+          </h1>
+          <h1 className="text-4xl lg:text-5xl xl:text-8xl font-semibold font-bricolage text-[#B8860B]">
             <span className="text-white font-bricolage">CONTACT</span> US
           </h1>
         </div>
@@ -66,35 +66,35 @@ function Contact() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 w-full gap-12">
 
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl relative group overflow-hidden">
-            <i className="ri-map-pin-fill text-[#d8c305c5] text-5xl"></i>
-            <h4 className="font-bricolage text-2xl lg:text-4xl font-semibold mt-8 mb-2">
+            <i className="ri-map-pin-fill text-[#B8860B] text-5xl"></i>
+            <h1 className="font-bricolage text-2xl lg:text-2xl font-semibold mt-8 mb-2">
               Our Address
-            </h4>
+            </h1>
             <p className="text-[#999]">Vadodara, Water Tower, Office 123</p>
           </div>
 
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl relative group overflow-hidden">
-            <i className="ri-mail-fill text-[#d8c305c5] text-5xl"></i>
-            <h4 className="font-bricolage text-2xl lg:text-4xl font-semibold mt-8 mb-2">
+            <i className="ri-mail-fill text-[#B8860B] text-5xl"></i>
+            <h1 className="font-bricolage text-2xl lg:text-2xl font-semibold mt-8 mb-2">
               Email Us
-            </h4>
-            <p className="text-[#999]">info@example.com</p>
+            </h1>
+            <p className="text-[#999]"> info@lecharlotlimousime.com</p>
           </div>
 
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl relative group overflow-hidden">
-            <i className="ri-time-fill text-[#d8c305c5] text-5xl"></i>
-            <h4 className="font-bricolage text-2xl lg:text-4xl font-semibold mt-8 mb-2">
+            <i className="ri-time-fill text-[#B8860B] text-5xl"></i>
+            <h1 className="font-bricolage text-2xl lg:text-2xl font-semibold mt-8 mb-2">
               Opening Hours
-            </h4>
+            </h1>
             <p className="text-[#999]">Mon-Sun: 9:00 AM - 6:00 PM</p>
           </div>
 
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl relative group overflow-hidden">
-            <i className="ri-phone-line text-[#d8c305c5] text-5xl"></i>
-            <h4 className="font-bricolage text-2xl lg:text-4xl font-semibold mt-8 mb-2">
+            <i className="ri-phone-line text-[#B8860B] text-5xl"></i>
+            <h1 className="font-bricolage text-2xl lg:text-2xl font-semibold mt-8 mb-2">
               Call Us
-            </h4>
-            <p className="text-[#999]">+123 456 7890</p>
+            </h1>
+            <p className="text-[#999]">+1 (404) 405-3738</p>
           </div>
 
         </div>
@@ -106,14 +106,14 @@ function Contact() {
 
           {/* Form */}
           <div>
-            <h2 className="text-white text-3xl font-semibold mb-8 text-center lg:text-left">
+            <h1 className="text-white text-3xl font-semibold mb-8 text-center lg:text-left">
               Get In Touch
-            </h2>
+            </h1>
 
             <form onSubmit={handleSubmit} className="space-y-5 contact-inputs">
 
               {/* Name + Email */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <input
                   type="text"
                   placeholder="Your Name"
@@ -121,7 +121,7 @@ function Contact() {
                   onChange={(e) =>
                     setForm({ ...form, name: e.target.value })
                   }
-                  className="bg-[#222] text-white rounded-md px-4 py-5"
+                  className="bg-[#222] fieldtext text-white rounded-md px-4 py-5"
                 />
 
                 <input
@@ -131,7 +131,7 @@ function Contact() {
                   onChange={(e) =>
                     setForm({ ...form, email: e.target.value })
                   }
-                  className="bg-[#222] text-white rounded-md px-4 py-5"
+                  className="bg-[#222] fieldtext text-white rounded-md px-4 py-5"
                 />
               </div>
 
@@ -144,7 +144,7 @@ function Contact() {
                   onChange={(e) =>
                     setForm({ ...form, number: e.target.value })
                   }
-                  className="bg-[#222] text-white rounded-md px-4 py-5"
+                  className="bg-[#222] fieldtext text-white rounded-md px-4 py-5"
                 />
 
                 <input
@@ -154,7 +154,7 @@ function Contact() {
                   onChange={(e) =>
                     setForm({ ...form, subject: e.target.value })
                   }
-                  className="bg-[#222] text-white rounded-md px-4 py-5"
+                  className="bg-[#222] fieldtext text-white rounded-md px-4 py-5"
                 />
               </div>
 
@@ -166,14 +166,14 @@ function Contact() {
                 onChange={(e) =>
                   setForm({ ...form, message: e.target.value })
                 }
-                className="bg-[#222] text-white rounded-md px-6 py-4 w-full"
+                className="bg-[#222] fieldtext text-white rounded-md px-6 py-4 w-full"
               />
 
               {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-[#d8c305c5] hover:bg-white hover:text-black text-white px-14 py-4 text-xl rounded-full transition"
+                className="bg-[#B8860B] hover:bg-white hover:text-black text-white px-14 py-4 text-xl rounded-full transition"
               >
                 {loading ? "Sending..." : "Submit"}
               </button>

@@ -4,25 +4,25 @@ import { motion } from "framer-motion";
 const services = [
   {
     id: 1,
-    title: "Airport Transpers",
-    slug: "airport-transportation",
+    title: "Airport Services",
+    slug: "airport-services",
     image: "/images/Air.jpg",
     description:
       "Enjoy professional airport transfer service with timely pickups and drop-offs, ensuring your journey begins or ends in complete comfort.",
   },
   {
     id: 2,
-    title: "Private Transpers",
-    slug: "fbo-airport-transportation",
-    image: "/images/fbo.jpg",
+    title: "Wine Tours",
+    slug: "wine-tours",
+    image: "/images/wine.jpg",
     description:
       "Private jet travelers receive VIP ground transportation to and from FBO terminals with our premium fleet.",
   },
   {
     id: 3,
-    title: "Corporate Limousine Service",
-    slug: "corporate-limousine-service",
-    image: "/images/chauf.jpg",
+    title: "Concerts",
+    slug: "concerts",
+    image: "/images/concert.jpg",
     description:
       "Arrive at meetings and events in style with professional chauffeurs and executive-class vehicles.",
   },
@@ -30,7 +30,7 @@ const services = [
     id: 4,
     title: "Weddings",
     slug: "wedding-limousine-service",
-    image: "/images/weds.jpg",
+    image: "/images/Peacwed.jpg",
     description:
       "Make your big day even more special with elegant limousine transportation for the couple and guests.",
   },
@@ -46,7 +46,31 @@ const services = [
     id: 6,
     title: "Proms",
     slug: "prom-limousine-service",
-    image: "/images/proms.jpg",
+    image: "/images/Prom 25.jpg",
+    description:
+      "Celebrate prom night in a glamorous limo with your friends, ensuring a memorable and safe experience.",
+  },
+  {
+    id: 7,
+    title: "Anniversaries",
+    slug: "anniversary-services",
+    image: "/images/anni.jpg",
+    description:
+      "Celebrate prom night in a glamorous limo with your friends, ensuring a memorable and safe experience.",
+  },
+  {
+    id: 8,
+    title: "Sporting Events",
+    slug: "sporting-events",
+    image: "/images/sport.jpg",
+    description:
+      "Celebrate prom night in a glamorous limo with your friends, ensuring a memorable and safe experience.",
+  },
+  {
+    id: 9,
+    title: "FBO Executive Chauffeur Service",
+    slug: "fbo-executive-chauffeur-service",
+    image: "/images/fbo.png",
     description:
       "Celebrate prom night in a glamorous limo with your friends, ensuring a memorable and safe experience.",
   },

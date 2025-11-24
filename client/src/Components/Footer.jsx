@@ -10,8 +10,8 @@ function Footer() {
 
             {/* Logo + About */}
             <div className="flex-1">
-              <Link to="/" className="text-4xl font-bold logo font-bricolage">
-                Le.Charlot<span className="text-[#d8c305c5]">Limousine</span>
+              <Link to="/" className="text-4xl flex font-bold logo font-bricolage">
+                LeCharlot<span className="text-[#B8860B]">Limousine</span>
               </Link>
               <p className="text-[#999] mt-2 md:w-[90%] w-full">
                 Rent a car imperdiet sapien porttitor bibendum elementum. Commodo erat
@@ -22,19 +22,19 @@ function Footer() {
               <div className="flex gap-4 mt-4">
                 <a
                   href="#"
-                  className="border border-[#d8c305c5] text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#d8c305c5] hover:text-black transition-colors"
+                  className="border border-[#B8860B] text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#d8c305c5] hover:text-black transition-colors"
                 >
                   <i className="ri-instagram-line"></i>
                 </a>
                 <a
                   href="#"
-                  className="border border-[#d8c305c5] text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#d8c305c5] hover:text-black transition-colors"
+                  className="border border-[#B8860B] text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#d8c305c5] hover:text-black transition-colors"
                 >
                   <i className="ri-twitter-x-fill"></i>
                 </a>
                 <a
                   href="#"
-                  className="border border-[#d8c305c5] text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#d8c305c5] hover:text-black transition-colors"
+                  className="border border-[#B8860B] text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#d8c305c5] hover:text-black transition-colors"
                 >
                   <i className="ri-facebook-fill"></i>
                 </a>
@@ -51,7 +51,7 @@ function Footer() {
                 <li>
                   <Link
                     to="/about"
-                    className="hover:text-[#d8c305c5] relative transition duration-300 font-bricolage"
+                    className="hover:text-[#B8860B] relative transition duration-300 font-bricolage"
                   >
                     About
                   </Link>
@@ -59,7 +59,7 @@ function Footer() {
                 <li>
                   <Link
                     to="/services"
-                    className="hover:text-[#d8c305c5] elative transition duration-300 font-bricolage"
+                    className="hover:text-[#B8860B] elative transition duration-300 font-bricolage"
                   >
                     Services
                   </Link>
@@ -67,7 +67,7 @@ function Footer() {
                 <li>
                   <Link
                     to="/contact"
-                    className="hover:text-[#d8c305c5] relative transition duration-300 font-bricolage"
+                    className="hover:text-[#B8860B] relative transition duration-300 font-bricolage"
                   >
                     Contact
                   </Link>
@@ -75,7 +75,7 @@ function Footer() {
                 <li>
                   <Link
                     to="/fleet"
-                    className="hover:text-[#d8c305c5] relative transition duration-300 font-bricolage"
+                    className="hover:text-[#B8860B] relative transition duration-300 font-bricolage"
                   >
                     Fleet
                   </Link>
@@ -98,7 +98,7 @@ function Footer() {
                     href="mailto:contact@lecharlot.com"
                     className="flex items-center gap-2 text-[#999] px-3 py-2 rounded-lg   "
                   >
-                    ✉ contact@lecharlot.com
+                    ✉ nfo@lecharlotlimousine.com
                   </a>
 
                   <a
@@ -111,7 +111,7 @@ function Footer() {
                   {/* Optional CTA Button */}
                   <Link
                     to="/reservation-form"
-                    className="mt-4 inline-flex items-center justify-center bg-[#d8c305c5]  text-black font-semibold px-6 py-3 rounded-full  duration-300 shadow-lg"
+                    className="mt-4 inline-flex items-center justify-center bg-[#B8860B]  text-black font-semibold px-6 py-3 rounded-full  duration-300 shadow-lg"
                   >
                     Schedule a Ride
                   </Link>
@@ -125,7 +125,7 @@ function Footer() {
             <p className="font-bricolage">
               © 2025. All Rights Reserved.{" "}
               <a href="#" className="text-white font-bricolage">
-                Le.Charlot<span className="text-[#d8c305c5]">Limousine</span>
+                Le Charlot<span className="text-[#B8860B]">Limousine</span>
               </a>
             </p>
           </div>

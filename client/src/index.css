@@ -35,7 +35,7 @@ html, body {
     cursor: default;
 }
 
-h1, h2, h3, h4,span,.nav-link,p {
+h1, h2, h3, h4,span,.nav-link,p,a, .fieldtext{
     font-family: 'Playfair Display', serif;
 }
 
@@ -166,7 +166,7 @@ nav {
 /* Banner Section */
 .banner-section {
     width: 100%;
-    background-image: url("https://images.unsplash.com/photo-1655484100469-30410d533489?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+    background-image: url("/images/dash.png");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
@@ -254,3 +254,48 @@ input[placeholder="Drop-off Location"] {
 .text-price { color: #B8860B; font-weight: 700; }
 button { transition: 0.3s all ease-in-out; }
 button:hover { cursor: pointer; }
+
+/* === FLATPICKR DARK THEME + GOLD ACCENTS === */
+
+/* Calendar container rounding + dark background */
+.flatpickr-calendar {
+  border-radius: 16px !important;
+  overflow: hidden;
+  background: #0b0b0b !important;
+  border: 1px solid rgba(212, 175, 55, 0.12) !important;
+}
+
+/* Month header + weekdays (gold) */
+.flatpickr-months .flatpickr-month,
+.flatpickr-weekday {
+  color: #B8860B !important;
+  font-weight: 600;
+}
+
+/* Selected day + hover day (gold highlight) */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day:hover {
+  background: #B8860B !important;
+  border-color: #B8860B !important;
+  color: #000 !important;
+}
+
+/* Today outline */
+.flatpickr-day.today {
+  border-color: #B8860B !important;
+}
+
+/* Time picker text */
+.flatpickr-time input,
+.flatpickr-time .flatpickr-time-separator {
+  color: #EEE !important;
+  background: transparent !important;
+}
+
+/* Time picker up/down arrows */
+.flatpickr-time .flatpickr-am-pm,
+.flatpickr-time .numInputWrapper span {
+  color: #B8860B !important;
+}

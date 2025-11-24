@@ -1,8 +1,8 @@
 const servicesData = [
   {
     id: 2,
-    title: "Airport Car Services",
-    slug: "airport-car-services",
+    title: "Airport Services",
+    slug: "airport-services",
     description:
       "Whether you’re traveling for business, leisure, or a special occasion, Le Charlot Limousine offers a variety of premium vehicles to suit your preferences and budget. Our chauffeurs guarantee a safe and relaxing ride to or from the airport.",
     icon: "/images/airport.png",
@@ -33,8 +33,8 @@ We offer customized billing and scheduling for corporate accounts, making transp
   },
   {
     id: 4,
-    title: "Private Aviation Service",
-    slug: "private-aviation",
+    title: "Sporting Events",
+    slug: "sporting-events",
     description:
       "For private jet travelers, Le Charlot Limousine delivers a personalized ground transportation experience. Our chauffeurs coordinate directly with your flight schedule, offering smooth and discreet transfers between private terminals and destinations.",
     icon: "/images/private.png",
@@ -49,8 +49,8 @@ From confidential transfers to personalized itineraries, Le Charlot Limousine is
   },
   {
     id: 5,
-    title: "Pier and Cruise Services",
-    slug: "pier-cruises",
+    title: "Anniversaries",
+    slug: "anniversaries",
     description:
       "Set sail without stress. Le Charlot Limousine provides reliable transfers to major cruise terminals and piers, including Manhattan, Brooklyn, and Cape Liberty. Begin or end your voyage in luxury and comfort.",
     icon: "/images/shipping.png",
@@ -113,8 +113,8 @@ From red-carpet photos to smooth rides between venues, every detail is designed 
   },
   {
     id: 11,
-    title: "Casinos",
-    slug: "casinos",
+    title: "Concerts",
+    slug: "concerts",
     description:
       "Turn your casino trip into a luxury experience. Le Charlot Limousine provides elegant, private transportation to and from top casinos, ensuring your evening begins and ends in class.",
     icon: "/images/cards.png",
@@ -129,8 +129,8 @@ And when the games are over, your chauffeur will be ready to take you home safel
   },
   {
     id: 12,
-    title: "Traveling with Kids?",
-    slug: "traveling-with-kids",
+    title: "Wine Tours",
+    slug: "wine-tours",
     description:
       "Family travel made simple — our vehicles come equipped with safe, clean child seats for infants and toddlers. With Le Charlot Limousine, your entire family rides in comfort and security.",
     icon: "/images/family.png",

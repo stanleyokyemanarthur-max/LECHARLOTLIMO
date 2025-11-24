@@ -6,13 +6,13 @@ function ReservationForm() {
 
   const cars = [
     { src: "/images/-Cadillac.png" },
-    { src: "/images/gmc.png" },
+    { src: "/images/Gmcc.png" },
     { src: "/images/Chevy.jpg" },
-    { src: "/images/Sprinter.jpg" },
+    { src: "/images/van.png" },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-white to-white text-gray-900 pt-24 pb-24 font-['Inter']">
+    <div className="min-h-screen bg-gradient-to-b from-white via-white to-white text-gray-900 pt-32 pb-24 font-['Inter']">
 
       <div className="max-w-7xl mx-auto px-6 text-center">
         {/* Header */}
@@ -22,6 +22,10 @@ function ReservationForm() {
 
         <div className="w-24 h-[2px] bg-[#d4af37] mx-auto mb-8"></div>
 
+        <p className="text-gray-600 leading-relaxed max-w-3xl mx-auto mb-14 text-base lg:text-lg">
+          At Le Charlot Limousine, reserving your luxury experience is simple and effortless.
+          A small deposit secures your date and preferred vehicle, while the remaining balance is due before your scheduled service or event.
+        </p>
         <p className="text-gray-600 leading-relaxed max-w-3xl mx-auto mb-14 text-base lg:text-lg">
           Make your reservation effortlessly — whether for airport transfers,
           corporate events, or special occasions. Select your preferred vehicle,

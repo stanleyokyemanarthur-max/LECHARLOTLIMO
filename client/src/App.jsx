@@ -31,6 +31,8 @@ import Services from "./Pages/Services.jsx";
 import ServiceDetails from "./Pages/ServiceDetails.jsx";
 import AllServices from "./Pages/AllServices.jsx";
 import FinalDetails from "./Pages/FinalDetails.jsx";
+import VerifyOtp from "./Pages/VerifyOtp.jsx";
+import EnableAuthenticator from "./Pages/EnableAuthenticator.jsx";
 
 function App() {
   return (
@@ -54,6 +56,9 @@ function App() {
         <Route path="/final-details" element={<FinalDetails />} />
         <Route path="/fleet" element={<FleetPage/>} />
         <Route path="/fleet/:slug" element={<FleetDetails />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/enable-authenticator" element={<EnableAuthenticator />} />
+
 
 
 

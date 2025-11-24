@@ -8,9 +8,9 @@ function About() {
       {/* Banner */}
       <div className="banner-section flex justify-center items-center h-[358px] lg:h-[550px]">
         <div className="banner-section-content text-center z-10">
-          <h6 className="uppercase text-sm lg:text-xl text-white font-bricolage">
-            Le.Charlot<span className="text-yellow-600">Limousine</span>
-          </h6>
+          <h1 className="uppercase text-sm lg:text-xl text-white font-bricolage">
+            Le Charlot<span className="text-yellow-600"> Limousine</span>
+          </h1>
           <h1 className="text-4xl lg:text-5xl xl:text-8xl font-semibold font-bricolage text-yellow-600">
             <span className="text-white font-bricolage">About</span> Us
           </h1>
@@ -29,12 +29,12 @@ function About() {
           </div>
           <div>
             <p className="uppercase text-xs md:text-sm tracking-widest text-yellow-600 mb-2">
-              - LE.CHARLOT LIMOUSINE
+              LE CHARLOT LIMOUSINE
             </p>
             <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
               We Are More Than <br />
               <span className="text-yellow-600 font-bricolage">
-                A Car Rental Company
+              A Car Rental Company.
               </span>
             </h2>
             <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
@@ -97,7 +97,7 @@ function About() {
       <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
         Travel in Style <br />
         <span className="text-yellow-600 font-bricolage">
-          Experience comfort from start to finish
+          Experience comfort from start to finish.
         </span>
       </h2>
       <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
