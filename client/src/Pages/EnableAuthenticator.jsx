@@ -30,8 +30,8 @@ export default function EnableAuthenticator() {
     try {
       setFetchingQR(true);
       const url = reduxToken
-        ? "http://localhost:5000/api/auth/enable-totp"
-        : "http://localhost:5000/api/auth/enable-totp-email";
+        ? "https://lecharlotlimo.onrender.com/api/auth/enable-totp"
+        : "https://lecharlotlimo.onrender.com/api/auth/enable-totp-email";
 
       const res = await fetch(url, {
         method: "POST",
@@ -81,7 +81,7 @@ export default function EnableAuthenticator() {
     if (!reduxToken) return setMessage("You must be logged in to reset your authenticator.");
     if (!confirm("Resetting will remove your authenticator and send a verification code to your email. Continue?")) return;
     try {
-      const res = await fetch("http://localhost:5000/api/auth/reset-totp", {
+      const res = await fetch("https://lecharlotlimo.onrender.com/api/auth/reset-totp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
