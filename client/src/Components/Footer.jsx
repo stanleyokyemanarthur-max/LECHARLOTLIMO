@@ -11,9 +11,15 @@ function Footer() {
 
             {/* Logo + About */}
             <div className="flex-1">
-              <Link to="/" className="text-4xl flex font-bold logo font-bricolage">
-                LeCharlot<span className="text-[#B8860B]">Limousine</span>
-              </Link>
+                {/* Logo */}
+        <div className="relative h-12 w-40 overflow-visible">
+          <img
+            src="/images/favicon.png"
+            alt="Le Charlot Logo"
+            className="absolute -top-16 left-0 w-40 h-auto object-contain cursor-pointer"
+            onClick={() => navigate("/")}
+          />
+        </div>
               <p className="text-[#999] mt-2 md:w-[90%] w-full">
                Book a luxury ride with ease. Experience comfort, class, and premium service for your events, airport transfers, and special occasions.
               </p>
