@@ -50,5 +50,5 @@ app.use("/api/contact", contactRoutes);
 app.get("/", (req, res) => res.send("🚖 LimoProject backend is running..."));
 
 app.listen(PORT, () =>
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
+console.log(`🚀 Server running on port ${PORT}`);
 );
