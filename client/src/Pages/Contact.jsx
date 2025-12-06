@@ -71,7 +71,7 @@ function Contact() {
             <h1 className="font-bricolage text-2xl lg:text-2xl font-semibold mt-8 mb-2">
               Our Address
             </h1>
-            <p className="text-[#999]">Vadodara, Water Tower, Office 123</p>
+            <p className="text-[#999]">Atlanta, Georgia</p>
           </div>
 
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl relative group overflow-hidden">
@@ -79,7 +79,7 @@ function Contact() {
             <h1 className="font-bricolage text-2xl lg:text-2xl font-semibold mt-8 mb-2">
               Email Us
             </h1>
-            <p className="text-[#999]"> info@lecharlotlimousime.com</p>
+            <p className="text-[#999]"> info@lecharlotlimousine.com</p>
           </div>
 
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl relative group overflow-hidden">
@@ -95,7 +95,7 @@ function Contact() {
             <h1 className="font-bricolage text-2xl lg:text-2xl font-semibold mt-8 mb-2">
               Call Us
             </h1>
-            <p className="text-[#999]">+1 (404) 405-3738</p>
+            <p className="text-[#999]">(404) 900-9088</p>
           </div>
 
         </div>
