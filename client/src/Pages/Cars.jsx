@@ -18,7 +18,7 @@ function Cars() {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/cars"); // 👈 backend endpoint
+        const res = await fetch("https://lecharlotlimo.onrender.com/api/cars"); // 👈 backend endpoint
         const data = await res.json();
         setCars(data);
       } catch (error) {
