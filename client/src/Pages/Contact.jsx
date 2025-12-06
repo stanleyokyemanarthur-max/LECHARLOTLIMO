@@ -28,7 +28,7 @@ function Contact() {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/contact", form);
+      const res = await axios.post("https://lecharlotlimo.onrender.com/api/contact", form);
 
       if (res.data.success) {
         setSuccess("Your message has been sent successfully!");

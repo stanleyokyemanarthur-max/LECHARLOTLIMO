@@ -12,7 +12,7 @@ export default function AdminBookings() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/bookings", {
+        const res = await axios.get("https://lecharlotlimo.onrender.com/api/bookings", {
           headers: { Authorization: `Bearer ${userInfo?.token}` },
         });
         setBookings(res.data);

@@ -13,7 +13,7 @@ export default function AdminUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/users", {
+        const res = await axios.get("https://lecharlotlimo.onrender.com/api/users", {
           headers: { Authorization: `Bearer ${userInfo?.token}` },
         });
         setUsers(res.data);

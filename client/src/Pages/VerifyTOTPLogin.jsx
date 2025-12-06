@@ -39,7 +39,7 @@ const initialEmail = location.state?.email || userInfo?.email || JSON.parse(loca
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-totp-login", {
+      const res = await fetch("https://lecharlotlimo.onrender.com/api/auth/verify-totp-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code: String(code).trim() }),

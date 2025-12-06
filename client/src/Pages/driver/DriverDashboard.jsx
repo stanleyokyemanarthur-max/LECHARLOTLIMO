@@ -12,7 +12,7 @@ function DriverDashboard() {
     const fetchBookings = async () => {
       try {
         // 👇 Fetch all bookings (client = single driver)
-        const res = await axios.get("http://localhost:5000/api/bookings");
+        const res = await axios.get("https://lecharlotlimo.onrender.com/api/bookings");
         setBookings(res.data);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -26,7 +26,7 @@ function DriverDashboard() {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/bookings/${id}/status`, {
+      await axios.put(`https://lecharlotlimo.onrender.com/api/bookings/${id}/status`, {
         status: newStatus,
       });
 

@@ -24,7 +24,7 @@ export default function VerifyOtp() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+      const res = await fetch("https://lecharlotlimo.onrender.com/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),

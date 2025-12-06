@@ -25,7 +25,7 @@ export default function SelectCar() {
     const fetchCars = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:5000/api/cars");
+        const res = await axios.get("https://lecharlotlimo.onrender.com/api/cars");
         setCars(res.data);
       } catch (err) {
         console.error(err);
