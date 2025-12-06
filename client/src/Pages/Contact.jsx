@@ -39,6 +39,7 @@ function Contact() {
           subject: "",
           message: "",
         });
+        setTimeout(() => setSuccess(""), 5000);
       }
     } catch (err) {
       setError("Failed to send message. Please try again.");

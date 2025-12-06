@@ -13,13 +13,18 @@ function Nav() {
   const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth);
 
+  // Fix: always get username and role correctly
+  const userName = userInfo?.user?.name || userInfo?.name || "";
+  const userRole = userInfo?.user?.role || userInfo?.role || "";
+
+  // Scroll effect
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close dropdown if clicked outside
+  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -35,25 +40,23 @@ function Nav() {
     navigate("/login");
   };
 
-  const userName = userInfo?.name || userInfo?.user?.name;
-  const userRole = userInfo?.role || userInfo?.user?.role;
+  const menuItems = ["Home", "About", "Fleet", "Services", "Contact"];
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-[9999] transition-all duration-300 ${
-        isScrolled ? "bg-[#111111] shadow-md" : "bg-transparent"
-      }`}
+      className={`fixed top-0 left-0 w-full z-[9999] transition-all duration-300 ${isScrolled ? "bg-[#111111] shadow-md" : "bg-transparent"
+        }`}
     >
       {/* Top Contact Bar */}
       <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-8 lg:px-12 cursor-default">
         <div className="flex flex-wrap items-center gap-6">
           <span className="flex items-center gap-2">
             <i className="ri-mail-line text-[#B8860B]"></i>
-            info@lecharlotlimousine.com
+            info@LeCharlotLimousine.com
           </span>
           <span className="flex items-center gap-2">
             <i className="ri-phone-line text-[#B8860B]"></i>
-            +1 (404) 405-3738
+            (404) 900-9088
           </span>
         </div>
 
@@ -67,9 +70,18 @@ function Nav() {
       {/* Main Nav */}
       <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-8 lg:px-12 relative">
         {/* Logo */}
-        <Link to="/" className="logo font-bold text-xl text-[#d8c305c5]">
-          Le Charlot<span> Limousine</span>
-        </Link>
+        <div className="relative h-12 w-40 overflow-visible">
+          <img
+            src="/images/favicon.png"
+            alt="Le Charlot Logo"
+            className="absolute -top-16 left-0 w-40 h-auto object-contain cursor-pointer"
+            onClick={() => navigate("/")}
+          />
+        </div>
+
+
+
+
 
         {/* Mobile Menu Button */}
         <button
@@ -82,15 +94,16 @@ function Nav() {
         {/* Menu */}
         <ul
           className={`flex flex-col lg:flex-row items-center absolute lg:static left-0 top-full
-          w-full lg:w-auto bg-[#0B0B0B] lg:bg-transparent transition-all duration-500
-          ease-in-out overflow-hidden lg:overflow-visible gap-6 lg:gap-10
-          ${isMobileMenuOpen ? "max-h-[500px] opacity-100 py-6" : "max-h-0 opacity-0 lg:opacity-100 lg:max-h-none"}`}
+            w-full lg:w-auto bg-[#0B0B0B] lg:bg-transparent transition-all duration-500
+            ease-in-out overflow-hidden lg:overflow-visible gap-6 lg:gap-10
+            ${isMobileMenuOpen ? "max-h-[500px] opacity-100 py-6" : "max-h-0 opacity-0 lg:opacity-100 lg:max-h-none"}`}
         >
-          {["Home", "About", "Fleet", "Services", "Contact"].map((item) => (
+          {/* Top-level nav items */}
+          {menuItems.map((item) => (
             <li key={item}>
               <Link
                 to={`/${item === "Home" ? "" : item.toLowerCase()}`}
-                className="nav-link"
+                className="nav-link text-white hover:text-[#B8860B] transition"
               >
                 {item}
               </Link>
@@ -107,7 +120,8 @@ function Nav() {
               </Link>
             </li>
           ) : (
-            <li className="flex items-center mb-4 gap-3 relative" ref={dropdownRef}>
+            <li className="relative flex items-center gap-3 mb-4 lg:mb-0" ref={dropdownRef}>
+              {/* Dropdown trigger */}
               <span
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="cursor-pointer font-semibold text-[#B8860B] hover:underline flex items-center gap-1"
@@ -115,54 +129,54 @@ function Nav() {
                 {userName} <i className="ri-arrow-down-s-line"></i>
               </span>
 
-              {/* Dropdown */}
+              {/* Dropdown menu */}
               {isDropdownOpen && (
-                <ul className="absolute right-0 mt-2 w-48 bg-[#111111] text-white rounded shadow-lg z-[9999] animate-fadeIn">
-                  {/* Arrow */}
-                  <div className="absolute top-0 right-4 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-[#111111]"></div>
+                <ul className="absolute right-0 top-12 mt-2 w-56 bg-[#111111] text-white rounded-xl shadow-lg z-[9999] animate-fadeIn overflow-hidden border border-[#333]">
+                  <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-[#111111]"></div>
 
-                  {/* Dropdown Items */}
-                  <li className="relative group">
-                    <span
-                      onClick={() => {
-                        navigate("/mybookings");
-                        setIsDropdownOpen(false);
-                      }}
-                      className="block px-4 py-2 hover:bg-[#B8860B] hover:text-black cursor-pointer"
-                    >
-                      My Bookings
-                    </span>
-                    <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline-block">
-                      View all your bookings
-                    </span>
-                  </li>
-
-                  <li className="relative group">
-                    <span
-                      onClick={() => {
-                        navigate("/enable-authenticator");
-                        setIsDropdownOpen(false);
-                      }}
-                      className="block px-4 py-2 hover:bg-[#B8860B] hover:text-black cursor-pointer"
-                    >
-                      Enable Authenticator
-                    </span>
-                    <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline-block">
-                      Secure your account with 2FA
-                    </span>
-                  </li>
-
-                  <li className="relative group">
-                    <span
-                      onClick={handleLogout}
-                      className="block px-4 py-2 hover:bg-[#B8860B] hover:text-black cursor-pointer"
-                    >
-                      Logout
-                    </span>
-                    <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline-block">
-                      Sign out of your account
-                    </span>
-                  </li>
+                  {userRole === "admin" ? (
+                    <>
+                      <li
+                        onClick={() => { navigate("/admin/dashboard"); setIsDropdownOpen(false); }}
+                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                      >
+                        <i className="ri-dashboard-line"></i> Dashboard
+                      </li>
+                      <li
+                        onClick={() => { navigate("/enableauthenticator"); setIsDropdownOpen(false); }}
+                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                      >
+                        <i className="ri-shield-keyhole-line"></i> Enable Authenticator
+                      </li>
+                      <li
+                        onClick={handleLogout}
+                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                      >
+                        <i className="ri-logout-box-line"></i> Logout
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li
+                        onClick={() => { navigate("/mybookings"); setIsDropdownOpen(false); }}
+                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                      >
+                        <i className="ri-calendar-line"></i> My Bookings
+                      </li>
+                      <li
+                        onClick={() => { navigate("/enableauthenticator"); setIsDropdownOpen(false); }}
+                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                      >
+                        <i className="ri-shield-keyhole-line"></i> Enable Authenticator
+                      </li>
+                      <li
+                        onClick={handleLogout}
+                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                      >
+                        <i className="ri-logout-box-line"></i> Logout
+                      </li>
+                    </>
+                  )}
                 </ul>
               )}
             </li>
@@ -170,7 +184,6 @@ function Nav() {
         </ul>
       </div>
 
-      {/* Tailwind animation */}
       <style>
         {`
           @keyframes fadeIn {

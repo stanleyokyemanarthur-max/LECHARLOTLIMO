@@ -34,7 +34,7 @@ function About() {
             <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
               We Are More Than <br />
               <span className="text-yellow-600 font-bricolage">
-              A Car Rental Company.
+              A Car Book Company.
               </span>
             </h2>
             <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
@@ -155,7 +155,7 @@ function About() {
                 <i className="ri-star-fill text-yellow-600"></i> 24/7 Availability for Global Travel
               </li>
               <li className="flex items-center gap-3">
-                <i className="ri-star-fill text-yellow-600"></i> Fleet of Luxury Sedans, SUVs & Sprinters
+                <i className="ri-star-fill text-yellow-600"></i> Fleet of Luxury SUVs & Sprinters
               </li>
               <li className="flex items-center gap-3">
                 <i className="ri-star-fill text-yellow-600"></i> Personalized VIP & Corporate Services
@@ -174,61 +174,46 @@ function About() {
         </div>
       </div>
 
-      {/* Vision, Mission, Values Section */}
+     
+        {/* Vision, Mission, Values Section */}
       <div className="our-service lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]">
         <div className="our-service-content mb-20 text-center text-white">
-          <p className="uppercase text-sm tracking-[5px] text-yellow-600 mb-2">
-             Our Philosophy
+          <p className="uppercase text-sm tracking-[5px] text-[#B8860B] mb-2">
+            Our Philosophy
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-3 font-bricolage">
-            Our Vision & Mission
+            Our Mision & Value
           </h2>
         </div>
 
         <div className="our-service-wrapper">
-          <div className="grid w-full gap-12 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
-
-            {/* Vision */}
-            <div className="service-item relative text-white rounded-[20px] bg-[#222222] p-6 w-full">
-              <h5 className="font-semibold text-3xl mb-3 font-bricolage">
-                Our Vision
-              </h5>
-              <p className="text-[#999] text-md leading-relaxed">
-                To redefine luxury transportation by providing safe, seamless, and exceptional experiences that exceed expectations for every journey.
-              </p>
-              <div className="curv absolute left-0 bottom-0">
-                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-yellow-600 flex items-center justify-center text-white text-lg font-bold shadow-md">
-                  1
-                </div>
-              </div>
-            </div>
-
+          <div className="grid w-full gap-12 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-2">
             {/* Mission */}
             <div className="service-item relative text-white rounded-[20px] bg-[#222222] p-6 w-full">
-              <h5 className="font-semibold text-3xl mb-3 font-bricolage">
+              <h1 className="font-semibold text-3xl mb-3 font-bricolage">
                 Our Mission
-              </h5>
+              </h1>
               <p className="text-[#999] text-md leading-relaxed">
-                To deliver premium transportation services with professionalism, reliability, and comfort, ensuring that every client feels valued and cared for.
+                Our mission is to deliver a world-class chauffeured experience marked by elegance, precision, and exceptional hospitality. We provide seamless, refined transportation for high-earning professionals who value discretion, comfort, and flawless service in every mile.
               </p>
               <div className="curv absolute left-0 bottom-0">
-                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-yellow-600 flex items-center justify-center text-white text-lg font-bold shadow-md">
-                  2
+                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B8860B] flex items-center justify-center text-white text-lg font-bold shadow-md">
+                  1
                 </div>
               </div>
             </div>
 
             {/* Values */}
             <div className="service-item relative text-white rounded-[20px] bg-[#222222] p-6 w-full">
-              <h5 className="font-semibold text-3xl mb-3 font-bricolage">
+              <h1 className="font-semibold text-3xl mb-3 font-bricolage">
                 Our Values
-              </h5>
+              </h1>
               <p className="text-[#999] text-md leading-relaxed">
-                Integrity, excellence, and customer focus guide everything we do. We aim to create memorable journeys built on trust, safety, and attention to detail.
+                Our vision is to become Georgia’s most distinguished luxury transportation brand—recognized for our impeccable presentation, elite chauffeurs, and unforgettable client care. We aim to elevate every journey into a personalized, first-class experience.
               </p>
               <div className="curv absolute left-0 bottom-0">
-                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-yellow-600 flex items-center justify-center text-white text-lg font-bold shadow-md">
-                  3
+                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B8860B] flex items-center justify-center text-white text-lg font-bold shadow-md">
+                  2
                 </div>
               </div>
             </div>

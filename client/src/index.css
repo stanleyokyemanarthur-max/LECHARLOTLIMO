@@ -34,6 +34,11 @@ html, body {
     font-family: 'Poppins', sans-serif;
     cursor: default;
 }
+button{
+    color: #C89B3C;
+    font-family: 'Playfair Display', serif;
+
+}
 
 h1, h2, h3, h4,span,.nav-link,p,a, .fieldtext{
     font-family: 'Playfair Display', serif;

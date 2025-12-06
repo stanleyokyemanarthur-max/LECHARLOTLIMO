@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/dark.css"; // Flatpickr dark theme
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setTripData } from "../slices/bookingSlice";
 
 const MAP_CONTAINER_STYLE = { width: "100%", height: "400px" };
@@ -16,12 +16,15 @@ const DEFAULT_CENTER = { lat: 39.8283, lng: -98.5795 }; // Center of USA
 export default function ReservationPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
+  // Get login state from Redux
+  const isLoggedIn = useSelector((state) => !!state.auth?.token);
 
   const [tripData, setTripDataState] = useState({
     pickupLocation: "",
     dropoffLocation: "",
-    pickupDate: null, // store as Date
-    dropoffDate: null, // store as Date
+    pickupDate: null,
+    dropoffDate: null,
     passengers: "",
     luggage: "",
     distance: null,
@@ -34,10 +37,9 @@ export default function ReservationPage() {
   const pickupRef = useRef(null);
   const dropoffRef = useRef(null);
 
-  // compute the dynamic minimum pickup date (2 hours from now)
   const minPickupDate = useMemo(() => new Date(Date.now() + 2 * 60 * 60 * 1000), []);
 
-  // Initialize Google Autocomplete
+  // Google Autocomplete setup
   useEffect(() => {
     if (!window.google || !window.google.maps || !window.google.maps.places) return;
     const options = { types: ["geocode"], componentRestrictions: { country: "us" } };
@@ -59,7 +61,6 @@ export default function ReservationPage() {
       }
     });
 
-    // cleanup listeners if component unmounts
     return () => {
       if (pickupAutocomplete && pickupAutocomplete.getPlace) {
         window.google.maps.event.clearInstanceListeners(pickupAutocomplete);
@@ -70,18 +71,16 @@ export default function ReservationPage() {
     };
   }, []);
 
-  // Generic handler for simple text/number inputs (passengers, luggage)
   const handleInputChange = (e) =>
     setTripDataState((s) => ({ ...s, [e.target.name]: e.target.value }));
 
-  // Enforce 2-hour minimum rule (pickupDate should be at least 2 hours from now)
   const validateTwoHourRule = () => {
     if (!tripData.pickupDate) return false;
     const pickup = dayjs(tripData.pickupDate);
     return pickup.diff(dayjs(), "minute") >= 120;
   };
 
-  // Auto draw Google route when locations change
+  // Auto draw route
   useEffect(() => {
     const autoDrawRoute = async () => {
       if (!tripData.pickupLocation || !tripData.dropoffLocation) return;
@@ -117,13 +116,16 @@ export default function ReservationPage() {
       }
     };
     autoDrawRoute();
-    // only depends on locations
   }, [tripData.pickupLocation, tripData.dropoffLocation]);
 
-  // Proceed to car selection
   const handlePreviewAndProceed = (e) => {
     e.preventDefault();
     setError("");
+
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
 
     if (!tripData.pickupLocation || !tripData.dropoffLocation || !tripData.pickupDate) {
       setError("Please fill pickup, drop-off, and pickup date/time.");
@@ -140,7 +142,6 @@ export default function ReservationPage() {
       return;
     }
 
-    // Convert dates to ISO strings for storage/dispatch
     const payload = {
       ...tripData,
       pickupDate: tripData.pickupDate ? tripData.pickupDate.toISOString() : null,
@@ -159,31 +160,16 @@ export default function ReservationPage() {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-6xl w-full bg-[#121212] shadow-[0_0_25px_rgba(212,175,55,0.15)] rounded-2xl p-10 grid md:grid-cols-2 gap-10"
       >
-        {/* Left: Form Section */}
+        {/* Left: Form */}
         <form onSubmit={handlePreviewAndProceed} className="space-y-6 text-[#EDEDED]">
           <h2 className="text-3xl font-[Playfair_Display] font-semibold text-[#B8860B] tracking-wide mb-4">
-            Step 1 — Ride Information
+            Step 1 — Booking Information
           </h2>
 
-          {/* Pickup / Dropoff Inputs */}
-          {[
-            {
-              label: "Pickup Location",
-              name: "pickupLocation",
-              ref: pickupRef,
-              placeholder: "e.g. Raleigh Convention Center",
-            },
-            {
-              label: "Drop-off Location",
-              name: "dropoffLocation",
-              ref: dropoffRef,
-              placeholder: "e.g. Crown Complex, Fayetteville",
-            },
-          ].map((f) => (
+          {[{ label: "Pickup Location", name: "pickupLocation", ref: pickupRef, placeholder: "e.g. Raleigh Convention Center" },
+            { label: "Drop-off Location", name: "dropoffLocation", ref: dropoffRef, placeholder: "e.g. Crown Complex, Fayetteville" }].map((f) => (
             <div key={f.name}>
-              <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">
-                {f.label}
-              </label>
+              <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">{f.label}</label>
               <input
                 ref={f.ref}
                 name={f.name}
@@ -196,56 +182,33 @@ export default function ReservationPage() {
             </div>
           ))}
 
-          {/* Date / Time Pickers (Flatpickr) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Pickup Date */}
             <div>
-              <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">
-                Pickup Date & Time
-              </label>
-
+              <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">Pickup Date & Time</label>
               <Flatpickr
                 value={tripData.pickupDate}
                 onChange={(dates) => {
                   const dt = dates && dates[0] ? dates[0] : null;
                   setTripDataState((s) => ({ ...s, pickupDate: dt }));
-                  // if dropoff exists and is earlier than pickup, clear dropoff
                   if (dt && sHasDropEarlier(dt, tripData.dropoffDate)) {
                     setTripDataState((s) => ({ ...s, dropoffDate: null }));
                   }
                 }}
-                options={{
-                  enableTime: true,
-                  dateFormat: "Y-m-d H:i",
-                  // enforce minimum 2 hours from now
-                  minDate: minPickupDate,
-                  time_24hr: false,
-                  // allow manual input but keep styling consistent
-                }}
+                options={{ enableTime: true, dateFormat: "Y-m-d H:i", minDate: minPickupDate, time_24hr: false }}
                 className="w-full mt-2 px-4 py-3 rounded-xl bg-black/40 border border-[#2D2D2D] text-white placeholder-gray-500 focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600"
                 placeholder="Select pickup date & time"
               />
             </div>
 
-            {/* Drop-off Date */}
             <div>
-              <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">
-                Drop-off Date & Time
-              </label>
-
+              <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">Drop-off Date & Time</label>
               <Flatpickr
                 value={tripData.dropoffDate}
                 onChange={(dates) => {
                   const dt = dates && dates[0] ? dates[0] : null;
                   setTripDataState((s) => ({ ...s, dropoffDate: dt }));
                 }}
-                options={{
-                  enableTime: true,
-                  dateFormat: "Y-m-d H:i",
-                  // dropoff can't be earlier than pickup; fallback to 2 hours from now
-                  minDate: tripData.pickupDate ? tripData.pickupDate : minPickupDate,
-                  time_24hr: false,
-                }}
+                options={{ enableTime: true, dateFormat: "Y-m-d H:i", minDate: tripData.pickupDate ? tripData.pickupDate : minPickupDate, time_24hr: false }}
                 className="w-full mt-2 px-4 py-3 rounded-xl bg-black/40 border border-[#2D2D2D] text-white placeholder-gray-500 focus:border-[#B8860B] focus:ring-1 focus:ring-[#B8860B]"
                 placeholder="Select drop-off date & time"
               />
@@ -254,14 +217,10 @@ export default function ReservationPage() {
 
           {/* Passengers / Luggage */}
           <div className="grid grid-cols-2 gap-4">
-            {[
-              { label: "Passengers", name: "passengers", placeholder: "3" },
-              { label: "Luggage", name: "luggage", placeholder: "2" },
-            ].map((f) => (
+            {[{ label: "Passengers", name: "passengers", placeholder: "3" },
+              { label: "Luggage", name: "luggage", placeholder: "2" }].map((f) => (
               <div key={f.name}>
-                <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">
-                  {f.label}
-                </label>
+                <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">{f.label}</label>
                 <input
                   type="number"
                   name={f.name}
@@ -275,20 +234,20 @@ export default function ReservationPage() {
             ))}
           </div>
 
-          {/* Error */}
           {error && <p className="text-[#FF6B6B] text-sm">{error}</p>}
 
-          {/* Button */}
+          {/* Conditional Button */}
           <button
             type="submit"
-            disabled={loadingRoute}
+            disabled={loadingRoute || !isLoggedIn}
+            onClick={() => !isLoggedIn && navigate("/login")}
             className="w-full bg-gradient-to-r from-[#B8860B] to-[#B8860B] text-black py-3 rounded-lg font-semibold hover:brightness-110 transition disabled:opacity-60 shadow-[0_0_10px_rgba(212,175,55,0.4)]"
           >
-            {loadingRoute ? "Drawing route..." : "Select a Vehicle"}
+            {isLoggedIn ? (loadingRoute ? "Drawing route..." : "Book Now") : "Login to Book"}
           </button>
         </form>
 
-        {/* Right: Google Map */}
+        {/* Google Map */}
         <div className="rounded-xl overflow-hidden border border-[#2A2A2A]">
           <GoogleMap
             mapContainerStyle={MAP_CONTAINER_STYLE}
@@ -304,17 +263,7 @@ export default function ReservationPage() {
             {directionsResult && (
               <DirectionsRenderer
                 directions={directionsResult}
-                options={{
-                  suppressMarkers: false,
-                  polylineOptions: { strokeColor: "#D4AF37", strokeWeight: 5 },
-                }}
-                onLoad={(renderer) => {
-                  const map = renderer.getMap();
-                  if (directionsResult && directionsResult.routes && directionsResult.routes[0]) {
-                    const bounds = directionsResult.routes[0].bounds;
-                    map.fitBounds(bounds);
-                  }
-                }}
+                options={{ suppressMarkers: false, polylineOptions: { strokeColor: "#D4AF37", strokeWeight: 5 } }}
               />
             )}
           </GoogleMap>
@@ -324,7 +273,7 @@ export default function ReservationPage() {
   );
 }
 
-/* Helper: check if dropoff is earlier than pickup */
+// Helper: check if dropoff is earlier than pickup
 function sHasDropEarlier(pickupDate, dropoffDate) {
   if (!pickupDate || !dropoffDate) return false;
   try {

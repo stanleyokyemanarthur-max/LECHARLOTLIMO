@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { Phone, Mail, Edit, CalendarCheck } from "lucide-react";
 
 function Footer() {
   return (
@@ -83,42 +84,44 @@ function Footer() {
               </ul>
             </div>
             <div className="flex-1">
-
               <div className="flex-1">
-                <h4 className="text-2xl font-semibold mb-4">Contact Us</h4>
+                <h4 className="text-2xl font-semibold mb-4 text-[#B8860B]">
+                  Contact Us
+                </h4>
                 <div className="flex flex-col gap-3">
                   <a
                     href="tel:+1234567890"
-                    className="flex items-center gap-2 text-[#999] px-3 py-2 rounded-lg "
+                    className="flex items-center gap-3 text-gray-300 px-4 py-2 rounded-lg"
                   >
-                    📞 +1 (404) 405-3738
+                    <Phone size={20} className="text-[#B8860B]" />
+                    (404) 900-9088
                   </a>
 
                   <a
                     href="mailto:contact@lecharlot.com"
-                    className="flex items-center gap-2 text-[#999] px-3 py-2 rounded-lg   "
+                    className="flex items-center gap-3 text-gray-300 px-4 py-2 rounded-lg"
                   >
-                    ✉ nfo@lecharlotlimousine.com
+                    <Mail size={20} className="text-[#B8860B]" />
+                    info@LeCharlotLimousine.com
                   </a>
 
                   <a
                     href="/contact"
-                    className="flex items-center gap-2 text-[#999] px-3 py-2 rounded-lg   "
+                    className="flex items-center gap-3 text-gray-300 px-4 py-2 rounded-lg "
                   >
-                    📝 Contact Form
+                    <Edit size={20} className="text-[#B8860B]" />
+                    Contact Form
                   </a>
 
-                  {/* Optional CTA Button */}
                   <Link
                     to="/reservation-form"
-                    className="mt-4 inline-flex items-center justify-center bg-[#B8860B]  text-black font-semibold px-6 py-3 rounded-full  duration-300 shadow-lg"
+                    className="mt-4 inline-flex items-center justify-center gap-2 bg-[#B8860B] text-black font-semibold px-6 py-3  hover:bg-[#d4a019] transition-all"
                   >
+                    <CalendarCheck size={20} />
                     Schedule a Ride
                   </Link>
                 </div>
               </div>
-
-
             </div>
           </div>
           <div className="text-[#999] text-center text-base relative py-6">

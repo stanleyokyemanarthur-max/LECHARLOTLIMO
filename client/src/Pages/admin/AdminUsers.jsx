@@ -29,7 +29,7 @@ export default function AdminUsers() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-screen text-white">
+      <div className="flex justify-center items-center min-h-screen text-[#B8860B]">
         Loading users...
       </div>
     );
@@ -45,7 +45,7 @@ export default function AdminUsers() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-[#d8c305c5] mb-6">Manage Users</h1>
+      <h1 className="text-2xl font-bold text-[#B8860B] mb-6">Manage Users</h1>
 
       {/* 🔽 Filter + Search Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
@@ -54,11 +54,10 @@ export default function AdminUsers() {
             <button
               key={role}
               onClick={() => setFilterRole(role)}
-              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
-                filterRole === role
-                  ? "bg-[#d8c305c5] text-black"
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${filterRole === role
+                  ? "bg-[#B8860B] text-black"
                   : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-              }`}
+                }`}
             >
               {role.charAt(0).toUpperCase() + role.slice(1)}
             </button>
@@ -70,56 +69,54 @@ export default function AdminUsers() {
           placeholder="Search name or email..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-gray-800 text-gray-200 border border-gray-600 rounded-md px-3 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#d8c305c5]"
+          className="bg-gray-800 text-gray-200 border border-gray-600 rounded-md px-3 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#B8860B]"
         />
       </div>
 
       {/* 🧾 User Table */}
-      <table className="min-w-full border border-gray-700 text-sm">
-        <thead className="bg-[#d8c305c5] text-black">
+      {/* 🧾 User Table */}
+      <table className="min-w-full border border-gray-700 text-sm table-fixed">
+        <thead className="bg-[#B8860B] text-black">
           <tr>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Email</th>
-            <th className="px-4 py-2">Role</th>
-            <th className="px-4 py-2">Joined</th>
+            <th className="px-4 py-2 w-1/5">Name</th>
+            <th className="px-4 py-2 w-1/5">Email</th>
+            <th className="px-4 py-2 w-1/5">Role</th>
+            <th className="px-4 py-2 w-1/5">Birthday</th>
+            <th className="px-4 py-2 w-1/5">Joined</th>
           </tr>
         </thead>
         <tbody>
           {filteredUsers.length > 0 ? (
             filteredUsers.map((u) => (
-              <tr
-                key={u._id}
-                className="border-t border-gray-700 hover:bg-gray-800"
-              >
+              <tr key={u._id} className="border-t border-gray-700 hover:bg-gray-800">
                 <td className="px-4 py-2">{u.name}</td>
                 <td className="px-4 py-2">{u.email}</td>
                 <td className="px-4 py-2 capitalize">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      u.role === "admin"
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${u.role === "admin"
                         ? "bg-purple-100 text-purple-700"
                         : u.role === "driver"
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-green-100 text-green-700"
-                    }`}
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
                   >
                     {u.role}
                   </span>
                 </td>
-                <td className="px-4 py-2">
-                  {new Date(u.createdAt).toLocaleDateString()}
-                </td>
+                <td className="px-4 py-2">{u.birthday ? new Date(u.birthday).toLocaleDateString() : "—"}</td>
+                <td className="px-4 py-2">{new Date(u.createdAt).toLocaleDateString()}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4" className="text-center py-6 text-gray-400 italic">
+              <td colSpan="5" className="text-center py-6 text-gray-400 italic">
                 No users found.
               </td>
             </tr>
           )}
         </tbody>
       </table>
+
     </div>
   );
 }

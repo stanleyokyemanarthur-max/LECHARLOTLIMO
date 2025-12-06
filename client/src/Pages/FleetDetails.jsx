@@ -128,7 +128,7 @@ export default function FleetDetails() {
         <h1 className="text-3xl font-bold mb-4">Vehicle not found</h1>
         <button
           onClick={() => navigate("/fleet")}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-2 rounded-lg transition"
+          className="bg-[#B8860B] hover:bg-[#B8860B] text-black font-semibold px-6 py-2 rounded-lg transition"
         >
           Back to Fleet
         </button>
@@ -160,7 +160,7 @@ export default function FleetDetails() {
     <section className="min-h-screen bg-[#0a0a0a] text-gray-300 py-16 px-6 md:px-12">
       <button
         onClick={() => navigate("/fleet")}
-        className="flex items-center gap-2 mb-10 text-gray-400 hover:text-yellow-500 transition"
+        className="flex items-center gap-2 mb-10 text-gray-400 hover:text-[#B8860B] transition"
       >
         <ArrowLeft className="w-5 h-5" />
         Back to Fleet
@@ -186,7 +186,7 @@ export default function FleetDetails() {
         <h1 className="text-3xl md:text-[34px] font-semibold text-white mb-2">
           {fleet.name}
         </h1>
-        <p className="text-yellow-500 font-medium mb-6 uppercase tracking-wide">
+        <p className="text-[#B8860B] font-medium mb-6 uppercase tracking-wide">
           {fleet.category}
         </p>
 
@@ -210,7 +210,7 @@ export default function FleetDetails() {
                 const Icon = iconMap[idx % iconMap.length];
                 return (
                   <li key={idx} className="flex items-center gap-3">
-                    <Icon className="w-5 h-5 text-yellow-500" />
+                    <Icon className="w-5 h-5 text-[#B8860B]" />
                     <span>{feature}</span>
                   </li>
                 );
@@ -220,7 +220,7 @@ export default function FleetDetails() {
         </div>
 
         {/* Book Now Button */}
-        <button onClick={() => navigate("/reserve")} className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
+        <button onClick={() => navigate("/reserve")} className="bg-[#B8860B] hover:bg-[#B8860B] text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
           Book Now
         </button>
 
@@ -239,8 +239,8 @@ export default function FleetDetails() {
             our professional chauffeurs ensure a seamless, comfortable, and stylish
             journey. Experience exceptional service and unmatched luxury in every mile.
           </p>
-          <button onClick={() => navigate("/reservation-form")} className="bg-yellow-600 hover:bg-yellow-700 text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
-            Reserve Your Ride
+          <button onClick={() => navigate("/reservation-form")} className="bg-[#B8860B] hover:bg-[#B8860B] text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
+            Book Your Ride
           </button>
         </div>
 

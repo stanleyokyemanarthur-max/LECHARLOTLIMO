@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
     phone: { type: String, required: true },
+    birthday: { type: Date },
     role: { type: String, enum: ["customer", "driver", "admin"], default: "customer" },
     address: { type: String },
     profileImage: { type: String },
@@ -19,10 +20,17 @@ const userSchema = new mongoose.Schema(
     // 🔹 MFA / OTP fields
     mfaCode: { type: String },
     mfaCodeExpiry: { type: Date },
-    totpSecret: { type: String },          // Base32 secret
-    isTOTPEnabled: { type: Boolean, default: false },
-    backupCodes: [{ type: String }]        // optional
 
+    totpSecret: { type: String },             // Base32 secret
+    isTOTPEnabled: { type: Boolean, default: false },
+    totpSetupPending: { type: Boolean, default: false },
+    backupCodes: [{ type: String }],          // optional
+    tempTOTPToken: String,
+    tempTOTPTokenExpires: Date,
+
+    // 🔹 TOTP reset fields (for "Reset Authenticator")
+    totpResetToken: { type: String },
+    totpResetExpires: { type: Date }
   },
   { timestamps: true }
 );

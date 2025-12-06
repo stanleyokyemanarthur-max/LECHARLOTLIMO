@@ -113,7 +113,7 @@ function FleetPage() {
                 <h2 className="text-xl font-bold text-gray-900 mb-1 uppercase">
                   {car.title}
                 </h2>
-                <p className="text-sm text-yellow-600 font-semibold mb-4 uppercase tracking-wide">
+                <p className="text-sm text-[#B8860B] font-semibold mb-4 uppercase tracking-wide">
                   {car.subtitle}
                 </p>
 
@@ -129,7 +129,7 @@ function FleetPage() {
 
               <button
                 onClick={() => navigate(`/fleet/${car.slug}`)}
-                className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 rounded-lg transition"
+                className="bg-[#B8860B] hover:bg-yellow-600 text-black font-semibold py-2 rounded-lg transition"
               >
                 VIEW DETAILS
               </button>

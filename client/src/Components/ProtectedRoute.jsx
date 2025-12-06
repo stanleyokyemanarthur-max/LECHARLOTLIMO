@@ -1,24 +1,26 @@
+// Components/ProtectedRoute.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 function ProtectedRoute({ children, allowedRoles }) {
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo, token, status } = useSelector((s) => s.auth);
 
-  // ⛔ If not logged in → redirect to login
-  if (!userInfo) {
-    return <Navigate to="/login" replace />;
-  }
+  // No token → must log in
+  if (!token) return <Navigate to="/login" replace />;
 
-  // ✅ Check user role
-  const userRole = userInfo.user?.role || userInfo.role;
+  // We're restoring session (fetchUserFromToken)
+  if (!userInfo && status === "loading") return <div>Loading...</div>;
 
-  if (allowedRoles && !allowedRoles.includes(userRole)) {
-    // Redirect unauthorized users to home or error page
-    return <Navigate to="/" replace />;
-  }
+  // If fetch failed or user not present → go to login
+  if (!userInfo && status === "failed") return <Navigate to="/login" replace />;
 
-  // ✅ Authorized → show the requested page
+  // If we still don't have userInfo (unlikely) show loading
+  if (!userInfo) return <div>Loading...</div>;
+
+  // Role check if provided
+  if (allowedRoles && !allowedRoles.includes(userInfo.role)) return <Navigate to="/" replace />;
+
   return children;
 }
 

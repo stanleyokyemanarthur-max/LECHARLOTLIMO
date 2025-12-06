@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "../slices/authSlice"; // Redux slice
+import { setCredentials } from "../slices/authSlice";
 import Spinner from "../Components/Spinner.jsx";
+import { motion } from "framer-motion";
 
 function Login() {
   const dispatch = useDispatch();
@@ -12,9 +13,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,25 +26,25 @@ function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // 🔥 Case 1: TOTP required → redirect to EnableAuthenticator
-      if (data.mfa === "TOTP_REQUIRED") {
-        navigate("/enable-totp", { state: { email: form.email } });
+      // Handle MFA / OTP flows
+      if (data.mfa === "SETUP_TOTP") {
+        navigate("/enableauthenticator", { state: { email: form.email } });
         return;
       }
-
-      // 🔥 Case 2: Email OTP required (optional)
-      if (data.message === "OTP sent" || data.message === "OTP sent to your email") {
+      if (data.mfa === "TOTP_REQUIRED") {
+        navigate("/verify-totp-login", { state: { email: form.email } });
+        return;
+      }
+      if (data.message?.includes("OTP sent")) {
         navigate("/verify-otp", { state: { email: form.email } });
         return;
       }
 
-      // 🔥 Case 3: Direct login
+      // Direct login
       dispatch(setCredentials({ user: data.user || data, token: data.token }));
-
       const role = data.user?.role || data.role;
       if (role === "admin") navigate("/admin/dashboard");
       else if (role === "driver") navigate("/driver/dashboard");
@@ -60,60 +59,60 @@ function Login() {
 
   return (
     <div
-      className="login-page flex justify-center items-center min-h-screen bg-cover bg-center relative"
-      style={{ backgroundImage: "url('/images/limo-bg.jpg')" }}
+      className="relative flex justify-center items-center min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: "url('/images/elite.jpg')" }}
     >
-      {loading && <Spinner />}
-      <div className="absolute inset-0 bg-black/60"></div>
+      {/* Dark cinematic overlay */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
 
-      <div className="relative z-10 bg-[#111111]/90 text-white shadow-lg rounded-2xl p-8 w-full max-w-md border border-[#d8c305c5]">
-        <h1 className="text-3xl font-bold mb-6 text-center text-[#d8c305c5]">
-          Login
+      {loading && <Spinner />}
+
+      {/* Frosted glass login card */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="relative z-10 mt-36 w-full max-w-md bg-black/50 border border-[#B8860B] rounded-3xl p-10 shadow-2xl backdrop-blur-md"
+      >
+        <h1 className="text-3xl font-bold text-center text-[#B8860B] mb-6">
+          Access Account
         </h1>
 
-        {error && <p className="text-red-400 mb-3">{error}</p>}
+        {error && <p className="text-red-400 mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full p-3 border rounded bg-black/50 border-gray-700 text-white focus:ring-2 focus:ring-[#d8c305c5] focus:outline-none"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full p-3 border rounded bg-black/50 border-gray-700 text-white focus:ring-2 focus:ring-[#d8c305c5] focus:outline-none"
-              required
-            />
-          </div>
+          {["email", "password"].map((field, idx) => (
+            <div key={idx}>
+              <label className="block text-sm font-medium mb-1 capitalize text-gray-200">
+                {field}
+              </label>
+              <input
+                type={field === "password" ? "password" : "email"}
+                name={field}
+                value={form[field]}
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B]"
+                required
+              />
+            </div>
+          ))}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#d8c305c5] text-black font-semibold py-2 rounded-lg hover:bg-[#b5a004] transition"
+            className="w-full bg-[#B8860B] text-black font-semibold py-3 rounded-xl shadow-lg hover:bg-[#d4a019] transition-all"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p className="mt-4 text-sm text-center">
+        <p className="mt-6 text-center text-gray-300">
           Not registered?{" "}
-          <Link to="/signup" className="text-[#d8c305c5] hover:underline">
-            Click here to Sign Up
+          <Link to="/signup" className="text-[#B8860B] hover:underline">
+            Sign Up
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserFromToken } from "./slices/authSlice.js";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Nav from "./Components/Nav";
@@ -33,8 +36,24 @@ import AllServices from "./Pages/AllServices.jsx";
 import FinalDetails from "./Pages/FinalDetails.jsx";
 import VerifyOtp from "./Pages/VerifyOtp.jsx";
 import EnableAuthenticator from "./Pages/EnableAuthenticator.jsx";
+import VerifyTOTPLogin from "./Pages/VerifyTOTPLogin.jsx"
+import ResetTOTP from "./Pages/ResetTOTP.jsx";
+import LostAuthenticator from "./Pages/LostAuthenticator.jsx";
+
 
 function App() {
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
+  const userInfo = useSelector((state) => state.auth.userInfo);
+  const status = useSelector((s)=>s.auth.status)
+
+
+  useEffect(() => {
+    if (token && !userInfo) {
+      dispatch(fetchUserFromToken(token));
+    }
+  }, [token,userInfo, dispatch]);
+
   return (
     <Router>
       <Nav />
@@ -54,17 +73,26 @@ function App() {
         <Route path="/select-car" element={<SelectCar />} />
         <Route path="/service/:slug" element={<ServiceDetails />} />
         <Route path="/final-details" element={<FinalDetails />} />
-        <Route path="/fleet" element={<FleetPage/>} />
+        <Route path="/fleet" element={<FleetPage />} />
         <Route path="/fleet/:slug" element={<FleetDetails />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
-        <Route path="/enable-authenticator" element={<EnableAuthenticator />} />
+        <Route path="/enableauthenticator" element={<EnableAuthenticator />} />
+        <Route path="/verify-totp-login" element={<VerifyTOTPLogin />} />
+        <Route path="/lost-authenticator" element={<LostAuthenticator />} />
+        <Route path="/reset-totp/:token" element={<ResetTOTP />} />
+
+
 
 
 
 
         {/* Protected routes */}
+
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/mybookings" element={<MyBookings />} />
+        <Route path="/mybookings" element={<ProtectedRoute allowedRoles={["customer"]}>
+          <MyBookings />
+        </ProtectedRoute>} />
+
 
         {/* Booking success route */}
         <Route path="/booking-success" element={<BookingSuccess />} />
@@ -77,15 +105,15 @@ function App() {
         <Route
           path="/admin"
           element={
-            <AdminRoute>
-              <AdminLayout />
-            </AdminRoute>
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminLayout/>
+            </ProtectedRoute>
           }
         >
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="bookings" element={<AdminBookings />} />
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="cars" element={<AdminCars />} />
+          <Route path="dashboard" element={<ProtectedRoute allowedRoles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
+          <Route path="bookings" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBookings /></ProtectedRoute>} />
+          <Route path="users" element={<ProtectedRoute allowedRoles={["admin"]}><AdminUsers /></ProtectedRoute>} />
+          <Route path="cars" element={<ProtectedRoute allowedRoles={["admin"]}><AdminCars /></ProtectedRoute>} />
         </Route>
       </Routes>
       <Footer />

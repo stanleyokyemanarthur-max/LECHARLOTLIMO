@@ -6,10 +6,10 @@ function AllServices() {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-black text-white py-20 px-[8%] lg:px-[12%]">
+    <div className="bg-black mt-18 text-white py-20 px-[8%] lg:px-[12%]">
       <div className="text-center mb-16">
-        <p className="uppercase text-sm tracking-[5px] text-[#d8c305c5] mb-2">
-          - Our Expertise
+        <p className="uppercase text-sm tracking-[5px] text-[#B8860B] mb-2">
+          Our Expertise
         </p>
         <h2 className="text-4xl md:text-5xl font-bold mb-3 font-bricolage">
           Our Services
@@ -40,7 +40,7 @@ function AllServices() {
             </p>
             <button
               onClick={() => navigate(`/services/${service.slug}`)}
-              className="bg-yellow-600 text-black font-semibold px-5 py-2 rounded-full hover:bg-yellow-500 transition"
+              className="bg-[#B8860B] text-black font-semibold px-5 py-2 rounded-full hover:bg-[#B8860B] transition"
             >
               Read More
             </button>

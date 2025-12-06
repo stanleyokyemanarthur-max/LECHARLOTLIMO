@@ -50,14 +50,14 @@ export default function AdminBookings() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-screen text-white">
+      <div className="flex justify-center items-center min-h-screen text-[#B8860B]">
         Loading bookings...
       </div>
     );
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-[#d8c305c5] mb-6">Manage Bookings</h1>
+      <h1 className="text-2xl font-bold text-[#B8860B] mb-6">Manage Bookings</h1>
 
       {/* 🔽 Filter Bar */}
       <div className="flex gap-2 mb-4">
@@ -67,7 +67,7 @@ export default function AdminBookings() {
             onClick={() => setFilter(s)}
             className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
               filter === s
-                ? "bg-[#d8c305c5] text-black"
+                ? "bg-[#B8860B] text-black"
                 : "bg-gray-800 text-gray-300 hover:bg-gray-700"
             }`}
           >
@@ -77,7 +77,7 @@ export default function AdminBookings() {
       </div>
 
       <table className="min-w-full border border-gray-700 text-sm">
-        <thead className="bg-[#d8c305c5] text-black">
+        <thead className="bg-[#B8860B] text-black">
           <tr>
             <th className="px-4 py-2">Car</th>
             <th className="px-4 py-2">User</th>
@@ -104,7 +104,7 @@ export default function AdminBookings() {
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       b.status === "pending"
-                        ? "bg-yellow-100 text-yellow-700"
+                        ? "bg-[#B8860B] text-[#503c08]"
                         : b.status === "cancelled"
                         ? "bg-red-100 text-red-700"
                         : b.status === "enroute"

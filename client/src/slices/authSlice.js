@@ -1,22 +1,35 @@
-import { createSlice } from "@reduxjs/toolkit";
+// slices/authSlice.js
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// ✅ Safely read JSON from localStorage
-const getStoredUser = () => {
-  try {
-    const stored = localStorage.getItem("user");
-    return stored && stored !== "undefined" ? JSON.parse(stored) : null;
-  } catch {
-    return null;
+// Load from localStorage
+const storedToken = localStorage.getItem("token");
+const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+
+export const fetchUserFromToken = createAsyncThunk(
+  "auth/fetchUserFromToken",
+  async (token, { rejectWithValue }) => {
+    try {
+      if (!token) return rejectWithValue("No token provided");
+
+      const res = await fetch("http://localhost:5000/api/auth/me", {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+
+      const data = await res.json();
+      if (!res.ok) return rejectWithValue(data.message || "Failed to fetch user");
+      // server sends { user: {...} }
+      return { user: data.user, token };
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
   }
-};
+);
 
 const initialState = {
-  userInfo: getStoredUser(),
-  token:
-    localStorage.getItem("token") &&
-    localStorage.getItem("token") !== "undefined"
-      ? localStorage.getItem("token")
-      : null,
+  token: storedToken || null,
+  userInfo: storedUser || null,
+  status: "idle",
+  error: null,
 };
 
 const authSlice = createSlice({
@@ -25,20 +38,46 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action) => {
       const { user, token } = action.payload;
-      state.userInfo = user;
       state.token = token;
-
-      localStorage.setItem("user", JSON.stringify(user));
+      state.userInfo = user;
+      state.status = "succeeded";
+      state.error = null;
       localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
     },
     logout: (state) => {
-      state.userInfo = null;
       state.token = null;
-      localStorage.removeItem("user");
+      state.userInfo = null;
+      state.status = "idle";
+      state.error = null;
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
+    clearError: (state) => { state.error = null; },
   },
+  // slices/authSlice.js (extraReducers)
+extraReducers: (builder) => {
+  builder
+    .addCase(fetchUserFromToken.pending, (state) => {
+      state.status = "loading";
+    })
+    .addCase(fetchUserFromToken.fulfilled, (state, action) => {
+      state.status = "succeeded";
+      // action.payload should be user object (e.g. { _id, name, email, role })
+      state.userInfo = action.payload;
+      // keep previously stored token if present (localStorage), otherwise null
+      state.token = state.token || localStorage.getItem("token");
+      localStorage.setItem("user", JSON.stringify(action.payload));
+    })
+    .addCase(fetchUserFromToken.rejected, (state, action) => {
+      state.status = "failed";
+      state.error = action.payload || "Failed to fetch user";
+      // if fetch fails, clear userInfo to force login
+      state.userInfo = null;
+    });
+},
+
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { setCredentials, logout, clearError } = authSlice.actions;
 export default authSlice.reducer;

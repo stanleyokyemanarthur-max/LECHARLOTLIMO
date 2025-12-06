@@ -33,7 +33,7 @@ export default function AdminDashboard() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-screen text-white">
+      <div className="flex justify-center items-center min-h-screen text-[#B8860B]">
         Loading dashboard...
       </div>
     );
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-[#d8c305c5] mb-8">
+      <h1 className="text-3xl font-bold text-[#B8860B] mb-8">
         Admin Dashboard
       </h1>
 
@@ -91,11 +91,11 @@ export default function AdminDashboard() {
 
       {/* Recent Bookings Preview */}
       <div className="mt-10">
-        <h2 className="text-xl font-bold mb-4 text-[#d8c305c5]">
+        <h2 className="text-xl font-bold mb-4 text-[#B8860B]">
           Recent Bookings
         </h2>
         <table className="min-w-full border border-gray-700 text-sm">
-          <thead className="bg-[#d8c305c5] text-black">
+          <thead className="bg-[#B8860B] text-black">
             <tr>
               <th className="px-4 py-2">Car</th>
               <th className="px-4 py-2">User</th>
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
                   <td>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold ${b.status === "pending"
-                          ? "bg-yellow-100 text-yellow-700"
+                          ? "bg-[#B8860B] text-yellow-700"
                           : b.status === "cancelled"
                             ? "bg-red-100 text-red-700"
                             : "bg-green-100 text-green-700"

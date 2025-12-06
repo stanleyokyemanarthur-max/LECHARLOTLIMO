@@ -115,14 +115,14 @@ export default function AdminCars() {
 
   if (loading)
     return (
-      <div className="text-white flex justify-center items-center min-h-screen">
+      <div className="text-[#B8860B] flex justify-center items-center min-h-screen">
         Loading cars...
       </div>
     );
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-[#d8c305c5] mb-6">Manage Cars</h1>
+      <h1 className="text-2xl font-bold text-[#B8860B] mb-6">Manage Cars</h1>
 
       {/* Filter Bar */}
       <div className="flex flex-wrap gap-3 mb-4">
@@ -157,7 +157,7 @@ export default function AdminCars() {
 
         <button
           onClick={() => setShowForm(true)}
-          className="ml-auto bg-[#d8c305c5] hover:bg-yellow-500 text-black font-semibold px-4 py-2 rounded"
+          className="ml-auto bg-[#B8860B] hover:bg-yellow-800 text-black font-semibold px-4 py-2 rounded"
         >
           + Add Car
         </button>
@@ -165,7 +165,7 @@ export default function AdminCars() {
 
       {/* Car Table */}
       <table className="min-w-full border border-gray-700 text-sm">
-        <thead className="bg-[#d8c305c5] text-black">
+        <thead className="bg-[#B8860B] text-black">
           <tr>
             <th className="px-4 py-2">Image</th>
             <th className="px-4 py-2">Name</th>
@@ -210,7 +210,7 @@ export default function AdminCars() {
               <td className="px-4 py-2 space-x-2">
                 <button
                   onClick={() => setShowDetails(car)}
-                  className="px-2 py-1 bg-yellow-600 text-white rounded"
+                  className="px-2 py-1 bg-[#B8860B] text-white rounded"
                 >
                   View
                 </button>
@@ -240,7 +240,7 @@ export default function AdminCars() {
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
           <div className="bg-gray-900 p-6 rounded-lg w-full max-w-lg">
-            <h2 className="text-xl mb-4 text-[#d8c305c5] font-semibold">
+            <h2 className="text-xl mb-4 text-[#B8860B] font-semibold">
               {editingCar ? "Edit Car" : "Add New Car"}
             </h2>
 
@@ -307,7 +307,7 @@ export default function AdminCars() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#d8c305c5] text-black font-semibold rounded"
+                  className="px-4 py-2 bg-[#B8860B] text-black font-semibold rounded"
                 >
                   {editingCar ? "Update" : "Add"}
                 </button>
@@ -327,7 +327,7 @@ export default function AdminCars() {
             onClick={(e) => e.stopPropagation()}
             className="bg-gray-900 text-white p-6 rounded-lg max-w-lg w-full"
           >
-            <h2 className="text-xl font-bold mb-3 text-[#d8c305c5]">
+            <h2 className="text-xl font-bold mb-3 text-[#B8860B]">
               {showDetails.name}
             </h2>
             <img
@@ -370,7 +370,7 @@ export default function AdminCars() {
 
             <button
               onClick={() => setShowDetails(null)}
-              className="mt-5 px-4 py-2 bg-[#d8c305c5] text-black rounded font-semibold w-full"
+              className="mt-5 px-4 py-2 bg-[#B8860B] text-black rounded font-semibold w-full"
             >
               Close
             </button>
