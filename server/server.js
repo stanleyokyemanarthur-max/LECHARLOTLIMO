@@ -19,7 +19,12 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors({ origin: "https://lecharlotlimo.vercel.app/" }));
+app.use(cors({
+  origin: "https://lecharlotlimo.vercel.app",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 const PORT = process.env.PORT || 5000;
 
 // ✅ Webhook route must come BEFORE express.json()
