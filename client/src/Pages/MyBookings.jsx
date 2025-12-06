@@ -16,7 +16,7 @@ function MyBookings() {
   // 🔄 Fetch bookings
   const fetchBookings = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/bookings/my-bookings", {
+      const res = await fetch("https://lecharlotlimo.onrender.com/api/bookings/my-bookings", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -46,7 +46,7 @@ function MyBookings() {
     if (!window.confirm("Are you sure you want to cancel this booking?")) return;
     setCancelingId(id);
     try {
-      const res = await fetch(`http://localhost:5000/api/bookings/${id}/cancel`, {
+      const res = await fetch(`https://lecharlotlimo.onrender.com/api/bookings/${id}/cancel`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
       });
