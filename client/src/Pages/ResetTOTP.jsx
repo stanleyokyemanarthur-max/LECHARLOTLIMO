@@ -10,7 +10,7 @@ export default function ResetTOTP() {
   useEffect(() => {
     const resetTOTP = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/auth/reset-totp/${token}`, { method: "POST" });
+        const res = await fetch(`https://lecharlotlimo.onrender.com/api/auth/reset-totp/${token}`, { method: "POST" });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Reset failed");
 
