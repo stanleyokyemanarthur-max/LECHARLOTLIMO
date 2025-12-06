@@ -15,8 +15,7 @@ function Footer() {
                 LeCharlot<span className="text-[#B8860B]">Limousine</span>
               </Link>
               <p className="text-[#999] mt-2 md:w-[90%] w-full">
-                Rent a car imperdiet sapien porttitor bibendum elementum. Commodo erat
-                nesuen facilisis mauris.
+               Book a luxury ride with ease. Experience comfort, class, and premium service for your events, airport transfers, and special occasions.
               </p>
 
               {/* Social Icons */}
