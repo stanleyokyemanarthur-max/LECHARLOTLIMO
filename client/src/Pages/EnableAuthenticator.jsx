@@ -108,7 +108,7 @@ export default function EnableAuthenticator() {
     setLoading(true);
     try {
       const url = reduxToken ? '/api/auth/verify-totp-setup' : '/api/auth/verify-totp-setup-email';
-      const fullUrl = `http://localhost:5000${url}`;
+      const fullUrl = `https://lecharlotlimo.onrender.com${url}`;
       const body = reduxToken ? { code } : { code, email };
       const res = await fetch(fullUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(reduxToken ? { Authorization: `Bearer ${reduxToken}` } : {}) }, body: JSON.stringify(body) });
       const data = await res.json(); if (!res.ok) throw new Error(data.message || 'Verification failed');
