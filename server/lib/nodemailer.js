@@ -13,10 +13,15 @@ if (!email || !pass) {
 
 // Create transporter using Gmail SMTP + App Password
 export const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,           // SSL port
+  secure: true,        // true for 465, false for 587
   auth: {
     user: email,
-    pass: pass, // App Password from Google
+    pass: pass,        // Google App Password
+  },
+  tls: {
+    rejectUnauthorized: false, // allows self-signed certificates
   },
 });
 
