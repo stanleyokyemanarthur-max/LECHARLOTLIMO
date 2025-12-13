@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
 import Spinner from "../Components/Spinner.jsx";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 function Login() {
   const dispatch = useDispatch();
@@ -12,6 +13,7 @@ function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -29,7 +31,7 @@ function Login() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // Handle MFA / OTP flows
+      // MFA / OTP handling
       if (data.mfa === "SETUP_TOTP") {
         navigate("/enableauthenticator", { state: { email: form.email } });
         return;
@@ -62,15 +64,16 @@ function Login() {
       className="relative flex justify-center items-center min-h-screen bg-cover bg-center"
       style={{ backgroundImage: "url('/images/elite.jpg')" }}
     >
-      {/* Dark cinematic overlay */}
+      {/* Overlay */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
 
-      {loading && <Spinner />}
+      <AnimatePresence>{loading && <Spinner />}</AnimatePresence>
 
-      {/* Frosted glass login card */}
+      {/* Frosted login card */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 30 }}
         transition={{ duration: 0.8 }}
         className="relative z-10 mt-36 w-full max-w-md bg-black/50 border border-[#B8860B] rounded-3xl p-10 shadow-2xl backdrop-blur-md"
       >
@@ -81,21 +84,37 @@ function Login() {
         {error && <p className="text-red-400 mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {["email", "password"].map((field, idx) => (
-            <div key={idx}>
-              <label className="block text-sm font-medium mb-1 capitalize text-gray-200">
-                {field}
-              </label>
-              <input
-                type={field === "password" ? "password" : "email"}
-                name={field}
-                value={form[field]}
-                onChange={handleChange}
-                className="w-full p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B]"
-                required
-              />
-            </div>
-          ))}
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-200">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] hover:bg-black/30 transition-all"
+              required
+            />
+          </div>
+
+          {/* Password */}
+          <div className="relative">
+            <label className="block text-sm font-medium mb-1 text-gray-200">Password</label>
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              className="w-full p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] hover:bg-black/30 transition-all"
+              required
+            />
+            <span
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-white hover:text-[#FFD700] transition-all"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+            </span>
+          </div>
 
           <button
             type="submit"

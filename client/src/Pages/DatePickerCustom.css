@@ -1,0 +1,84 @@
+.react-datepicker {
+  background-color: #111;
+  border: 1px solid #B8860B;
+  border-radius: 0.75rem;
+  color: #fff;
+}
+
+.react-datepicker__day {
+  color: #fff;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.react-datepicker__day:hover {
+  background-color: #B8860B;
+  color: #000;
+}
+
+.react-datepicker__day--selected {
+  background-color: #FFD700;
+  color: #000;
+}
+
+.react-datepicker__day--today {
+  border: 1px solid #FFD700;
+}
+
+.react-datepicker__day--disabled {
+  color: #555;
+  cursor: not-allowed;
+}
+
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  border-color: #B8860B;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__month,
+.react-datepicker__year {
+  color: #fff;
+}
+
+.react-datepicker-popper {
+  z-index: 50;
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+  min-width: 100%;
+}
+/* Calendar Input Hover & Focus */
+.calendar-input {
+  transition: all 0.2s ease;
+}
+
+.calendar-input:hover {
+  background-color: rgba(255, 255, 255, 0.05); /* subtle lighten */
+  border-color: #FFD700; /* gold glow */
+}
+
+.calendar-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.5); /* gold glow ring */
+}
+
+/* Calendar Icon Hover */
+.calendar-icon {
+  transition: all 0.2s ease;
+}
+
+.calendar-icon:hover {
+  transform: scale(1.2);
+  color: #FFD700;
+}
+.react-datepicker {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.react-datepicker.show {
+  opacity: 1;
+  transform: translateY(0);
+}

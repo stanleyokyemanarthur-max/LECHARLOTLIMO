@@ -1,4 +1,4 @@
-import { sendEmail } from "../lib/nodemailer.js";
+import { sendEmail } from "../lib/sendgrid.js";
 
 export const contactForm = async (req, res) => {
   const { name, email, subject, message } = req.body;
@@ -17,7 +17,12 @@ export const contactForm = async (req, res) => {
 
   try {
     await sendEmail({
-      to: "info@lecharlotlimousine.com", // client inbox
+      to: "info@lecharlotlimousine.com", // your inbox
+      from: {
+        email: "lecharlotlimousine@gmail.com", // your verified SendGrid sender
+        name: "Le Charlot Limousine",
+      },
+      replyTo: email, // ✅ this is key: reply goes directly to user
       subject: `[Contact Form] ${subject}`,
       html,
     });

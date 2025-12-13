@@ -1,6 +1,5 @@
 // server.js
 import express from "express";
-import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import connectDB from "./config/db.js";
 import contactRoutes from "./routes/contactRoute.js";
@@ -13,6 +12,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import paymentWebhook from "./routes/paymentWebhook.js";
 import cors from "cors";
+import dotenv from "dotenv";
 
 
 dotenv.config();
