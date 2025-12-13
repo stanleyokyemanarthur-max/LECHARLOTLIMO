@@ -25,7 +25,7 @@ export default function SelectCar() {
     const fetchCars = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("https://lecharlotlimo.onrender.com/api/cars");
+        const res = await axios.get("https://selfless-renewal-production-793e.up.railway.app/api/cars");
         setCars(res.data);
       } catch (err) {
         console.error(err);

@@ -1,8 +1,16 @@
 // controllers/paymentController.js
 import Stripe from "stripe";
 import Booking from "../models/Booking.js";
-import dotenv from "dotenv";
-dotenv.config();
+
+// Load dotenv only if running locally
+if (process.env.NODE_ENV !== "production") {
+  import('dotenv').then(dotenv => dotenv.config());
+}
+
+// Check if the key exists
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error("❌ STRIPE_SECRET_KEY is missing. Set it in .env (dev) or Railway Variables (prod).");
+}
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -15,7 +23,6 @@ export const createCheckoutSession = async (req, res) => {
     const booking = await Booking.findById(bookingId);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
 
-    // ✅ Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
@@ -27,19 +34,16 @@ export const createCheckoutSession = async (req, res) => {
               name: `Car Booking - ${booking.carSnapshot?.name || "Luxury Ride"}`,
               description: `${booking.pickupLocation} → ${booking.dropoffLocation}`,
             },
-            unit_amount: Math.round(amount * 100), // convert to cents
+            unit_amount: Math.round(amount * 100), // cents
           },
           quantity: 1,
         },
       ],
       success_url: `${process.env.CLIENT_URL}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.CLIENT_URL}/booking-cancelled?session_id={CHECKOUT_SESSION_ID}`,
-      metadata: {
-        bookingId: booking._id.toString(),
-      },
+      metadata: { bookingId: booking._id.toString() },
     });
 
-    // ✅ Save session ID to the booking
     booking.stripeSessionId = session.id;
     booking.paymentStatus = "pending";
     await booking.save();
@@ -50,6 +54,7 @@ export const createCheckoutSession = async (req, res) => {
     res.status(500).json({ message: "Payment session failed" });
   }
 };
+
 
 /**
  * ❌ Handle Cancelled Payments

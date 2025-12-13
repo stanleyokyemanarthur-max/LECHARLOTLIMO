@@ -13,7 +13,7 @@ function BookingSuccess() {
     window.scrollTo(0, 0);
 
     if (sessionId) {
-      fetch(`http://localhost:5000/api/payments/verify?session_id=${sessionId}`)
+      fetch(`https://selfless-renewal-production-793e.up.railway.app/api/payments/verify?session_id=${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.success) setVerified(true);

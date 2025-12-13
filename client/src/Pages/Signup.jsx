@@ -32,7 +32,7 @@ function Signup() {
     setError("");
 
     try {
-      const res = await fetch("https://lecharlotlimo.onrender.com/api/auth/register", {
+      const res = await fetch("https://selfless-renewal-production-793e.up.railway.app/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

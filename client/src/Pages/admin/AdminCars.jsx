@@ -36,7 +36,7 @@ export default function AdminCars() {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const res = await axios.get("https://lecharlotlimo.onrender.com/api/cars", {
+        const res = await axios.get("https://selfless-renewal-production-793e.up.railway.app/api/cars", {
           headers: { Authorization: `Bearer ${userInfo?.token}` },
         });
         setCars(res.data);
@@ -58,7 +58,7 @@ export default function AdminCars() {
     try {
       if (editingCar) {
         const res = await axios.put(
-          `https://lecharlotlimo.onrender.com/api/cars/${editingCar._id}`,
+          `https://selfless-renewal-production-793e.up.railway.app/api/cars/${editingCar._id}`,
           form,
           { headers: { Authorization: `Bearer ${userInfo?.token}` } }
         );
@@ -66,7 +66,7 @@ export default function AdminCars() {
           prev.map((c) => (c._id === editingCar._id ? res.data : c))
         );
       } else {
-        const res = await axios.post("https://lecharlotlimo.onrender.com/api/cars", form, {
+        const res = await axios.post("https://selfless-renewal-production-793e.up.railway.app/api/cars", form, {
           headers: { Authorization: `Bearer ${userInfo?.token}` },
         });
         setCars((prev) => [...prev, res.data]);
@@ -93,7 +93,7 @@ export default function AdminCars() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this car?")) return;
     try {
-      await axios.delete(`https://lecharlotlimo.onrender.com/api/cars/${id}`, {
+      await axios.delete(`https://selfless-renewal-production-793e.up.railway.app/api/cars/${id}`, {
         headers: { Authorization: `Bearer ${userInfo?.token}` },
       });
       setCars((prev) => prev.filter((c) => c._id !== id));
