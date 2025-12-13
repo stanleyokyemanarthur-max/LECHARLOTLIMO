@@ -46,7 +46,7 @@ function CarsDetails() {
   useEffect(() => {
     const fetchCar = async () => {
       try {
-        const res = await fetch(`https://lecharlotlimo.onrender.com/api/cars/${id}`);
+        const res = await fetch(`https://selfless-renewal-production-793e.up.railway.app/api/cars/${id}`);
         if (!res.ok) throw new Error("Failed to fetch car");
         const data = await res.json();
         setCar(data);
@@ -66,7 +66,7 @@ function CarsDetails() {
         setLoadingEstimate(true);
         try {
           const res = await fetch(
-            `https://lecharlotlimo.onrender.com/api/bookings/estimate?pickup=${encodeURIComponent(
+            `https://selfless-renewal-production-793e.up.railway.app/api/bookings/estimate?pickup=${encodeURIComponent(
               pickUpLocation
             )}&dropoff=${encodeURIComponent(dropOffLocation)}&carId=${car._id}`
           );
@@ -108,7 +108,7 @@ function CarsDetails() {
     try {
       setCheckoutLoading(true);
       // Step 1 — Create booking
-      const bookingRes = await fetch("https://lecharlotlimo.onrender.com/api/bookings", {
+      const bookingRes = await fetch("https://selfless-renewal-production-793e.up.railway.app/api/bookings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,7 +133,7 @@ function CarsDetails() {
 
       // Step 2 — Create Stripe checkout session
       const stripeRes = await fetch(
-        "https://lecharlotlimo.onrender.com/api/payments/create-checkout-session",
+        "https://selfless-renewal-production-793e.up.railway.app/api/payments/create-checkout-session",
         {
           method: "POST",
           headers: {
@@ -176,7 +176,7 @@ function CarsDetails() {
           ? { email: authEmail, password: authPassword }
           : { name: authName, email: authEmail, password: authPassword };
 
-      const res = await fetch(`https://lecharlotlimo.onrender.com${endpoint}`, {
+      const res = await fetch(`https://selfless-renewal-production-793e.up.railway.app${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
