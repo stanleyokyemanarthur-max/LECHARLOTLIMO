@@ -12,7 +12,7 @@ export default function AdminBookings() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const res = await axios.get("https://selfless-renewal-production-793e.up.railway.app//api/bookings", {
+        const res = await axios.get("https://selfless-renewal-production-793e.up.railway.app/api/bookings", {
           headers: { Authorization: `Bearer ${userInfo?.token}` },
         });
         setBookings(res.data);
@@ -29,7 +29,7 @@ export default function AdminBookings() {
   const handleStatusChange = async (id, newStatus) => {
     try {
       await axios.put(
-        `https://selfless-renewal-production-793e.up.railway.app//api/bookings/${id}/status`,
+        `https://selfless-renewal-production-793e.up.railway.app/api/bookings/${id}/status`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${userInfo?.token}` } }
       );
