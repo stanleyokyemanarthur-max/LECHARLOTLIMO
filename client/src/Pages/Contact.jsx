@@ -26,14 +26,6 @@ function Contact() {
     }
 
     try {
-<<<<<<< HEAD
-      const res = await axios.post(
-        "http://localhost:5000/api/contact",
-        form
-      );
-=======
-      const res = await axios.post("https://selfless-renewal-production-793e.up.railway.app/api/contact", form);
->>>>>>> 7aaedcd885ccc05afab9e92a789affd0c901837e
 
       if (res.data.success) {
         toast.success("Your message has been sent successfully!");
