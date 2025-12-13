@@ -61,7 +61,7 @@ function CarDetails() {
         return;
       }
       try {
-        const res = await fetch(`https://lecharlotlimo.onrender.com/api/cars/${id}`);
+        const res = await fetch(`https://selfless-renewal-production-793e.up.railway.app/api/cars/${id}`);
         if (!res.ok) throw new Error("Failed to fetch car");
         const data = await res.json();
         setCar(data);
@@ -131,7 +131,7 @@ function CarDetails() {
 
     try {
       // create booking on server
-      const bookingRes = await fetch("https://lecharlotlimo.onrender.com/api/bookings", {
+      const bookingRes = await fetch("https://selfless-renewal-production-793e.up.railway.app/api/bookings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -155,7 +155,7 @@ function CarDetails() {
 
       // create stripe session
       const stripeRes = await fetch(
-        "https://lecharlotlimo.onrender.com/api/payments/create-checkout-session",
+        "https://selfless-renewal-production-793e.up.railway.app/api/payments/create-checkout-session",
         {
           method: "POST",
           headers: {
@@ -194,7 +194,7 @@ function CarDetails() {
           ? { email: authEmail, password: authPassword }
           : { name: authName, email: authEmail, password: authPassword };
 
-      const res = await fetch(`https://lecharlotlimo.onrender.com${endpoint}`, {
+      const res = await fetch(`https://selfless-renewal-production-793e.up.railway.app${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
