@@ -11,7 +11,7 @@ function AuthLoader() {
       if (!token) return;
 
       try {
-        const res = await fetch("https://lecharlotlimo.onrender.com/api/auth/me", {
+        const res = await fetch("https://selfless-renewal-production-793e.up.railway.app//api/auth/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
