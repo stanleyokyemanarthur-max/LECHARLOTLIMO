@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
-import { sendEmail } from "../lib/nodemailer.js";
+import { sendEmail } from "../lib/sendgrid.js";
 import speakeasy from "speakeasy";
 import QRCode from "qrcode";
 
