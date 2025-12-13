@@ -30,8 +30,8 @@ export default function EnableAuthenticator() {
     try {
       setFetchingQR(true);
       const url = reduxToken
-        ? "https://lecharlotlimo.onrender.com/api/auth/enable-totp"
-        : "https://lecharlotlimo.onrender.com/api/auth/enable-totp-email";
+        ? "https://selfless-renewal-production-793e.up.railway.app/api/auth/enable-totp"
+        : "https://selfless-renewal-production-793e.up.railway.app/api/auth/enable-totp-email";
 
       const res = await fetch(url, {
         method: "POST",
@@ -108,7 +108,7 @@ export default function EnableAuthenticator() {
     setLoading(true);
     try {
       const url = reduxToken ? '/api/auth/verify-totp-setup' : '/api/auth/verify-totp-setup-email';
-      const fullUrl = `https://lecharlotlimo.onrender.com${url}`;
+      const fullUrl = `https://selfless-renewal-production-793e.up.railway.app${url}`;
       const body = reduxToken ? { code } : { code, email };
       const res = await fetch(fullUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(reduxToken ? { Authorization: `Bearer ${reduxToken}` } : {}) }, body: JSON.stringify(body) });
       const data = await res.json(); if (!res.ok) throw new Error(data.message || 'Verification failed');
