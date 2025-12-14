@@ -218,7 +218,7 @@ function Signup() {
               required
             />
             <span
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-white transition-all"
+              className="absolute right-3 top-2/3 transform -translate-y-1/2 cursor-pointer text-white hover:text-[#FFD700] transition-all"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}

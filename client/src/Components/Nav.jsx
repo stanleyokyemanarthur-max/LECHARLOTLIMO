@@ -131,7 +131,7 @@ function Nav() {
 
               {/* Dropdown menu */}
               {isDropdownOpen && (
-                <ul className="absolute right-0 top-12 mt-2 w-56 bg-[#111111] text-white rounded-xl shadow-lg z-[9999] animate-fadeIn overflow-hidden border border-[#333]">
+                <ul className="absolute lg:absolute right-[5] top-[-1] lg:top-12 mt-2 w-56 bg-[#111111] text-white rounded-xl shadow-lg z-[9999] animate-fadeIn overflow-hidden border border-[#333]">
                   <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-[#111111]"></div>
 
                   {userRole === "admin" ? (
