@@ -27,7 +27,7 @@ export const registerUser = async (req, res) => {
     await sendEmail({
       to: email,
       subject: "Welcome to Le Charlot Limousine",
-      html: `<p>Hi ${name}, welcome to Le Charlot Limousine!</p>`,
+      html: `<p>Hi ${name}, welcome to Le Charlot Limousine! Your Premium Car Booking Site.</p>`,
     });
 
     // Return user info ONLY — no token
