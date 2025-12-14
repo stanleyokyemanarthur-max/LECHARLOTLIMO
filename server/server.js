@@ -11,6 +11,7 @@ import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import paymentWebhook from "./routes/paymentWebhook.js";
+import adminBroadcastRoutes from "./routes/adminBroadcastRoutes.js"
 import cors from "cors";
 import dotenv from "dotenv";
 
@@ -54,6 +55,8 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/admin", adminBroadcastRoutes);
+
 
 app.get("/", (req, res) => res.send("🚖 LimoProject backend is running..."));
 

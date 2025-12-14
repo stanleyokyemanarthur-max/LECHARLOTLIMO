@@ -84,7 +84,7 @@ function FleetPage() {
   const navigate = useNavigate();
 
   return (
-    <section className="bg-gray-50 min-h-screen py-16 px-6 md:px-12">
+    <section className="bg-gray-50 min-h-screen  py-28 px-6 md:px-12">
       {/* Title */}
       <div className="text-center mt-16">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">

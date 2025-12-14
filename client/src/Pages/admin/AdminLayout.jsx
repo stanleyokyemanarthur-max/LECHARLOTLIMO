@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, Car, LogOut, ArrowLeftCircle } from "lucide-react";
+import { LayoutDashboard,Radio, Users, Car, LogOut, ArrowLeftCircle } from "lucide-react";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -54,6 +54,17 @@ export default function AdminLayout() {
             <Car className="w-5 h-5 text-[#B8860B]" />
             <span>Cars</span>
           </button>
+          <button
+            onClick={() => navigate("/admin/broadcast")}
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition font-semibold ${isActive("/admin/broadcast")
+                ? "bg-[#d8c305c5]/30"
+                : "hover:bg-[#d8c305c5]/20"
+              }`}
+          >
+            <Radio className="w-5 h-5 text-[#B8860B]" />
+            <span>Broadcast</span>
+          </button>
+
 
 
           <button

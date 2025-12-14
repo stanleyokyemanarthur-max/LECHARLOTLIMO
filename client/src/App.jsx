@@ -39,6 +39,9 @@ import EnableAuthenticator from "./Pages/EnableAuthenticator.jsx";
 import VerifyTOTPLogin from "./Pages/VerifyTOTPLogin.jsx"
 import ResetTOTP from "./Pages/ResetTOTP.jsx";
 import LostAuthenticator from "./Pages/LostAuthenticator.jsx";
+import AdminBroadcast from "./Pages/admin/AdminBroadcast.jsx";
+
+
 
 
 function App() {
@@ -99,7 +102,9 @@ function App() {
 
         <Route path="/booking-cancelled" element={<BookingCancelled />} />
 
-
+<Route path="/admin" element={<AdminLayout />}>
+  
+</Route>
 
         {/* Admin routes */}
         <Route
@@ -114,6 +119,7 @@ function App() {
           <Route path="bookings" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBookings /></ProtectedRoute>} />
           <Route path="users" element={<ProtectedRoute allowedRoles={["admin"]}><AdminUsers /></ProtectedRoute>} />
           <Route path="cars" element={<ProtectedRoute allowedRoles={["admin"]}><AdminCars /></ProtectedRoute>} />
+          <Route path="broadcast" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBroadcast /></ProtectedRoute> } />
         </Route>
       </Routes>
       <Footer />
