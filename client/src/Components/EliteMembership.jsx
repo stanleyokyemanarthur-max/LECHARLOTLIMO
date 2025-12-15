@@ -89,7 +89,7 @@ export default function EliteMembership() {
                     <button
                         onClick={() => (window.location.href = "/signup")}
                         className="mt-20 bg-[#B8860B] text-black font-semibold px-8 py-3 rounded-xl shadow-lg 
-                                   hover:bg-[#d4a019] transition-all"
+                                    transition-all"
                     >
                         Join the Elite Membership
                     </button>

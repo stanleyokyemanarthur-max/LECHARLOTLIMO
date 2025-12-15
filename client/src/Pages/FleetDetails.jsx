@@ -28,7 +28,7 @@ function AutoSlideGallery({ images }) {
   }, [images.length]);
 
   return (
-    <div className="relative w-full h-[320px] md:h-[420px] overflow-hidden rounded-2xl">
+    <div className="relative mt-20 w-full h-[320px] md:h-[420px] overflow-hidden rounded-2xl">
       <AnimatePresence mode="wait">
         <motion.img
           key={images[current]}

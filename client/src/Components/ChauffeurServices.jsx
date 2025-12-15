@@ -84,7 +84,7 @@ function ChauffeurServices() {
         <h2 className="text-3xl font-semibold text-gray-900 mb-2">
           Our Chauffeur Services
         </h2>
-        <div className="w-16 h-1 bg-yellow-500 mx-auto mb-8 rounded-full"></div>
+        <div className="w-16 h-1 bg-[#B8860B] mx-auto mb-8 rounded-full"></div>
 
         {/* Services Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -103,7 +103,7 @@ function ChauffeurServices() {
                 className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute bottom-0 w-full bg-black bg-opacity-80 py-3">
-                <h3 className="text-yellow-700 font-medium text-lg">{service.title}</h3>
+                <h3 className="text-[#B8860B] font-medium text-lg">{service.title}</h3>
               </div>
             </motion.a>
           ))}
@@ -115,7 +115,7 @@ function ChauffeurServices() {
             href="/services"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-yellow-700 text-black font-medium px-6 py-4 rounded hover:bg-yellow-600 transition"
+            className="bg-[#B8860B] text-black font-medium px-6 py-4 rounded hover:bg-yellow-600 transition"
           >
             View All Services
           </a>

@@ -14,28 +14,28 @@ import {
 const fleetData = [
   {
     id: 1,
-    slug: "luxury-sedan",
-    title: "Luxury Sedan",
+    slug: "cadillac-escalade",
+    title: "Cadillac Escalade",
     subtitle: "1-4 PASSENGER",
     image: "/images/-Cadillac.png",
     specs: [
-      { icon: <Users className="w-4 h-4 text-yellow-600" />, text: "1-4 passengers" },
-      { icon: <Briefcase className="w-4 h-4 text-yellow-600" />, text: "2-3 medium sized bags" },
-      { icon: <Armchair className="w-4 h-4 text-yellow-600" />, text: "Plush leather seating" },
-      { icon: <Sparkles className="w-4 h-4 text-yellow-600" />, text: "Dual Illuminating Vanity Mirrors" },
+      { icon: <Users className="w-4 h-4 text-[#B8860B]" />, text: "1-4 passengers" },
+      { icon: <Briefcase className="w-4 h-4 text-[#B8860B]" />, text: "2-3 medium sized bags" },
+      { icon: <Armchair className="w-4 h-4 text-[#B8860B]" />, text: "Plush leather seating" },
+      { icon: <Sparkles className="w-4 h-4 text-[#B8860B]" />, text: "Dual Illuminating Vanity Mirrors" },
     ],
   },
   {
     id: 2,
-    slug: "luxury-suv",
-    title: "SUV",
+    slug: "chevrolet-suburban",
+    title: "Chevrolet Suburban",
     subtitle: "SUV 6-7 PASSENGER",
     image: "/images/Chvy.png",
     specs: [
-      { icon: <Users className="w-4 h-4 text-yellow-600" />, text: "6-7 passengers" },
-      { icon: <Briefcase className="w-4 h-4 text-yellow-600" />, text: "Luggage 8-10 Small or 7-8 Large" },
-      { icon: <Armchair className="w-4 h-4 text-yellow-600" />, text: "Plush leather seating" },
-      { icon: <GlassWater className="w-4 h-4 text-yellow-600" />, text: "Rear Armrest and Drink Holders" },
+      { icon: <Users className="w-4 h-4 text-[#B8860B]" />, text: "6-7 passengers" },
+      { icon: <Briefcase className="w-4 h-4 text-[#B8860B]" />, text: "Luggage 8-10 Small or 7-8 Large" },
+      { icon: <Armchair className="w-4 h-4 text-[#B8860B]" />, text: "Plush leather seating" },
+      { icon: <GlassWater className="w-4 h-4 text-[#B8860B]" />, text: "Rear Armrest and Drink Holders" },
     ],
   },
   {
@@ -45,38 +45,38 @@ const fleetData = [
     subtitle: "SPRINTER VAN (11 OR 14 PASSENGER)",
     image: "/images/van.png",
     specs: [
-      { icon: <Users className="w-4 h-4 text-yellow-600" />, text: "11-14 passengers" },
-      { icon: <Briefcase className="w-4 h-4 text-yellow-600" />, text: "Luggage 10-12 Large or 12-14 Small" },
-      { icon: <Armchair className="w-4 h-4 text-yellow-600" />, text: "Forward Facing Seating" },
-      { icon: <Radio className="w-4 h-4 text-yellow-600" />, text: "AM/FM Radio" },
+      { icon: <Users className="w-4 h-4 text-[#B8860B]" />, text: "11-14 passengers" },
+      { icon: <Briefcase className="w-4 h-4 text-[#B8860B]" />, text: "Luggage 10-12 Large or 12-14 Small" },
+      { icon: <Armchair className="w-4 h-4 text-[#B8860B]" />, text: "Forward Facing Seating" },
+      { icon: <Radio className="w-4 h-4 text-[#B8860B]" />, text: "AM/FM Radio" },
     ],
   },
   {
     id: 4,
-    slug: "stretch-limo-6",
-    title: "Stretch Limo 6",
+    slug: "gmc-yukon-denali",
+    title: "GMC Yukon Denali",
     subtitle: "STRETCH LIMO – 6 PASSENGER",
     image: "/images/Gmcc.png",
     specs: [
-      { icon: <Users className="w-4 h-4 text-yellow-600" />, text: "6 passengers" },
-      { icon: <Briefcase className="w-4 h-4 text-yellow-600" />, text: "Luggage 3-4 Large or 4-5 Small" },
-      { icon: <Armchair className="w-4 h-4 text-yellow-600" />, text: "Plush leather seating" },
-      { icon: <Music className="w-4 h-4 text-yellow-600" />, text: "AM/FM Stereo & CD Player" },
+      { icon: <Users className="w-4 h-4 text-[#B8860B]" />, text: "6 passengers" },
+      { icon: <Briefcase className="w-4 h-4 text-[#B8860B]" />, text: "Luggage 3-4 Large or 4-5 Small" },
+      { icon: <Armchair className="w-4 h-4 text-[#B8860B]" />, text: "Plush leather seating" },
+      { icon: <Music className="w-4 h-4 text-[#B8860B]" />, text: "AM/FM Stereo & CD Player" },
     ],
   },
-  {
-    id: 5,
-    slug: "stretch-limo-10",
-    title: "Stretch Limo 10",
-    subtitle: "STRETCH LIMO – 10 PASSENGER",
-    image: "/images/suburban.png",
-    specs: [
-      { icon: <Users className="w-4 h-4 text-yellow-600" />, text: "10-14 passengers" },
-      { icon: <Briefcase className="w-4 h-4 text-yellow-600" />, text: "Luggage 3-4 Large or 4-5 Small" },
-      { icon: <Armchair className="w-4 h-4 text-yellow-600" />, text: "Plush leather seating" },
-      { icon: <Music className="w-4 h-4 text-yellow-600" />, text: "AM/FM Stereo & CD Player" },
-    ],
-  },
+  // {
+  //   id: 5,
+  //   slug: "stretch-limo-10",
+  //   title: "Stretch Limo 10",
+  //   subtitle: "STRETCH LIMO – 10 PASSENGER",
+  //   image: "/images/suburban.png",
+  //   specs: [
+  //     { icon: <Users className="w-4 h-4 text-[#B8860B]" />, text: "10-14 passengers" },
+  //     { icon: <Briefcase className="w-4 h-4 text-[#B8860B]" />, text: "Luggage 3-4 Large or 4-5 Small" },
+  //     { icon: <Armchair className="w-4 h-4 text-[#B8860B]" />, text: "Plush leather seating" },
+  //     { icon: <Music className="w-4 h-4 text-[#B8860B]" />, text: "AM/FM Stereo & CD Player" },
+  //   ],
+  // },
 ];
 
 
@@ -91,8 +91,7 @@ function FleetPage() {
           Our Luxurious Fleet
         </h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Explore our selection of premium vehicles. Whether you need a sedan,
-          SUV, limo, or van, each vehicle offers unmatched comfort and luxury.
+          Explore our premium fleet featuring the Chevrolet Suburban, Cadillac Escalade, and Mercedes-Benz Sprinter Van. Each vehicle is designed to deliver exceptional comfort, luxury, and reliability for every journey.
         </p>
       </div>
 
@@ -129,7 +128,7 @@ function FleetPage() {
 
               <button
                 onClick={() => navigate(`/fleet/${car.slug}`)}
-                className="bg-[#B8860B] hover:bg-yellow-600 text-black font-semibold py-2 rounded-lg transition"
+                className="bg-[#B8860B] hover:bg-[#B8860B] text-black font-semibold py-2 rounded-lg transition"
               >
                 VIEW DETAILS
               </button>

@@ -17,7 +17,7 @@ function LandingFleetSection() {
   <div className="md:w-1/2 text-center md:text-left space-y-6">
     <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
       Luxurious Fleet <br />
-      <span className="text-yellow-600">for Ultimate Satisfaction</span>
+      <span className="text-[#B8860B]">for Ultimate Satisfaction</span>
     </h2>
 
     <p className="text-gray-700 text-base md:text-lg leading-relaxed max-w-md mx-auto md:mx-0">
@@ -28,7 +28,7 @@ function LandingFleetSection() {
 
     <button
       onClick={() => navigate("/fleet")}
-      className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-8 py-3 rounded-full text-base md:text-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg"
+      className="bg-[#B8860B] hover:bg-[#B8860B] text-black font-semibold px-8 py-3 rounded-full text-base md:text-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg"
     >
       Explore our Fleet
     </button>

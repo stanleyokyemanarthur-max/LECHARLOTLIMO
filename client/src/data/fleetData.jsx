@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 const fleetData = [
   {
     id: 1,
-    slug: "luxury-sedan",
-    name: "Luxury Sedan",
+    slug: "cadillac-escalade",
+    name: "Cadillac Escalade",
     category: "1-4 Passenger",
     mainImage: "/images/-Cadillac.png",
     gallery: [
@@ -28,8 +28,8 @@ const fleetData = [
   },
   {
     id: 2,
-    slug: "luxury-suv",
-    name: "Luxury SUV",
+    slug: "chevrolet-suburban",
+    name: "Chevrolet Suburban",
     category: "6-7 Passenger",
     mainImage: "/images/Chvy.png",
     gallery: [
@@ -74,8 +74,8 @@ const fleetData = [
   },
   {
     id: 4,
-    slug: "stretch-limo-6",
-    name: "Stretch Limo (6 Passenger)",
+    slug: "gmc-yukon-denali",
+    name: "GMC Yukon Denali",
     category: "6 Passenger",
     mainImage: "/images/Gmcc.png",
     gallery: [

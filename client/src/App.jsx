@@ -102,9 +102,9 @@ function App() {
 
         <Route path="/booking-cancelled" element={<BookingCancelled />} />
 
-<Route path="/admin" element={<AdminLayout />}>
-  
-</Route>
+        <Route path="/admin" element={<AdminLayout />}>
+
+        </Route>
 
         {/* Admin routes */}
         <Route
@@ -119,7 +119,7 @@ function App() {
           <Route path="bookings" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBookings /></ProtectedRoute>} />
           <Route path="users" element={<ProtectedRoute allowedRoles={["admin"]}><AdminUsers /></ProtectedRoute>} />
           <Route path="cars" element={<ProtectedRoute allowedRoles={["admin"]}><AdminCars /></ProtectedRoute>} />
-          <Route path="broadcast" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBroadcast /></ProtectedRoute> } />
+          <Route path="broadcast" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBroadcast /></ProtectedRoute>} />
         </Route>
       </Routes>
       <Footer />

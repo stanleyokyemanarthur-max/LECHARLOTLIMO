@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import EliteMembership from "../Components/EliteMembership";
 
 function About() {
   const navigate = useNavigate();
@@ -9,9 +10,9 @@ function About() {
       <div className="banner-section flex justify-center items-center h-[358px] lg:h-[550px]">
         <div className="banner-section-content text-center z-10">
           <h1 className="uppercase text-sm lg:text-xl text-white font-bricolage">
-            Le Charlot<span className="text-yellow-600"> Limousine</span>
+            Le Charlot<span className="text-[#B8860B]"> Limousine</span>
           </h1>
-          <h1 className="text-4xl lg:text-5xl xl:text-8xl font-semibold font-bricolage text-yellow-600">
+          <h1 className="text-4xl lg:text-5xl xl:text-8xl font-semibold font-bricolage text-[#B8860B]">
             <span className="text-white font-bricolage">About</span> Us
           </h1>
         </div>
@@ -28,13 +29,13 @@ function About() {
             />
           </div>
           <div>
-            <p className="uppercase text-xs md:text-sm tracking-widest text-yellow-600 mb-2">
+            <p className="uppercase text-xs md:text-sm tracking-widest text-[#B8860B] mb-2">
               LE CHARLOT LIMOUSINE
             </p>
             <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
               We Are More Than <br />
-              <span className="text-yellow-600 font-bricolage">
-              A Car Book Company.
+              <span className="text-[#B8860B] font-bricolage">
+                A Car Book Company.
               </span>
             </h2>
             <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
@@ -45,30 +46,32 @@ function About() {
             </p>
             <div className="space-y-4 mb-10">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-[#d8c305c5]">
+                <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-[#B8860B]">
                   <i className="ri-check-double-line"></i>
                 </div>
                 <span className="text-white">Exclusive Fleet of Luxury & Executive Cars</span>
               </div>
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-yellow-600">
+                <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-[#B8860B]">
                   <i className="ri-check-double-line"></i>
                 </div>
                 <span className="text-white">Professional Chauffeurs with Years of Experience</span>
               </div>
             </div>
-            <button onClick={() => navigate("/reservation-form")} className="bg-yellow-600 hover:bg-black text-white px-8 py-4 rounded-full font-medium flex items-center gap-2 transition-colors duration-300">
+            <button onClick={() => navigate("/reservation-form")} className="bg-[#B8860B] hover:bg-black text-white px-8 py-4 rounded-full font-medium flex items-center gap-2 transition-colors duration-300">
               Make Reservation <i className="ri-arrow-right-line"></i>
             </button>
           </div>
         </div>
       </div>
 
+      <EliteMembership/>
+
       {/* Booking Section */}
       <div className="banner lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]">
         <div className="banner-content text-center">
           <p className="uppercase text-sm tracking-[5px] text-white mb-2">
-          
+
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-3 text-white font-bricolage">
             Book Your Luxury Ride <br />
@@ -76,57 +79,57 @@ function About() {
         </div>
       </div>
 
-    {/* About Section 2 - Landing Page */}
-<div className="about text-white lg:px-[10%] px-[8%] py-[50px] lg:py-[90px]">
-  <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-    
-    {/* Image */}
-    <div className="relative w-auto sm:h-[450px] lg:h-[600px]">
-      <img
-        src="/images/driver.jpg"
-        alt="Chauffeur service at the airport"
-        className="rounded-3xl w-full h-full object-contain md:object-cover"
-      />
-    </div>
+      {/* About Section 2 - Landing Page */}
+      <div className="about text-white lg:px-[10%] px-[8%] py-[50px] lg:py-[90px]">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
 
-    {/* Text Content */}
-    <div>
-      <p className="uppercase text-xs md:text-sm tracking-widest text-yellow-600 mb-2">
-        LE CHARLOT LIMOUSINE
-      </p>
-      <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
-        Travel in Style <br />
-        <span className="text-yellow-600 font-bricolage">
-          Experience comfort from start to finish.
-        </span>
-      </h2>
-      <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
-        At Le Charlot Limousine, we know that your time is valuable. Our professional chauffeurs
-        provide seamless rides with attention to every detail, ensuring a luxurious
-        experience for every journey whether it’s a city trip or a quick airport transfer.
-      </p>
-      <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
-        From punctual pick-ups to clean, premium vehicles, we combine reliability
-        with sophistication to make every ride feel effortless and memorable.
-      </p>
-      <div className="space-y-4 mb-10">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-yellow-600">
-            <i className="ri-check-double-line"></i>
+          {/* Image */}
+          <div className="relative w-auto sm:h-[450px] lg:h-[600px]">
+            <img
+              src="/images/driver.jpg"
+              alt="Chauffeur service at the airport"
+              className="rounded-3xl w-full h-full object-contain md:object-cover"
+            />
           </div>
-          <span className="text-white">Fast and Reliable Service</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-yellow-600">
-            <i className="ri-check-double-line"></i>
+
+          {/* Text Content */}
+          <div>
+            <p className="uppercase text-xs md:text-sm tracking-widest text-[#B8860B] mb-2">
+              LE CHARLOT LIMOUSINE
+            </p>
+            <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
+              Travel in Style <br />
+              <span className="text-[#B8860B] font-bricolage">
+                Experience comfort from start to finish.
+              </span>
+            </h2>
+            <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
+              At Le Charlot Limousine, we know that your time is valuable. Our professional chauffeurs
+              provide seamless rides with attention to every detail, ensuring a luxurious
+              experience for every journey whether it’s a city trip or a quick airport transfer.
+            </p>
+            <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
+              From punctual pick-ups to clean, premium vehicles, we combine reliability
+              with sophistication to make every ride feel effortless and memorable.
+            </p>
+            <div className="space-y-4 mb-10">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-[#B8860B]">
+                  <i className="ri-check-double-line"></i>
+                </div>
+                <span className="text-white">Fast and Reliable Service</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-[#B8860B]">
+                  <i className="ri-check-double-line"></i>
+                </div>
+                <span className="text-white">Clean, Luxury Vehicles Every Time</span>
+              </div>
+            </div>
           </div>
-          <span className="text-white">Clean, Luxury Vehicles Every Time</span>
+
         </div>
       </div>
-    </div>
-
-  </div>
-</div>
 
 
       {/* NEW SECTION - Why Choose Us */}
@@ -134,12 +137,12 @@ function About() {
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
           {/* Text Section */}
           <div>
-            <p className="uppercase text-xs md:text-sm tracking-widest text-yellow-600 mb-2">
-               WHY CHOOSE US
+            <p className="uppercase text-xs md:text-sm tracking-widest text-[#B8860B] mb-2">
+              WHY CHOOSE US
             </p>
             <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
               Driven by <br />
-              <span className="text-yellow-600 font-bricolage">Excellence & Elegance</span>
+              <span className="text-[#B8860B] font-bricolage">Excellence & Elegance</span>
             </h2>
             <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
               Choosing Le Charlot Limousine means choosing an experience that blends luxury
@@ -149,16 +152,16 @@ function About() {
             </p>
             <ul className="space-y-3 text-sm lg:text-base">
               <li className="flex items-center gap-3">
-                <i className="ri-star-fill text-yellow-600"></i> Professionally Trained Chauffeurs
+                <i className="ri-star-fill text-[#B8860B]"></i> Professionally Trained Chauffeurs
               </li>
               <li className="flex items-center gap-3">
-                <i className="ri-star-fill text-yellow-600"></i> 24/7 Availability for Global Travel
+                <i className="ri-star-fill text-[#B8860B]"></i> 24/7 Availability for Global Travel
               </li>
               <li className="flex items-center gap-3">
-                <i className="ri-star-fill text-yellow-600"></i> Fleet of Luxury SUVs & Sprinters
+                <i className="ri-star-fill text-[#B8860B]"></i> Fleet of Luxury SUVs & Sprinters
               </li>
               <li className="flex items-center gap-3">
-                <i className="ri-star-fill text-yellow-600"></i> Personalized VIP & Corporate Services
+                <i className="ri-star-fill text-[#B8860B]"></i> Personalized VIP & Corporate Services
               </li>
             </ul>
           </div>
@@ -174,8 +177,8 @@ function About() {
         </div>
       </div>
 
-     
-        {/* Vision, Mission, Values Section */}
+
+      {/* Vision, Mission, Values Section */}
       <div className="our-service lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]">
         <div className="our-service-content mb-20 text-center text-white">
           <p className="uppercase text-sm tracking-[5px] text-[#B8860B] mb-2">
