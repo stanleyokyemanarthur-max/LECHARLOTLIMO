@@ -56,7 +56,7 @@ export default function EliteMembership() {
 
 
                 {/* Features */}
-                <div className="grid sm:grid-cols-2 gap-6 mt-12">
+                <div className="grid sm:grid-cols-2 gap-6 mb-12 mt-12">
                     {features.map((item, i) => (
                         <motion.div
                             key={i}
