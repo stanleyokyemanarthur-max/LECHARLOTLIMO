@@ -234,7 +234,7 @@ function Signup() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-gray-300">
+        <p className="mt-6 pt-7  flex flex-wrap  text-center text-gray-300">
           Already a member?{" "}
           <Link to="/login" className="text-[#B8860B] hover:underline">
             Login here

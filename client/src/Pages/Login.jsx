@@ -125,7 +125,7 @@ function Login() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-gray-300">
+        <p className="mt-6 pt-7  flex flex-wrap  text-center text-gray-300">
           Not registered?{" "}
           <Link to="/signup" className="text-[#B8860B] hover:underline">
             Sign Up

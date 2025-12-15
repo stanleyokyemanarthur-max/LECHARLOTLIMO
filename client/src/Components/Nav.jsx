@@ -56,7 +56,7 @@ function Nav() {
           </span>
           <span className="flex items-center gap-2">
             <i className="ri-phone-line text-[#B8860B]"></i>
-            (404) 900-9088
+            (404) 405-3738
           </span>
         </div>
 
