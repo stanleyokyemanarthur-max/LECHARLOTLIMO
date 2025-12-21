@@ -3,6 +3,8 @@ import Booking from "../models/Booking.js";
 import Car from "../models/Car.js";
 import User from "../models/User.js";
 import { getDistanceInMiles } from "../utils/getDistance.js";
+import Reward from "../models/Reward.js";
+import { evaluateMilestones } from "../utils/evaluateMilestones.js";
 
 /* 
 ==============================
@@ -11,28 +13,95 @@ import { getDistanceInMiles } from "../utils/getDistance.js";
 */
 export const createBooking = async (req, res) => {
   try {
-    const { car, pickupLocation, dropoffLocation, pickupDate, dropoffDate } = req.body;
+    const {
+      car,
+      pickupLocation,
+      dropoffLocation,
+      pickupDate,
+      dropoffDate,
+      rewardId,
+    } = req.body;
 
-    // ✅ Validate input
+    /* ======================
+       BASIC VALIDATION
+    ====================== */
     if (!car || !pickupLocation || !dropoffLocation || !pickupDate || !dropoffDate) {
       return res.status(400).json({ error: "All booking fields are required." });
     }
 
-    // ✅ Find car
     const carData = await Car.findById(car);
-    if (!carData) return res.status(404).json({ error: "Car not found" });
+    if (!carData) {
+      return res.status(404).json({ error: "Car not found" });
+    }
 
-    // ✅ Compute distance
-    const distanceInMiles = await getDistanceInMiles(pickupLocation, dropoffLocation);
+    /* ======================
+       DISTANCE & PRICE
+    ====================== */
+    const distanceInMiles = await getDistanceInMiles(
+      pickupLocation,
+      dropoffLocation
+    );
 
-    // ✅ Compute total price (minimum $20)
-    const totalPrice = Math.max(distanceInMiles * carData.perMileRate, 20);
+    let totalPrice = Math.max(distanceInMiles * carData.perMileRate, 20);
+    let isPaid = true;
+    let reward = null;
 
-    // ✅ Find the default driver (your client)
+    /* ======================
+       🎁 REWARD FLOW (SAFE)
+    ====================== */
+    if (rewardId) {
+      // 1️⃣ Find reward
+      reward = await Reward.findOne({
+        _id: rewardId,
+        user: req.user._id,
+        status: "AVAILABLE",
+        expiresAt: { $gt: new Date() },
+      });
+
+      if (!reward) {
+        return res.status(400).json({
+          error: "Invalid, expired, or unavailable reward",
+        });
+      }
+
+      // 2️⃣ LOCK reward immediately (prevents double usage)
+      reward.status = "LOCKED";
+      reward.lockedAt = new Date();
+      await reward.save();
+
+      // 3️⃣ Admin rule: PAID rides take priority
+      const paidBookingExists = await Booking.exists({
+        pickupDate,
+        isPaid: true,
+        status: { $in: ["pending", "confirmed"] },
+      });
+
+      if (paidBookingExists) {
+        reward.status = "QUEUED";
+        reward.isSlotFull = true;
+        reward.lockedAt = null;
+        await reward.save();
+
+        return res.status(409).json({
+          error:
+            "Paid booking already exists for this slot. Your free ride has been queued.",
+        });
+      }
+
+      // 4️⃣ Free ride allowed
+      isPaid = false;
+      totalPrice = 0;
+    }
+
+    /* ======================
+       DRIVER ASSIGNMENT
+    ====================== */
     const defaultDriver = await User.findOne({ role: "driver" });
 
-    // ✅ Create booking (assign driver automatically)
-    const booking = new Booking({
+    /* ======================
+       CREATE BOOKING
+    ====================== */
+    const booking = await Booking.create({
       user: req.user._id,
       driver: defaultDriver ? defaultDriver._id : null,
       car,
@@ -47,15 +116,27 @@ export const createBooking = async (req, res) => {
       dropoffDate,
       distance: distanceInMiles,
       totalPrice,
+      isPaid,
+      reward: reward ? reward._id : null,
     });
 
-    await booking.save();
+    /* ======================
+       LINK REWARD (NOT USED YET)
+       ⚠️ Stripe webhook will
+       finalize this
+    ====================== */
+    if (reward) {
+      reward.booking = booking._id;
+      await reward.save();
+    }
+
     res.status(201).json(booking);
   } catch (err) {
     console.error("Create booking error:", err);
     res.status(500).json({ error: err.message });
   }
 };
+
 
 /* 
 ==============================================
@@ -176,17 +257,62 @@ export const getAllBookings = async (req, res) => {
 */
 export const updateBookingStatus = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id);
+    const booking = await Booking.findById(req.params.id)
+      .populate("user")
+      .populate("reward"); // added
+
     if (!booking) return res.status(404).json({ error: "Booking not found" });
 
+    const prevStatus = booking.status;
     booking.status = req.body.status || booking.status;
     await booking.save();
+
+    // 🎁 REWARD FINALIZATION
+    if (booking.reward) {
+      const reward = await Reward.findById(booking.reward);
+
+      // ✅ Booking completed → reward USED
+      if (prevStatus !== "COMPLETED" && booking.status === "COMPLETED") {
+        reward.status = "USED";
+        reward.usedAt = new Date();
+        await reward.save();
+      }
+
+      // ❌ Booking cancelled → reward released
+      if (booking.status === "CANCELLED") {
+        reward.status = "AVAILABLE";
+        reward.booking = null;
+        reward.lockedAt = null;
+        reward.isSlotFull = false;
+        await reward.save();
+      }
+    }
+
+    // 🎯 Milestones + birthday rewards
+    if (prevStatus !== "COMPLETED" && booking.status === "COMPLETED") {
+      const user = booking.user;
+
+      user.totalRides = (user.totalRides || 0) + 1;
+      user.totalSpend = (user.totalSpend || 0) + booking.totalPrice;
+      await user.save();
+
+      await evaluateMilestones({
+        user,
+        totalRides: user.totalRides,
+        totalSpend: user.totalSpend,
+        isBirthday:
+          user.birthday &&
+          new Date(user.birthday).toDateString() ===
+            new Date().toDateString(),
+      });
+    }
 
     res.json(booking);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 /* 
 =============================

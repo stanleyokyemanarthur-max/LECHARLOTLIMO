@@ -57,173 +57,175 @@ function Index() {
   return (
     <>
       {/* HERO SECTION */}
-      <div className="hero w-full h-screen overflow-hidden pt-[env(safe-area-inset-top)] mt-24 md:mt-12 lg:mt-18 xl:mt-8">
+      <div className="hero w-full h-screen overflow-hidden pt-[env(safe-area-inset-top)] mt-24 md:mt-12 xl:mt-8">
         {loading && <Spinner />}
+
         <Swiper
           modules={[Autoplay, EffectFade]}
           slidesPerView={1}
           effect="fade"
-          loop={true}
-          autoplay={{ delay: 3500, disableOnInteraction: false }}
-          speed={1500}
+          loop
+          autoplay={{ delay: 4200, disableOnInteraction: false }}
+          speed={1800}
           className="hero-swiper w-full h-full"
         >
-          {/* Slide 1 */}
-          <SwiperSlide key="slide1">
+          {/* ================= SLIDE 1 ================= */}
+          <SwiperSlide>
             <motion.div
-              className="hero-slide hero-slide1 w-full h-full flex items-center px-[12%]"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ duration: 1 }}
+              className="hero-slide hero-slide1 w-full h-full flex items-center px-[10%]"
+              initial={{ opacity: 0, scale: 1.02 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1.6, ease: "easeOut" }}
             >
-              <div className="hero-content text-white lg:w-[60%]">
-                <span className="font-bricolage text-xs sm:text-sm lg:text-md uppercase tracking-widest bg-[#B8860B] px-2 py-1 rounded-sm">
-                  Comfort & Class
+              <div className="max-w-3xl text-white">
+                <span className="block mb-6 text-[11px] tracking-[0.4em] uppercase text-[#d4af37]">
+                  Comfort · Class · Precision
                 </span>
-                <h1 className="font-bricolage text-4xl sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-medium hero-title">
-                  Drive in Style, Arrive in Comfort
+
+                <h1 className="font-['Playfair_Display'] text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight font-semibold mb-6">
+                  Drive in Style.<br />Arrive Distinguished.
                 </h1>
-                <p className="my-2 text-lg lg:text-2xl font-bricolage hero-subtitle text-gray-300">
-                  Every mile with us is a promise of sophistication and peace of mind.
+
+                <p className="text-lg lg:text-xl text-gray-300 leading-relaxed max-w-xl mb-10">
+                  Chauffeur-driven luxury crafted for those who value discretion,
+                  comfort, and impeccable service.
                 </p>
-                <p className="my-5 xl:my-7 lg:w-[60%] hero-pere text-gray-300">
-                  Whether it’s airport pickup or a red-carpet event, our chauffeurs ensure your arrival<br />
-                  feels as premium as the destination.
-                </p>
-                <div className="hero-btns flex flex-wrap gap-4 mt-5 lg:mt-8">
-                  <button
-                    onClick={() => navigate("/reservation-form")}
-                    className="make-reservation-btn group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-[#B8860B] px-8 py-3 text-lg font-semibold transition-all duration-300 hover:scale-105"
-                  >
-                    <span className="relative z-10 font-bricolage tracking-wide uppercase">
-                      Make Reservation&nbsp; <i className="bi bi-arrow-up-right"></i>
-                    </span>
-                  </button>
-                </div>
+
+                <button
+                  onClick={() => navigate("/reservation-form")}
+                  className="group inline-flex items-center gap-3 rounded-full border border-[#d4af37] px-10 py-4 text-sm uppercase tracking-widest text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all duration-300"
+                >
+                  Make Reservation
+                  <i className="bi bi-arrow-up-right transition-transform duration-300 group-hover:translate-x-1"></i>
+                </button>
               </div>
             </motion.div>
           </SwiperSlide>
 
-          {/* Slide 2 */}
-          <SwiperSlide key="slide2">
+          {/* ================= SLIDE 2 ================= */}
+          <SwiperSlide>
             <motion.div
-              className="hero-slide hero-slide2 w-full h-full flex items-center px-[12%]"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ duration: 1 }}
+              className="hero-slide hero-slide2 w-full h-full flex items-center px-[10%]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.6, ease: "easeOut" }}
             >
-              <div className="hero-content text-white lg:w-[60%]">
-                <span className="font-bricolage text-xs sm:text-sm lg:text-md uppercase tracking-widest bg-[#B8860B] px-2 py-1 rounded-sm">
-                  Exclusive Luxury
+              <div className="max-w-3xl text-white">
+                <span className="block mb-6 text-[11px] tracking-[0.4em] uppercase text-[#d4af37]">
+                  Executive Experience
                 </span>
-                <h1 className="font-bricolage text-4xl sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-medium hero-title">
-                  Experience a seamless journey defined by comfort, sophistication, and personalized care.
+
+                <h1 className="font-['Playfair_Display'] text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight font-semibold mb-6">
+                  A Seamless Journey,<br />Defined by Excellence.
                 </h1>
-                <p className="my-2 text-lg lg:text-2xl font-bricolage hero-subtitle text-gray-300">
-                  Experience the perfect fusion of elegance and performance on every ride.
+
+                <p className="text-lg lg:text-xl text-gray-300 leading-relaxed max-w-xl mb-10">
+                  From airport transfers to corporate engagements, every detail is
+                  curated to exceed expectations.
                 </p>
-                <p className="my-5 xl:my-7 lg:w-[60%] hero-pere text-gray-300">
-                  From business trips to special occasions, our premium cars redefine your journey<br />
-                  with unmatched class and comfort.
-                </p>
-                <div className="hero-btns flex flex-wrap gap-4 mt-5 lg:mt-8">
-                  <button
-                    onClick={() => navigate("/reservation-form")}
-                    className="make-reservation-btn group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-[#B8860B] px-8 py-3 text-lg font-semibold transition-all duration-300 hover:scale-105"
-                  >
-                    <span className="relative z-10 font-bricolage tracking-wide uppercase">
-                      Make Reservation&nbsp; <i className="bi bi-arrow-up-right"></i>
-                    </span>
-                  </button>
-                </div>
+
+                <button
+                  onClick={() => navigate("/reservation-form")}
+                  className="group inline-flex items-center gap-3 rounded-full border border-[#d4af37] px-10 py-4 text-sm uppercase tracking-widest text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all duration-300"
+                >
+                  Reserve Your Ride
+                  <i className="bi bi-arrow-up-right transition-transform duration-300 group-hover:translate-x-1"></i>
+                </button>
               </div>
             </motion.div>
           </SwiperSlide>
 
-          {/* Slide 3 */}
-          <SwiperSlide key="slide3">
+          {/* ================= SLIDE 3 ================= */}
+          <SwiperSlide>
             <motion.div
-              className="hero-slide hero-slide3 w-full h-full flex items-center px-[12%]"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ duration: 1 }}
+              className="hero-slide hero-slide3 w-full h-full flex items-center px-[10%]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.6, ease: "easeOut" }}
             >
-              <div className="hero-content text-white lg:w-[60%]">
-                <span className="font-bricolage text-xs sm:text-sm lg:text-md uppercase tracking-widest bg-[#B8860B] px-2 py-1 rounded-sm">
-                  Elite Service
+              <div className="max-w-3xl text-white">
+                <span className="block mb-6 text-[11px] tracking-[0.4em] uppercase text-[#d4af37]">
+                  Elite Fleet
                 </span>
-                <h1 className="font-bricolage text-4xl sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-medium hero-title">
-                  Luxury Rides for Every Occasion
+
+                <h1 className="font-['Playfair_Display'] text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight font-semibold mb-6">
+                  An Exceptional Fleet<br />For Every Occasion.
                 </h1>
-                <p className="my-2 text-lg lg:text-2xl font-bricolage hero-subtitle text-gray-300">
-                  Choose from our collection of premium, chauffeur-driven vehicles.
+
+                <p className="text-lg lg:text-xl text-gray-300 leading-relaxed max-w-xl mb-10">
+                  Yukon, Escalade, Suburban, and Sprinter —
+                  impeccably maintained and chauffeur-driven.
                 </p>
-                <p className="my-5 xl:my-7 lg:w-[60%] hero-pere text-gray-300">
-                  Le Charlot Limousine delivers elegance, comfort, and reliability.<br />
-                  Enjoy a seamless travel experience designed to match your style and needs.
-                </p>
-                <div className="hero-btns flex flex-wrap gap-4 mt-5 lg:mt-8">
-                  <button
-                    onClick={() => navigate("/reservation-form")}
-                    className="make-reservation-btn group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-[#B8860B] px-8 py-3 text-lg font-semibold transition-all duration-300 hover:scale-105"
-                  >
-                    <span className="relative z-10 font-bricolage tracking-wide uppercase">
-                      Make Reservation&nbsp; <i className="bi bi-arrow-up-right"></i>
-                    </span>
-                  </button>
-                </div>
+
+                <button
+                  onClick={() => navigate("/reservation-form")}
+                  className="group inline-flex items-center gap-3 rounded-full border border-[#d4af37] px-10 py-4 text-sm uppercase tracking-widest text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all duration-300"
+                >
+                  View Availability
+                  <i className="bi bi-arrow-up-right transition-transform duration-300 group-hover:translate-x-1"></i>
+                </button>
               </div>
             </motion.div>
           </SwiperSlide>
         </Swiper>
       </div>
 
+
       <div>
         <EliteMembership />
       </div>
 
       {/* ABOUT SECTION  */}
-      <div className="about text-white lg:px-[10%] px-[8%] py-[50px] lg:py-[90px]">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-          <div className="relative w-auto sm:h-[450px] lg:h-[600px]">
-            <img
-              src="/images/airport.jpeg"   // ✅ Replace with your actual image
-              alt="About us"
-              className="rounded-3xl w-full h-full object-contain md:object-cover"
-            />
+      <div className="about bg-[#0c0c0c] text-white lg:px-[10%] px-[8%] py-[70px] lg:py-[110px]">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
 
+          {/* IMAGE */}
+          <div className="relative h-[420px] sm:h-[500px] lg:h-[620px] rounded-3xl overflow-hidden">
+            <img
+              src="/images/airport.jpeg"
+              alt="Le Charlot Limousine Experience"
+              className="w-full h-full object-cover scale-[1.03]"
+            />
+            {/* soft overlay */}
+            <div className="absolute inset-0 bg-black/20"></div>
           </div>
+
+          {/* CONTENT */}
           <div>
-            <p className="uppercase text-xs md:text-sm tracking-widest text-[#B8860B] mb-2">
-              LE CHARLOT LIMOUSINE
+            <p className="uppercase text-[11px] tracking-[0.35em] text-[#d4af37] mb-5">
+              Le Charlot Limousine
             </p>
-            <h2 className="text-3xl md:text-5xl font-bold mb-3 font-bricolage">
-              Luxury is more than a vehicle it’s the way you’re treated.
+
+            <h2 className="font-['Playfair_Display'] text-3xl md:text-5xl leading-tight font-semibold mb-6">
+              Where Every Journey<br />
+              Is Treated First-Class.
             </h2>
-            <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
-              At Le Charlot Limousine, our mission is to deliver more than transportation —
-              we craft unforgettable journeys defined by elegance, comfort, and personalized care.
+
+            <p className="text-white/65 leading-relaxed mb-6 text-sm lg:text-base max-w-xl">
+              At Le Charlot Limousine, we deliver more than transportation —
+              we curate refined travel experiences defined by elegance,
+              comfort, and impeccable attention to detail.
             </p>
-            <p className="text-gray-400 leading-relaxed my-6 text-sm lg:text-base">
-              Led by Pierre Charlot, our team of professional chauffeurs combines top-tier
-              service with warmth and discretion, ensuring every ride feels like first class.
+
+            <p className="text-white/65 leading-relaxed mb-10 text-sm lg:text-base max-w-xl">
+              Led by Pierre Charlot, our professional chauffeurs combine discretion,
+              warmth, and punctuality to ensure every ride feels effortless and distinguished.
             </p>
-            <div className="space-y-4 mb-10">
+
+            {/* VALUES */}
+            <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-[#B8860B]">
-                  <i className="ri-check-double-line"></i>
-                </div>
-                <span className="text-white">Service with a Smile</span>
+                <i className="ri-check-double-line text-[#d4af37]"></i>
+                <span className="text-sm tracking-wide text-white">
+                  Service Delivered with Grace
+                </span>
               </div>
+
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#222] flex
-                   items-center justify-center text-[#B8860B]">
-                  <i className="ri-check-double-line"></i>
-                </div>
-                <span className="text-white">On-Time Guarantee</span>
+                <i className="ri-check-double-line text-[#d4af37]"></i>
+                <span className="text-sm tracking-wide text-white">
+                  Precision & On-Time Commitment
+                </span>
               </div>
             </div>
           </div>
@@ -232,33 +234,40 @@ function Index() {
       </div>
 
       {/* ================= Banner Section ================= */}
-      <div className="banner-section lg:px-[12%] px-[8%] py-[60px] lg:py-[100px] text-center text-white">
-        <p className="uppercase text-sm tracking-[5px] text-[#B8860B] mb-2">
-          Reserve Now
+      <div className="banner-section bg-[#0c0c0c] lg:px-[12%] px-[8%] py-[80px] lg:py-[120px] text-center text-white">
+
+        <p className="uppercase text-[11px] tracking-[0.4em] text-[#d4af37] mb-6">
+          Reservations
         </p>
 
-        <h2 className="text-4xl md:text-5xl text-[#B8860B] font-bold mb-4 font-bricolage">
-          We Offer Flexible & Quick Booking Methods
+        <h2 className="font-['Playfair_Display'] text-3xl md:text-5xl leading-tight font-semibold mb-6">
+          Reserve Your Chauffeur Experience
         </h2>
 
-        <p className="text-gray-300 max-w-2xl mx-auto text-base md:text-lg leading-relaxed mb-6">
-          We value the time and quality of travel for each of our clients. Explore our luxury cars
-          and book a ride for the ultimate experience.
+        <p className="text-white/65 max-w-2xl mx-auto text-base md:text-lg leading-relaxed mb-10">
+          Whether booking in advance or arranging last-minute travel,
+          our reservation process is designed to be seamless, discreet,
+          and tailored to your needs.
         </p>
 
-        <div className="mt-6">
-          <p className="text-lg md:text-xl font-semibold text-[#B8860B] mb-2">
-            For Instant Booking: <span className="text-white">(404) 900-9088</span>
-          </p>
-          <p className="text-gray-300 mb-6">
-            For complete reservation please click below
+        <div className="space-y-6">
+          <p className="text-sm tracking-wide text-white/60">
+            Immediate Assistance
           </p>
 
-          <button onClick={() => navigate("/reservation-form")} className="bg-[#B8860B] text-black font-semibold py-3 px-8 rounded-full transition duration-300">
-            Reservation
+          <p className="text-xl md:text-2xl font-medium text-white">
+            (404) 405-3738
+          </p>
+
+          <button
+            onClick={() => navigate("/reservation-form")}
+            className="mt-4 inline-flex items-center justify-center gap-3 rounded-full border border-[#d4af37] px-10 py-4 text-xs tracking-widest uppercase text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all duration-300"
+          >
+            Begin Reservation
           </button>
         </div>
       </div>
+
 
 
       {/* ================= Safety & Features Section ================= */}

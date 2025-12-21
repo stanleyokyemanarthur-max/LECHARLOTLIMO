@@ -5,141 +5,105 @@ import { Phone, Mail, Edit, CalendarCheck } from "lucide-react";
 function Footer() {
   return (
     <>
-      <footer className="text-white lg:px-[12%] px-[8%] pt-16 flex justify-center items-center bg-[#111]">
-        <div className="border-b border-[#222] pb-8 w-full text-white px-4 md:px-8">
-          <div className="flex flex-col md:flex-row space-x-10 space-y-10 md:space-y-0">
+     <footer className="bg-[#0c0c0c] text-white px-[8%] lg:px-[12%] pt-24">
+  <div className="max-w-7xl mx-auto">
 
-            {/* Logo + About */}
-            <div className="flex-1">
-                {/* Logo */}
-        <div className="relative h-12 w-40 overflow-visible">
+    {/* Top section */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-14 pb-16 border-b border-white/10">
+
+      {/* BRAND */}
+      <div>
+        <div className="relative h-14 w-44 mb-6">
           <img
             src="/images/favicon.png"
             alt="Le Charlot Logo"
-            className="absolute -top-16 left-0 w-40 h-auto object-contain cursor-pointer"
+            className="absolute -top-10 left-0 w-44 h-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}
           />
         </div>
-              <p className="text-[#999] mt-2 md:w-[90%] w-full">
-               Book a luxury ride with ease. Experience comfort, class, and premium service for your events, airport transfers, and special occasions.
-              </p>
 
-              {/* Social Icons */}
-              <div className="flex gap-4 mt-4">
-                <a
-                  href="#"
-                  className="border border-[#B8860B] text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#d8c305c5] hover:text-black transition-colors"
-                >
-                  <i className="ri-instagram-line"></i>
-                </a>
-                <a
-                  href="#"
-                  className="border border-[#B8860B] text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#d8c305c5] hover:text-black transition-colors"
-                >
-                  <i className="ri-twitter-x-fill"></i>
-                </a>
-                <a
-                  href="#"
-                  className="border border-[#B8860B] text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#d8c305c5] hover:text-black transition-colors"
-                >
-                  <i className="ri-facebook-fill"></i>
-                </a>
-              </div>
-            </div>
+        <p className="text-sm leading-relaxed text-white/60 max-w-sm">
+          Chauffeur-driven luxury designed for discerning clients.
+          Airport transfers, executive travel, and special occasions —
+          delivered with precision and discretion.
+        </p>
 
-            {/* Extra columns (links, contact, etc.) */}
-            {/* You can add more <div className="flex-1"> sections here for navigation or contact info */}
-            <div className="flex-1">
-              <h4 className="text-2xl font-semibold mb-4">
-                Quick Links
-              </h4>
-              <ul className="space-y-2 text-[#999] footer-menu relative">
-                <li>
-                  <Link
-                    to="/about"
-                    className="hover:text-[#B8860B] relative transition duration-300 font-bricolage"
-                  >
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/services"
-                    className="hover:text-[#B8860B] elative transition duration-300 font-bricolage"
-                  >
-                    Services
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/contact"
-                    className="hover:text-[#B8860B] relative transition duration-300 font-bricolage"
-                  >
-                    Contact
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/fleet"
-                    className="hover:text-[#B8860B] relative transition duration-300 font-bricolage"
-                  >
-                    Fleet
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="flex-1">
-              <div className="flex-1">
-                <h4 className="text-2xl font-semibold mb-4 text-[#B8860B]">
-                  Contact Us
-                </h4>
-                <div className="flex flex-col gap-3">
-                  <a
-                    href="tel:+1234567890"
-                    className="flex items-center gap-3 text-gray-300 px-4 py-2 rounded-lg"
-                  >
-                    <Phone size={20} className="text-[#B8860B]" />
-                    (404) 900-9088
-                  </a>
+        {/* Social */}
+        <div className="flex gap-4 mt-8">
+          {["instagram-line", "twitter-x-fill", "facebook-fill"].map((icon, i) => (
+            <a
+              key={i}
+              href="#"
+              className="w-10 h-10 flex items-center justify-center rounded-full border border-white/20 text-white/70 hover:border-[#d4af37] hover:text-[#d4af37] transition-all duration-300"
+            >
+              <i className={`ri-${icon}`}></i>
+            </a>
+          ))}
+        </div>
+      </div>
 
-                  <a
-                    href="mailto:contact@lecharlot.com"
-                    className="flex items-center gap-3 text-gray-300 px-4 py-2 rounded-lg"
-                  >
-                    <Mail size={20} className="text-[#B8860B]" />
-                    info@LeCharlotLimousine.com
-                  </a>
+      {/* CONTACT */}
+      <div>
+        <h4 className="text-sm tracking-[0.3em] uppercase text-[#d4af37] mb-8">
+          Contact
+        </h4>
 
-                  <a
-                    href="/contact"
-                    className="flex items-center gap-3 text-gray-300 px-4 py-2 rounded-lg "
-                  >
-                    <Edit size={20} className="text-[#B8860B]" />
-                    Contact Form
-                  </a>
+        <div className="space-y-4 text-sm text-white/70">
+          <a href="tel:+14049009088" className="flex items-center gap-3 hover:text-white transition">
+            <Phone size={18} className="text-[#d4af37]" />
+            (404) 405-3738
+          </a>
 
-                  <Link
-                    to="/reservation-form"
-                    className="mt-4 inline-flex items-center justify-center gap-2 bg-[#B8860B] text-black font-semibold px-6 py-3  hover:bg-[#d4a019] transition-all"
-                  >
-                    <CalendarCheck size={20} />
-                    Schedule a Ride
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="text-[#999] text-center text-base relative py-6">
-            <p className="font-bricolage">
-              © 2025. All Rights Reserved.{" "}
-              <a href="#" className="text-white font-bricolage">
-                Le Charlot<span className="text-[#B8860B]">Limousine</span>
-              </a>
-            </p>
-          </div>
+          <a href="mailto:info@LeCharlotLimousine.com" className="flex items-center gap-3 hover:text-white transition">
+            <Mail size={18} className="text-[#d4af37]" />
+            info@LeCharlotLimousine.com
+          </a>
+
+          <Link to="/contact" className="flex items-center gap-3 hover:text-white transition">
+            <Edit size={18} className="text-[#d4af37]" />
+            Contact Form
+          </Link>
         </div>
 
-      </footer>
+        <Link
+          to="/reservation-form"
+          className="inline-flex items-center gap-3 mt-8 px-8 py-4 rounded-full border border-[#d4af37] text-[#d4af37] text-xs tracking-widest uppercase hover:bg-[#d4af37] hover:text-black transition-all duration-300"
+        >
+          <CalendarCheck size={18} />
+          Schedule a Ride
+        </Link>
+      </div>
+
+      {/* LINKS */}
+      <div>
+        <h4 className="text-sm tracking-[0.3em] uppercase text-[#d4af37] mb-8">
+          Quick Links
+        </h4>
+
+        <ul className="space-y-3 text-sm text-white/60">
+          {["About", "Services", "Fleet", "Contact"].map((item) => (
+            <li key={item}>
+              <Link
+                to={`/${item.toLowerCase()}`}
+                className="hover:text-[#d4af37] transition"
+              >
+                {item}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+    </div>
+
+    {/* Bottom */}
+    <div className="py-8 text-center text-xs text-white/40 tracking-wide">
+      © 2025 Le Charlot <span className="text-[#d4af37]">Limousine</span>. All rights reserved.
+    </div>
+
+  </div>
+</footer>
+
     </>
 
   )

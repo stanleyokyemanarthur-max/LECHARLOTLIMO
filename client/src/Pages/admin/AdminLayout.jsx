@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard,Radio, Users, Car, LogOut, ArrowLeftCircle } from "lucide-react";
+import { LayoutDashboard, Radio, Users, Car, LogOut, ArrowLeftCircle ,Gift as GiftIcon} from "lucide-react";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ export default function AdminLayout() {
         <nav className="flex flex-col space-y-6">
           <button
             onClick={() => navigate("/admin/dashboard")}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition font-semibold ${isActive("/admin/dashboard") ? "bg-[#B8860B]/30" : "hover:bg-[#d8c305c5]/20"
+            className={`flex items-center gap-3 px-3 py-5 rounded-lg transition font-semibold ${isActive("/admin/dashboard") ? "bg-[#B8860B]/30" : "hover:bg-[#d8c305c5]/20"
               }`}
           >
             <LayoutDashboard className="w-5 h-5 text-[#B8860B]" />
@@ -31,7 +31,7 @@ export default function AdminLayout() {
 
           <button
             onClick={() => navigate("/admin/bookings")}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition font-semibold ${isActive("/admin/bookings") ? "bg-[#d8c305c5]/30" : "hover:bg-[#d8c305c5]/20"
+            className={`flex items-center gap-3 px-3 py-5 rounded-lg transition font-semibold ${isActive("/admin/bookings") ? "bg-[#d8c305c5]/30" : "hover:bg-[#d8c305c5]/20"
               }`}
           >
             <Car className="w-5 h-5 text-[#B8860B]" />
@@ -40,7 +40,7 @@ export default function AdminLayout() {
 
           <button
             onClick={() => navigate("/admin/users")}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition font-semibold ${isActive("/admin/users") ? "bg-[#d8c305c5]/30" : "hover:bg-[#d8c305c5]/20"
+            className={`flex items-center gap-3 px-3 py-5 rounded-lg transition font-semibold ${isActive("/admin/users") ? "bg-[#d8c305c5]/30" : "hover:bg-[#d8c305c5]/20"
               }`}
           >
             <Users className="w-5 h-5 text-[#B8860B]" />
@@ -48,7 +48,7 @@ export default function AdminLayout() {
           </button>
           <button
             onClick={() => navigate("/admin/cars")}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition font-semibold ${isActive("/admin/cars") ? "bg-[#d8c305c5]/30" : "hover:bg-[#d8c305c5]/20"
+            className={`flex items-center gap-3 px-3 py-5 rounded-lg transition font-semibold ${isActive("/admin/cars") ? "bg-[#d8c305c5]/30" : "hover:bg-[#d8c305c5]/20"
               }`}
           >
             <Car className="w-5 h-5 text-[#B8860B]" />
@@ -56,20 +56,31 @@ export default function AdminLayout() {
           </button>
           <button
             onClick={() => navigate("/admin/broadcast")}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition font-semibold ${isActive("/admin/broadcast")
-                ? "bg-[#d8c305c5]/30"
-                : "hover:bg-[#d8c305c5]/20"
+            className={`flex items-center gap-3 px-3 py-5 rounded-lg transition font-semibold ${isActive("/admin/broadcast")
+              ? "bg-[#d8c305c5]/30"
+              : "hover:bg-[#d8c305c5]/20"
               }`}
           >
             <Radio className="w-5 h-5 text-[#B8860B]" />
             <span>Broadcast</span>
           </button>
+          <button
+            onClick={() => navigate("/admin/rewards")}
+            className={`flex items-center gap-3 px-3 py-5 rounded-lg transition font-semibold ${isActive("/admin/rewards")
+                ? "bg-[#d8c305c5]/30"
+                : "hover:bg-[#d8c305c5]/20"
+              }`}
+          >
+            <GiftIcon className="w-5 h-5 text-[#B8860B]" />
+            <span>Rewards</span>
+          </button>
+
 
 
 
           <button
             onClick={() => navigate("/")}
-            className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#d8c305c5]/20 transition font-semibold mt-4"
+            className="flex items-center gap-3 px-3 py-5 rounded-lg hover:bg-[#d8c305c5]/20 transition font-semibold mt-4"
           >
             <ArrowLeftCircle className="w-5 h-5 text-[#B8860B]" />
             <span>Back to Site</span>

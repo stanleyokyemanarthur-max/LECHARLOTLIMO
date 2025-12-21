@@ -1,10 +1,11 @@
-// routes/paymentWebhook.js
 import express from "express";
 import Stripe from "stripe";
 import Booking from "../models/Booking.js";
+import Reward from "../models/Reward.js";
 import dotenv from "dotenv";
 
 dotenv.config();
+
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -19,23 +20,43 @@ router.post("/", async (req, res) => {
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    console.error("Webhook signature verification failed:", err.message);
+    console.error("❌ Webhook signature verification failed:", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // Handle successful checkout
+  /* ===============================
+     ✅ PAYMENT SUCCESS
+  =============================== */
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
     const bookingId = session.metadata.bookingId;
 
     try {
-      await Booking.findByIdAndUpdate(bookingId, {
-        paymentStatus: "paid",
-        status: "confirmed",
-      });
-      console.log(`✅ Booking ${bookingId} marked as paid`);
+      const booking = await Booking.findById(bookingId).populate("reward");
+
+      if (!booking) {
+        console.error("❌ Booking not found:", bookingId);
+        return res.json({ received: true });
+      }
+
+      // Confirm booking
+      booking.paymentStatus = "paid";
+      booking.status = "confirmed";
+      await booking.save();
+
+      // 🎁 FINALIZE REWARD
+      if (booking.reward) {
+        await Reward.findByIdAndUpdate(booking.reward._id, {
+          status: "USED",
+          lockedAt: null,
+          booking: booking._id,
+          isSlotFull: false,
+        });
+      }
+
+      console.log(`✅ Booking ${bookingId} confirmed`);
     } catch (err) {
-      console.error("❌ Error updating booking:", err.message);
+      console.error("❌ Webhook processing error:", err.message);
     }
   }
 

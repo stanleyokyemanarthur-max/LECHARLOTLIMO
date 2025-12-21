@@ -40,6 +40,7 @@ import VerifyTOTPLogin from "./Pages/VerifyTOTPLogin.jsx"
 import ResetTOTP from "./Pages/ResetTOTP.jsx";
 import LostAuthenticator from "./Pages/LostAuthenticator.jsx";
 import AdminBroadcast from "./Pages/admin/AdminBroadcast.jsx";
+import AdminRewardsPage from "./Pages/admin/adminRewardsPage.jsx";
 
 
 
@@ -48,14 +49,14 @@ function App() {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const userInfo = useSelector((state) => state.auth.userInfo);
-  const status = useSelector((s)=>s.auth.status)
+  const status = useSelector((s) => s.auth.status)
 
 
   useEffect(() => {
     if (token && !userInfo) {
       dispatch(fetchUserFromToken(token));
     }
-  }, [token,userInfo, dispatch]);
+  }, [token, userInfo, dispatch]);
 
   return (
     <Router>
@@ -83,6 +84,8 @@ function App() {
         <Route path="/verify-totp-login" element={<VerifyTOTPLogin />} />
         <Route path="/lost-authenticator" element={<LostAuthenticator />} />
         <Route path="/reset-totp/:token" element={<ResetTOTP />} />
+        
+
 
 
 
@@ -120,10 +123,11 @@ function App() {
           <Route path="users" element={<ProtectedRoute allowedRoles={["admin"]}><AdminUsers /></ProtectedRoute>} />
           <Route path="cars" element={<ProtectedRoute allowedRoles={["admin"]}><AdminCars /></ProtectedRoute>} />
           <Route path="broadcast" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBroadcast /></ProtectedRoute>} />
-        </Route>
+          <Route path="rewards" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminRewardsPage /></ProtectedRoute>}/>
+        </Route>  
       </Routes>
       <Footer />
-    </Router>
+    </Router >
   );
 }
 

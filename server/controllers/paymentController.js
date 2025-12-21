@@ -1,6 +1,7 @@
 // controllers/paymentController.js
 import Stripe from "stripe";
 import Booking from "../models/Booking.js";
+import Reward from "../models/Reward.js";
 
 // Load dotenv only if running locally
 if (process.env.NODE_ENV !== "production") {
@@ -62,20 +63,38 @@ export const createCheckoutSession = async (req, res) => {
 export const handleCancelledPayment = async (req, res) => {
   try {
     const { session_id } = req.query;
-
-    if (!session_id) return res.status(400).json({ message: "Missing session ID" });
-
-    const booking = await Booking.findOne({ stripeSessionId: session_id });
-    if (!booking) return res.status(404).json({ message: "Booking not found" });
-
-    // Prevent overwriting confirmed bookings
-    if (booking.status !== "confirmed") {
-      booking.status = "cancelled";
-      booking.paymentStatus = "cancelled";
-      await booking.save();
+    if (!session_id) {
+      return res.status(400).json({ message: "Missing session ID" });
     }
 
-    res.status(200).json({ message: "Booking marked as cancelled", booking });
+    const booking = await Booking.findOne({ stripeSessionId: session_id });
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Do nothing if already confirmed by webhook
+    if (booking.status === "confirmed") {
+      return res.status(200).json({ message: "Booking already confirmed" });
+    }
+
+    booking.status = "cancelled";
+    booking.paymentStatus = "cancelled";
+    await booking.save();
+
+    // 🔓 UNLOCK reward if it exists
+    if (booking.reward) {
+      await Reward.findByIdAndUpdate(booking.reward, {
+        status: "AVAILABLE",
+        lockedAt: null,
+        booking: null,
+        isSlotFull: false,
+      });
+    }
+
+    res.status(200).json({
+      message: "Booking cancelled and reward released",
+      booking,
+    });
   } catch (error) {
     console.error("❌ Cancel payment error:", error);
     res.status(500).json({ message: "Server error cancelling booking" });
@@ -88,23 +107,25 @@ export const handleCancelledPayment = async (req, res) => {
 export const verifyPaymentStatus = async (req, res) => {
   try {
     const { session_id } = req.query;
-    if (!session_id) return res.status(400).json({ message: "Missing session ID" });
+    if (!session_id) {
+      return res.status(400).json({ message: "Missing session ID" });
+    }
 
     const session = await stripe.checkout.sessions.retrieve(session_id);
     const booking = await Booking.findOne({ stripeSessionId: session_id });
 
-    if (!booking) return res.status(404).json({ message: "Booking not found" });
-
-    if (session.payment_status === "paid") {
-      booking.status = "confirmed";
-      booking.paymentStatus = "paid";
-      await booking.save();
-      return res.status(200).json({ success: true, booking });
-    } else {
-      return res.status(200).json({ success: false, booking });
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
     }
+
+    return res.status(200).json({
+      paid: session.payment_status === "paid",
+      bookingStatus: booking.status,
+      paymentStatus: booking.paymentStatus,
+    });
   } catch (error) {
     console.error("❌ Verify payment error:", error);
     res.status(500).json({ message: "Server error verifying payment" });
   }
 };
+

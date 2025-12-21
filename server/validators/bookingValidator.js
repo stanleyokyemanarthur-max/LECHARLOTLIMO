@@ -33,4 +33,8 @@ export const bookingValidationRules = [
       }
       return true;
     }),
+    body("rewardId")
+    .optional()
+    .isMongoId()
+    .withMessage("Invalid reward ID"),
 ];

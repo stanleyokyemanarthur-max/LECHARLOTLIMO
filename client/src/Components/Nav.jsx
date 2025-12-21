@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../slices/authSlice";
+import RewardsIcon from "./RewardsIcon";
+import { fetchRewards } from "../slices/rewardsSlice";
+
 
 function Nav() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -41,6 +44,13 @@ function Nav() {
   };
 
   const menuItems = ["Home", "About", "Fleet", "Services", "Contact"];
+
+useEffect(() => {
+  if (userInfo && userRole !== "admin") {
+    dispatch(fetchRewards());
+  }
+}, [dispatch, userInfo, userRole]);
+
 
   return (
     <nav
@@ -121,6 +131,8 @@ function Nav() {
             </li>
           ) : (
             <li className="relative flex items-center gap-3 mb-4 lg:mb-0" ref={dropdownRef}>
+              {userRole !== "admin" && <RewardsIcon />}
+
               {/* Dropdown trigger */}
               <span
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}

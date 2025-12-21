@@ -7,9 +7,8 @@ import {
   Radio,
   Music,
   GlassWater,
-  Sparkles, // ✅ Replaces Mirror
-} from "lucide-react"; // Lucide icon set
-
+  Sparkles,
+} from "lucide-react";
 
 const fleetData = [
   {
@@ -19,10 +18,10 @@ const fleetData = [
     subtitle: "1-4 PASSENGER",
     image: "/images/-Cadillac.png",
     specs: [
-      { icon: <Users className="w-4 h-4 text-[#B8860B]" />, text: "1-4 passengers" },
-      { icon: <Briefcase className="w-4 h-4 text-[#B8860B]" />, text: "2-3 medium sized bags" },
-      { icon: <Armchair className="w-4 h-4 text-[#B8860B]" />, text: "Plush leather seating" },
-      { icon: <Sparkles className="w-4 h-4 text-[#B8860B]" />, text: "Dual Illuminating Vanity Mirrors" },
+      { icon: <Users className="w-5 h-5 text-[#B8860B]" />, text: "1-4 passengers" },
+      { icon: <Briefcase className="w-5 h-5 text-[#B8860B]" />, text: "2-3 medium bags" },
+      { icon: <Armchair className="w-5 h-5 text-[#B8860B]" />, text: "Plush leather seating" },
+      { icon: <Sparkles className="w-5 h-5 text-[#B8860B]" />, text: "Illuminating vanity mirrors" },
     ],
   },
   {
@@ -32,23 +31,23 @@ const fleetData = [
     subtitle: "SUV 6-7 PASSENGER",
     image: "/images/Chvy.png",
     specs: [
-      { icon: <Users className="w-4 h-4 text-[#B8860B]" />, text: "6-7 passengers" },
-      { icon: <Briefcase className="w-4 h-4 text-[#B8860B]" />, text: "Luggage 8-10 Small or 7-8 Large" },
-      { icon: <Armchair className="w-4 h-4 text-[#B8860B]" />, text: "Plush leather seating" },
-      { icon: <GlassWater className="w-4 h-4 text-[#B8860B]" />, text: "Rear Armrest and Drink Holders" },
+      { icon: <Users className="w-5 h-5 text-[#B8860B]" />, text: "6-7 passengers" },
+      { icon: <Briefcase className="w-5 h-5 text-[#B8860B]" />, text: "Luggage 8-10 small or 7-8 large" },
+      { icon: <Armchair className="w-5 h-5 text-[#B8860B]" />, text: "Plush leather seating" },
+      { icon: <GlassWater className="w-5 h-5 text-[#B8860B]" />, text: "Rear armrest & drink holders" },
     ],
   },
   {
     id: 3,
     slug: "sprinter-van",
     title: "Sprinter Van",
-    subtitle: "SPRINTER VAN (11 OR 14 PASSENGER)",
+    subtitle: "11-14 PASSENGER",
     image: "/images/van.png",
     specs: [
-      { icon: <Users className="w-4 h-4 text-[#B8860B]" />, text: "11-14 passengers" },
-      { icon: <Briefcase className="w-4 h-4 text-[#B8860B]" />, text: "Luggage 10-12 Large or 12-14 Small" },
-      { icon: <Armchair className="w-4 h-4 text-[#B8860B]" />, text: "Forward Facing Seating" },
-      { icon: <Radio className="w-4 h-4 text-[#B8860B]" />, text: "AM/FM Radio" },
+      { icon: <Users className="w-5 h-5 text-[#B8860B]" />, text: "11-14 passengers" },
+      { icon: <Briefcase className="w-5 h-5 text-[#B8860B]" />, text: "Luggage 10-12 large or 12-14 small" },
+      { icon: <Armchair className="w-5 h-5 text-[#B8860B]" />, text: "Forward-facing seating" },
+      { icon: <Radio className="w-5 h-5 text-[#B8860B]" />, text: "AM/FM Radio" },
     ],
   },
   {
@@ -58,40 +57,26 @@ const fleetData = [
     subtitle: "STRETCH LIMO – 6 PASSENGER",
     image: "/images/Gmcc.png",
     specs: [
-      { icon: <Users className="w-4 h-4 text-[#B8860B]" />, text: "6 passengers" },
-      { icon: <Briefcase className="w-4 h-4 text-[#B8860B]" />, text: "Luggage 3-4 Large or 4-5 Small" },
-      { icon: <Armchair className="w-4 h-4 text-[#B8860B]" />, text: "Plush leather seating" },
-      { icon: <Music className="w-4 h-4 text-[#B8860B]" />, text: "AM/FM Stereo & CD Player" },
+      { icon: <Users className="w-5 h-5 text-[#B8860B]" />, text: "6 passengers" },
+      { icon: <Briefcase className="w-5 h-5 text-[#B8860B]" />, text: "Luggage 3-4 large or 4-5 small" },
+      { icon: <Armchair className="w-5 h-5 text-[#B8860B]" />, text: "Plush leather seating" },
+      { icon: <Music className="w-5 h-5 text-[#B8860B]" />, text: "AM/FM Stereo & CD Player" },
     ],
   },
-  // {
-  //   id: 5,
-  //   slug: "stretch-limo-10",
-  //   title: "Stretch Limo 10",
-  //   subtitle: "STRETCH LIMO – 10 PASSENGER",
-  //   image: "/images/suburban.png",
-  //   specs: [
-  //     { icon: <Users className="w-4 h-4 text-[#B8860B]" />, text: "10-14 passengers" },
-  //     { icon: <Briefcase className="w-4 h-4 text-[#B8860B]" />, text: "Luggage 3-4 Large or 4-5 Small" },
-  //     { icon: <Armchair className="w-4 h-4 text-[#B8860B]" />, text: "Plush leather seating" },
-  //     { icon: <Music className="w-4 h-4 text-[#B8860B]" />, text: "AM/FM Stereo & CD Player" },
-  //   ],
-  // },
 ];
-
 
 function FleetPage() {
   const navigate = useNavigate();
 
   return (
-    <section className="bg-gray-50 min-h-screen  py-28 px-6 md:px-12">
+    <section className="bg-[#0a0a0a] mt-12 min-h-screen py-28 px-6 md:px-12 text-white">
       {/* Title */}
-      <div className="text-center mt-16">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+      <div className="text-center mb-16">
+        <h1 className="text-4xl md:text-5xl font-bricolage font-bold mb-3 text-[#B8860B]">
           Our Luxurious Fleet
         </h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Explore our premium fleet featuring the Chevrolet Suburban, Cadillac Escalade, and Mercedes-Benz Sprinter Van. Each vehicle is designed to deliver exceptional comfort, luxury, and reliability for every journey.
+        <p className="text-gray-300 max-w-2xl mx-auto">
+          Explore our premium fleet, crafted to deliver unmatched comfort, elegance, and reliability.
         </p>
       </div>
 
@@ -100,23 +85,25 @@ function FleetPage() {
         {fleetData.map((car) => (
           <div
             key={car.id}
-            className="bg-white rounded-2xl shadow-md hover:shadow-xl transition flex flex-col overflow-hidden"
+            className="relative bg-gradient-to-tr from-[#111] to-[#1a1a1a] rounded-3xl shadow-2xl overflow-hidden group hover:scale-105 transition-transform duration-500"
           >
-            <img
-              src={car.image}
-              alt={car.title}
-              className="w-full h-60 object-cover"
-            />
+            <div className="relative h-72 overflow-hidden">
+              <img
+                src={car.image}
+                alt={car.title}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+            </div>
+
             <div className="p-6 flex flex-col justify-between flex-grow">
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-1 uppercase">
-                  {car.title}
-                </h2>
-                <p className="text-sm text-[#B8860B] font-semibold mb-4 uppercase tracking-wide">
+                <h2 className="text-2xl font-bold mb-1 uppercase">{car.title}</h2>
+                <p className="text-[#B8860B] font-semibold mb-4 uppercase tracking-wide">
                   {car.subtitle}
                 </p>
 
-                <ul className="text-gray-700 text-sm space-y-2 mb-6">
+                <ul className="text-gray-300 text-sm space-y-2 mb-6">
                   {car.specs.map((item, idx) => (
                     <li key={idx} className="flex items-center gap-2">
                       {item.icon}
@@ -128,7 +115,7 @@ function FleetPage() {
 
               <button
                 onClick={() => navigate(`/fleet/${car.slug}`)}
-                className="bg-[#B8860B] hover:bg-[#B8860B] text-black font-semibold py-2 rounded-lg transition"
+                className="bg-gradient-to-r from-[#B8860B] to-[#B8860B] hover:from-yellow-400 hover:to-[#B8860B] text-black font-bold py-3 rounded-full shadow-lg transition-all"
               >
                 VIEW DETAILS
               </button>

@@ -14,10 +14,27 @@ import paymentWebhook from "./routes/paymentWebhook.js";
 import adminBroadcastRoutes from "./routes/adminBroadcastRoutes.js"
 import cors from "cors";
 import dotenv from "dotenv";
+import {birthdayRewardJob} from "./jobs/birthdayRewards.js"
+import {milestoneRewardJob} from "./jobs/milestoneRewards.js"
+import { expireRewardsJob } from "./jobs/expireRewards.js";
+import rewardRoutes from "./routes/rewardRoutes.js"
+import { rewardCleanupJob } from "./jobs/rewardCleanup.js";
+import adminRewardsRoutes from "./routes/adminRewardsRoute.js";
+import "./jobs/rewardCleanup.js";
+
+
+
+
 
 
 dotenv.config();
 connectDB();
+
+birthdayRewardJob();
+milestoneRewardJob();
+expireRewardsJob();
+rewardCleanupJob();
+
 
 const app = express();
 app.use(
@@ -56,8 +73,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminBroadcastRoutes);
-
-
+app.use("/rewards", rewardRoutes);
+app.use("/api/admin", adminRewardsRoutes);
 app.get("/", (req, res) => res.send("🚖 LimoProject backend is running..."));
 
 app.listen(PORT, () => {
