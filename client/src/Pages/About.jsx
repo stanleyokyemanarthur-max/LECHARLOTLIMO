@@ -2,7 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import EliteMembership from "../Components/EliteMembership";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
+import { Pagination, Autoplay } from "swiper";
+
 import "swiper/css";
 import "swiper/css/pagination";
 
