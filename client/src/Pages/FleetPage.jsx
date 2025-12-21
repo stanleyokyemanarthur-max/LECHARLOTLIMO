@@ -10,6 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
+// Fleet data: store the icon component type, not JSX
 const fleetData = [
   {
     id: 1,
@@ -18,10 +19,10 @@ const fleetData = [
     subtitle: "1-4 PASSENGER",
     image: "/images/-Cadillac.png",
     specs: [
-      { icon: <Users className="w-5 h-5 text-[#B8860B]" />, text: "1-4 passengers" },
-      { icon: <Briefcase className="w-5 h-5 text-[#B8860B]" />, text: "2-3 medium bags" },
-      { icon: <Armchair className="w-5 h-5 text-[#B8860B]" />, text: "Plush leather seating" },
-      { icon: <Sparkles className="w-5 h-5 text-[#B8860B]" />, text: "Illuminating vanity mirrors" },
+      { icon: Users, text: "1-4 passengers" },
+      { icon: Briefcase, text: "2-3 medium bags" },
+      { icon: Armchair, text: "Plush leather seating" },
+      { icon: Sparkles, text: "Illuminating vanity mirrors" },
     ],
   },
   {
@@ -31,10 +32,10 @@ const fleetData = [
     subtitle: "SUV 6-7 PASSENGER",
     image: "/images/Chvy.png",
     specs: [
-      { icon: <Users className="w-5 h-5 text-[#B8860B]" />, text: "6-7 passengers" },
-      { icon: <Briefcase className="w-5 h-5 text-[#B8860B]" />, text: "Luggage 8-10 small or 7-8 large" },
-      { icon: <Armchair className="w-5 h-5 text-[#B8860B]" />, text: "Plush leather seating" },
-      { icon: <GlassWater className="w-5 h-5 text-[#B8860B]" />, text: "Rear armrest & drink holders" },
+      { icon: Users, text: "6-7 passengers" },
+      { icon: Briefcase, text: "Luggage 8-10 small or 7-8 large" },
+      { icon: Armchair, text: "Plush leather seating" },
+      { icon: GlassWater, text: "Rear armrest & drink holders" },
     ],
   },
   {
@@ -44,10 +45,10 @@ const fleetData = [
     subtitle: "11-14 PASSENGER",
     image: "/images/van.png",
     specs: [
-      { icon: <Users className="w-5 h-5 text-[#B8860B]" />, text: "11-14 passengers" },
-      { icon: <Briefcase className="w-5 h-5 text-[#B8860B]" />, text: "Luggage 10-12 large or 12-14 small" },
-      { icon: <Armchair className="w-5 h-5 text-[#B8860B]" />, text: "Forward-facing seating" },
-      { icon: <Radio className="w-5 h-5 text-[#B8860B]" />, text: "AM/FM Radio" },
+      { icon: Users, text: "11-14 passengers" },
+      { icon: Briefcase, text: "Luggage 10-12 large or 12-14 small" },
+      { icon: Armchair, text: "Forward-facing seating" },
+      { icon: Radio, text: "AM/FM Radio" },
     ],
   },
   {
@@ -57,10 +58,10 @@ const fleetData = [
     subtitle: "STRETCH LIMO – 6 PASSENGER",
     image: "/images/Gmcc.png",
     specs: [
-      { icon: <Users className="w-5 h-5 text-[#B8860B]" />, text: "6 passengers" },
-      { icon: <Briefcase className="w-5 h-5 text-[#B8860B]" />, text: "Luggage 3-4 large or 4-5 small" },
-      { icon: <Armchair className="w-5 h-5 text-[#B8860B]" />, text: "Plush leather seating" },
-      { icon: <Music className="w-5 h-5 text-[#B8860B]" />, text: "AM/FM Stereo & CD Player" },
+      { icon: Users, text: "6 passengers" },
+      { icon: Briefcase, text: "Luggage 3-4 large or 4-5 small" },
+      { icon: Armchair, text: "Plush leather seating" },
+      { icon: Music, text: "AM/FM Stereo & CD Player" },
     ],
   },
 ];
@@ -104,12 +105,15 @@ function FleetPage() {
                 </p>
 
                 <ul className="text-gray-300 text-sm space-y-2 mb-6">
-                  {car.specs.map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-2">
-                      {item.icon}
-                      <span>{item.text}</span>
-                    </li>
-                  ))}
+                  {car.specs.map((item, idx) => {
+                    const Icon = item.icon;
+                    return (
+                      <li key={idx} className="flex items-center gap-2">
+                        <Icon className="w-5 h-5 text-[#B8860B]" />
+                        <span>{item.text}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
 
