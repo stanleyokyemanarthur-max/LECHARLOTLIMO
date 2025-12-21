@@ -89,7 +89,7 @@ function Contact() {
           </div>
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl">
             <i className="ri-mail-fill text-[#B8860B] text-5xl"></i>
-            <h1 className="font-bricolage text-2xl font-semibold mt-8 mb-2">Email Us</h1>
+            <h1 className="font-bricolage text-xl font-semibold mt-8 mb-2">Email Us</h1>
             <p className="text-[#999]">info@lecharlotlimousine.com</p>
           </div>
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl">
@@ -100,7 +100,7 @@ function Contact() {
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl">
             <i className="ri-phone-line text-[#B8860B] text-5xl"></i>
             <h1 className="font-bricolage text-2xl font-semibold mt-8 mb-2">Call Us</h1>
-            <p className="text-[#999]">(404) 900-9088</p>
+            <p className="text-[#999]">(404) 405-3738</p>
           </div>
         </div>
       </div>
