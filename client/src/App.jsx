@@ -41,6 +41,7 @@ import ResetTOTP from "./Pages/ResetTOTP.jsx";
 import LostAuthenticator from "./Pages/LostAuthenticator.jsx";
 import AdminBroadcast from "./Pages/admin/AdminBroadcast.jsx";
 import AdminRewardsPage from "./Pages/admin/adminRewardsPage.jsx";
+import AdminMilestonesPage from "./Pages/admin/AdminMilestonesPage.jsx";
 
 
 
@@ -124,6 +125,8 @@ function App() {
           <Route path="cars" element={<ProtectedRoute allowedRoles={["admin"]}><AdminCars /></ProtectedRoute>} />
           <Route path="broadcast" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBroadcast /></ProtectedRoute>} />
           <Route path="rewards" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminRewardsPage /></ProtectedRoute>}/>
+          <Route path="milestones" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminMilestonesPage /></ProtectedRoute>}/>
+          
         </Route>  
       </Routes>
       <Footer />

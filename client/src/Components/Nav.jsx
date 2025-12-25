@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../slices/authSlice";
 import RewardsIcon from "./RewardsIcon";
-import { fetchRewards } from "../slices/rewardsSlice";
-
 
 function Nav() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -16,7 +14,6 @@ function Nav() {
   const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth);
 
-  // Fix: always get username and role correctly
   const userName = userInfo?.user?.name || userInfo?.name || "";
   const userRole = userInfo?.user?.role || userInfo?.role || "";
 
@@ -45,17 +42,11 @@ function Nav() {
 
   const menuItems = ["Home", "About", "Fleet", "Services", "Contact"];
 
-useEffect(() => {
-  if (userInfo && userRole !== "admin") {
-    dispatch(fetchRewards());
-  }
-}, [dispatch, userInfo, userRole]);
-
-
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-[9999] transition-all duration-300 ${isScrolled ? "bg-[#111111] shadow-md" : "bg-transparent"
-        }`}
+      className={`fixed top-0 left-0 w-full z-[9999] transition-all duration-300 ${
+        isScrolled ? "bg-[#111111] shadow-md" : "bg-transparent"
+      }`}
     >
       {/* Top Contact Bar */}
       <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-8 lg:px-12 cursor-default">
@@ -89,10 +80,6 @@ useEffect(() => {
           />
         </div>
 
-
-
-
-
         {/* Mobile Menu Button */}
         <button
           className="lg:hidden text-3xl text-[#B8860B]"
@@ -108,7 +95,6 @@ useEffect(() => {
             ease-in-out overflow-hidden lg:overflow-visible gap-6 lg:gap-10
             ${isMobileMenuOpen ? "max-h-[500px] opacity-100 py-6" : "max-h-0 opacity-0 lg:opacity-100 lg:max-h-none"}`}
         >
-          {/* Top-level nav items */}
           {menuItems.map((item) => (
             <li key={item}>
               <Link
@@ -130,7 +116,11 @@ useEffect(() => {
               </Link>
             </li>
           ) : (
-            <li className="relative flex items-center gap-3 mb-4 lg:mb-0" ref={dropdownRef}>
+            <li
+              className="relative flex items-center gap-3 mb-4 lg:mb-0"
+              ref={dropdownRef}
+            >
+              {/* SHOW REWARDS ICON FOR NON-ADMIN */}
               {userRole !== "admin" && <RewardsIcon />}
 
               {/* Dropdown trigger */}
@@ -143,19 +133,25 @@ useEffect(() => {
 
               {/* Dropdown menu */}
               {isDropdownOpen && (
-                <ul className="absolute lg:absolute right-[5] top-[-1] lg:top-12 mt-2 w-56 bg-[#111111] text-white rounded-xl shadow-lg z-[9999] animate-fadeIn overflow-hidden border border-[#333]">
+                <ul className="absolute right-5 md:top-2 w-56 bg-[#111111] text-white rounded-xl shadow-lg z-[9999] animate-fadeIn overflow-hidden border border-[#333]">
                   <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-[#111111]"></div>
 
                   {userRole === "admin" ? (
                     <>
                       <li
-                        onClick={() => { navigate("/admin/dashboard"); setIsDropdownOpen(false); }}
+                        onClick={() => {
+                          navigate("/admin/dashboard");
+                          setIsDropdownOpen(false);
+                        }}
                         className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-dashboard-line"></i> Dashboard
                       </li>
                       <li
-                        onClick={() => { navigate("/enableauthenticator"); setIsDropdownOpen(false); }}
+                        onClick={() => {
+                          navigate("/enableauthenticator");
+                          setIsDropdownOpen(false);
+                        }}
                         className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-shield-keyhole-line"></i> Enable Authenticator
@@ -170,13 +166,19 @@ useEffect(() => {
                   ) : (
                     <>
                       <li
-                        onClick={() => { navigate("/mybookings"); setIsDropdownOpen(false); }}
+                        onClick={() => {
+                          navigate("/mybookings");
+                          setIsDropdownOpen(false);
+                        }}
                         className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-calendar-line"></i> My Bookings
                       </li>
                       <li
-                        onClick={() => { navigate("/enableauthenticator"); setIsDropdownOpen(false); }}
+                        onClick={() => {
+                          navigate("/enableauthenticator");
+                          setIsDropdownOpen(false);
+                        }}
                         className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-shield-keyhole-line"></i> Enable Authenticator

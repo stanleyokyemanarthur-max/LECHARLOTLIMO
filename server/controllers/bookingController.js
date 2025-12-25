@@ -4,7 +4,8 @@ import Car from "../models/Car.js";
 import User from "../models/User.js";
 import { getDistanceInMiles } from "../utils/getDistance.js";
 import Reward from "../models/Reward.js";
-import { evaluateMilestones } from "../utils/evaluateMilestones.js";
+import { evaluateMilestonesForUser} from "../services/milestone.service.js";
+import mongoose from "mongoose";
 
 /* 
 ==============================
@@ -255,63 +256,78 @@ export const getAllBookings = async (req, res) => {
  🔄 UPDATE BOOKING STATUS
 =============================
 */
+
+
+
 export const updateBookingStatus = async (req, res) => {
+  const session = await mongoose.startSession();
+
   try {
     const booking = await Booking.findById(req.params.id)
       .populate("user")
-      .populate("reward"); // added
+      .populate("reward");
 
     if (!booking) return res.status(404).json({ error: "Booking not found" });
 
-    const prevStatus = booking.status;
-    booking.status = req.body.status || booking.status;
-    await booking.save();
+    await session.withTransaction(async () => {
+      const prevStatus = booking.status;
+      booking.status = req.body.status || booking.status;
+      await booking.save({ session });
 
-    // 🎁 REWARD FINALIZATION
-    if (booking.reward) {
-      const reward = await Reward.findById(booking.reward);
+      // Reward finalization
+      if (booking.reward) {
+        const reward = await Reward.findById(booking.reward).session(session);
 
-      // ✅ Booking completed → reward USED
-      if (prevStatus !== "COMPLETED" && booking.status === "COMPLETED") {
-        reward.status = "USED";
-        reward.usedAt = new Date();
-        await reward.save();
+        if (prevStatus !== "COMPLETED" && booking.status === "COMPLETED") {
+          reward.status = "USED";
+          reward.usedAt = new Date();
+          await reward.save({ session });
+        }
+
+        if (booking.status === "CANCELLED") {
+          reward.status = "AVAILABLE";
+          reward.booking = null;
+          reward.lockedAt = null;
+          reward.isSlotFull = false;
+          await reward.save({ session });
+        }
       }
 
-      // ❌ Booking cancelled → reward released
-      if (booking.status === "CANCELLED") {
-        reward.status = "AVAILABLE";
-        reward.booking = null;
-        reward.lockedAt = null;
-        reward.isSlotFull = false;
-        await reward.save();
+      // Loyalty / milestone rewards
+      if (prevStatus !== "COMPLETED" && booking.status === "COMPLETED" && booking.isPaid) {
+        await User.updateOne(
+          { _id: booking.user._id },
+          { $inc: { totalCompletedBookings: 1, totalSpend: booking.totalPrice } },
+          { session }
+        );
+
+        const freshUser = await User.findById(booking.user._id).session(session);
+
+        const pendingPaidBooking = await Booking.exists({
+          user: booking.user._id,
+          isPaid: true,
+          status: { $in: ["pending", "confirmed"] },
+        });
+
+        if (!pendingPaidBooking) {
+          await evaluateMilestonesForUser(freshUser, session);
+        } else {
+          console.log("⏳ Paid booking exists, milestone reward will be queued");
+        }
       }
-    }
-
-    // 🎯 Milestones + birthday rewards
-    if (prevStatus !== "COMPLETED" && booking.status === "COMPLETED") {
-      const user = booking.user;
-
-      user.totalRides = (user.totalRides || 0) + 1;
-      user.totalSpend = (user.totalSpend || 0) + booking.totalPrice;
-      await user.save();
-
-      await evaluateMilestones({
-        user,
-        totalRides: user.totalRides,
-        totalSpend: user.totalSpend,
-        isBirthday:
-          user.birthday &&
-          new Date(user.birthday).toDateString() ===
-            new Date().toDateString(),
-      });
-    }
+    });
 
     res.json(booking);
   } catch (err) {
+    console.error("Update booking status error:", err);
     res.status(500).json({ error: err.message });
+  } finally {
+    session.endSession();
   }
 };
+
+
+
 
 
 /* 

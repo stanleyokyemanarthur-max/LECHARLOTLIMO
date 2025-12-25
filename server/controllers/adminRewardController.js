@@ -8,8 +8,7 @@ import User from "../models/User.js";
 export const adminGetAllRewards = async (req, res) => {
   try {
     const rewards = await Reward.find()
-      .populate("user", "name email role") // get user info
-      .populate("user", "name email phone")
+      .populate("user", "name email role phone") // get user info
       .populate("booking", "status createdAt")
       .sort({ createdAt: -1 });
 
@@ -40,34 +39,42 @@ export const adminUpdateRewardStatus = async (req, res) => {
 };
 // 🔓 Unlock QUEUED reward
 export const adminUnlockReward = async (req, res) => {
-  const reward = await Reward.findById(req.params.id);
-  if (!reward) return res.status(404).json({ message: "Reward not found" });
+  try {
+    const reward = await Reward.findById(req.params.id);
+    if (!reward) return res.status(404).json({ message: "Reward not found" });
 
-  if (reward.status !== "QUEUED") {
-    return res.status(400).json({ message: "Only QUEUED rewards can be unlocked" });
+    if (reward.status !== "QUEUED")
+      return res.status(400).json({ message: "Only QUEUED rewards can be unlocked" });
+
+    reward.status = "AVAILABLE";
+    reward.isSlotFull = false;
+    reward.lockedAt = null;
+    reward.booking = null;
+
+    await reward.save();
+    res.json({ message: "Reward unlocked", reward });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to unlock reward" });
   }
-
-  reward.status = "AVAILABLE";
-  reward.isSlotFull = false;
-  reward.lockedAt = null;
-  reward.booking = null;
-
-  await reward.save();
-  res.json({ message: "Reward unlocked", reward });
 };
 
 // ✅ Mark LOCKED reward as USED
 export const adminMarkRewardUsed = async (req, res) => {
-  const reward = await Reward.findById(req.params.id);
-  if (!reward) return res.status(404).json({ message: "Reward not found" });
+  try {
+    const reward = await Reward.findById(req.params.id);
+    if (!reward) return res.status(404).json({ message: "Reward not found" });
 
-  if (reward.status !== "LOCKED") {
-    return res.status(400).json({ message: "Only LOCKED rewards can be marked USED" });
+    if (reward.status !== "LOCKED")
+      return res.status(400).json({ message: "Only LOCKED rewards can be marked USED" });
+
+    reward.status = "USED";
+    reward.usedAt = new Date();
+
+    await reward.save();
+    res.json({ message: "Reward marked as used", reward });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to mark reward used" });
   }
-
-  reward.status = "USED";
-  reward.usedAt = new Date();
-
-  await reward.save();
-  res.json({ message: "Reward marked as used", reward });
 };

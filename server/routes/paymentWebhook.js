@@ -9,10 +9,19 @@ dotenv.config();
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+/**
+ * ⚠️ IMPORTANT
+ * This route MUST use bodyParser.raw({ type: "application/json" })
+ * and be registered BEFORE express.json()
+ */
+
 router.post("/", async (req, res) => {
   const sig = req.headers["stripe-signature"];
   let event;
 
+  /* ===============================
+     🔐 VERIFY STRIPE SIGNATURE
+  =============================== */
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
@@ -25,41 +34,89 @@ router.post("/", async (req, res) => {
   }
 
   /* ===============================
-     ✅ PAYMENT SUCCESS
+     🎯 HANDLE EVENTS
   =============================== */
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    const bookingId = session.metadata.bookingId;
+  try {
+    switch (event.type) {
+      /* ===============================
+         ✅ PAYMENT SUCCESS
+      =============================== */
+      case "checkout.session.completed": {
+        const session = event.data.object;
 
-    try {
-      const booking = await Booking.findById(bookingId).populate("reward");
+        // 🛡️ Safety check
+        const bookingId = session.metadata?.bookingId;
+        if (!bookingId) {
+          console.warn("⚠️ Missing bookingId in Stripe metadata");
+          break;
+        }
 
-      if (!booking) {
-        console.error("❌ Booking not found:", bookingId);
-        return res.json({ received: true });
+        const booking = await Booking.findById(bookingId).populate("reward");
+        if (!booking) {
+          console.warn("⚠️ Booking not found:", bookingId);
+          break;
+        }
+
+        // 🔁 IDEMPOTENCY GUARD
+        if (booking.paymentStatus === "paid") {
+          console.log("🔁 Webhook already processed for booking:", bookingId);
+          break;
+        }
+
+        // ✅ Confirm booking
+        booking.paymentStatus = "paid";
+        booking.status = "confirmed";
+        await booking.save();
+
+        // 🎁 FINALIZE REWARD
+        if (booking.reward) {
+          await Reward.findByIdAndUpdate(booking.reward._id, {
+            status: "USED",
+            usedAt: new Date(),
+            lockedAt: null,
+            booking: booking._id,
+            isSlotFull: false,
+          });
+        }
+
+        console.log(`✅ Booking ${bookingId} confirmed & reward finalized`);
+        break;
       }
 
-      // Confirm booking
-      booking.paymentStatus = "paid";
-      booking.status = "confirmed";
-      await booking.save();
+      /* ===============================
+         ❌ PAYMENT FAILED / ABANDONED
+      =============================== */
+      case "checkout.session.expired":
+      case "payment_intent.payment_failed": {
+        const session = event.data.object;
+        const bookingId = session.metadata?.bookingId;
 
-      // 🎁 FINALIZE REWARD
-      if (booking.reward) {
+        if (!bookingId) break;
+
+        const booking = await Booking.findById(bookingId).populate("reward");
+        if (!booking || !booking.reward) break;
+
+        // 🔓 RELEASE REWARD
         await Reward.findByIdAndUpdate(booking.reward._id, {
-          status: "USED",
+          status: "AVAILABLE",
           lockedAt: null,
-          booking: booking._id,
+          booking: null,
           isSlotFull: false,
         });
+
+        console.log(`🔓 Reward released for failed booking ${bookingId}`);
+        break;
       }
 
-      console.log(`✅ Booking ${bookingId} confirmed`);
-    } catch (err) {
-      console.error("❌ Webhook processing error:", err.message);
+      default:
+        // Ignore unhandled events
+        break;
     }
+  } catch (err) {
+    console.error("❌ Webhook processing error:", err.message);
   }
 
+  // ✅ Always acknowledge Stripe
   res.json({ received: true });
 });
 

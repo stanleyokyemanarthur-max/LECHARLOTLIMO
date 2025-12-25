@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, Radio, Users, Car, LogOut, ArrowLeftCircle ,Gift as GiftIcon} from "lucide-react";
+import { LayoutDashboard, Flag, Radio, Users, Car, LogOut, ArrowLeftCircle, Gift as GiftIcon } from "lucide-react";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -67,13 +67,24 @@ export default function AdminLayout() {
           <button
             onClick={() => navigate("/admin/rewards")}
             className={`flex items-center gap-3 px-3 py-5 rounded-lg transition font-semibold ${isActive("/admin/rewards")
-                ? "bg-[#d8c305c5]/30"
-                : "hover:bg-[#d8c305c5]/20"
+              ? "bg-[#d8c305c5]/30"
+              : "hover:bg-[#d8c305c5]/20"
               }`}
           >
             <GiftIcon className="w-5 h-5 text-[#B8860B]" />
             <span>Rewards</span>
           </button>
+          <button
+            onClick={() => navigate("/admin/milestones")}
+            className={`flex items-center gap-3 px-3 py-5 rounded-lg transition font-semibold ${isActive("/admin/milestones")
+                ? "bg-[#d8c305c5]/30"
+                : "hover:bg-[#d8c305c5]/20"
+              }`}
+          >
+            <Flag className="w-5 h-5 text-[#B8860B]" />
+            <span>Milestones</span>
+          </button>
+
 
 
 

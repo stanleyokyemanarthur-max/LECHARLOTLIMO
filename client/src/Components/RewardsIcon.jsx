@@ -8,18 +8,25 @@ function RewardsIcon() {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
 
-  const rewards = useSelector((state) => state.rewards.items);
-  const safeRewards = Array.isArray(rewards) ? rewards : [];
+  const rewards = useSelector((state) => state.rewards.items) || [];
 
-
-  // ONLY rewards that can be used now
-  const availableRewards = safeRewards.filter(
+  // Only show rewards that are AVAILABLE and not full
+  const availableRewards = rewards.filter(
     (r) => r.status === "AVAILABLE" && !r.isSlotFull
   );
 
   const rewardsCount = availableRewards.length;
 
+  // Fetch rewards on mount and if user logs in
+  useEffect(() => {
+    dispatch(fetchRewards());
+  }, [dispatch]);
 
+  // DEBUG: log Redux rewards
+  useEffect(() => {
+    console.log("All rewards from Redux:", rewards);
+    console.log("Available rewards for badge:", availableRewards);
+  }, [rewards, availableRewards]);
 
   if (rewardsCount === 0) return null;
 
@@ -28,11 +35,13 @@ function RewardsIcon() {
       <button
         onClick={() => setIsOpen(true)}
         className="relative flex items-center justify-center w-10 h-10 ml-2"
+        aria-label={`You have ${rewardsCount} rewards`}
       >
         <Gift size={28} className="text-[#B8860B]" />
-
-        <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full
-          bg-[#B8860B] text-black text-[11px] font-bold flex items-center justify-center">
+        <span
+          className="absolute -top-1 -right-1 w-5 h-5 rounded-full
+            bg-[#B8860B] text-black text-[17px] font-bold flex items-center justify-center"
+        >
           {rewardsCount > 3 ? "3+" : rewardsCount}
         </span>
       </button>
@@ -40,7 +49,7 @@ function RewardsIcon() {
       <RewardsDrawer
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        rewards={rewards}
+        rewards={availableRewards}
       />
     </>
   );

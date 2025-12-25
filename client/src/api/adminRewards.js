@@ -1,7 +1,7 @@
-import api from "./api";
+import axios from "axios";
 
-export const fetchAllRewards = (token) =>
-  api.get("/admin/rewards", {
+export const fetchAdminRewards = (token) =>
+  axios.get("/api/admin/rewards", {
     headers: {
       Authorization: `Bearer ${token}`,
     },

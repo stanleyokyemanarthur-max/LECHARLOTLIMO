@@ -1,4 +1,26 @@
-import api from "./api"; // your axios instance
+import axios from "axios";
 
-export const fetchMyRewards = () => api.get("/rewards/my"); // ensure backend has this route
-export const lockReward = (rewardId) => api.patch(`/rewards/${rewardId}/lock`);
+const API = axios.create({
+  baseURL: "http://localhost:5000/api",
+});
+
+// 👇 MUST SEND BEARER TOKEN
+export const fetchMyRewards = (token) => {
+  return API.get("/rewards/my", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const lockReward = (rewardId, token) => {
+  return API.post(
+    `/rewards/${rewardId}/lock`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};

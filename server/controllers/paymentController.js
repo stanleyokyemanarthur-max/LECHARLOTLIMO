@@ -2,6 +2,9 @@
 import Stripe from "stripe";
 import Booking from "../models/Booking.js";
 import Reward from "../models/Reward.js";
+import { evaluateMilestonesForUser } from "../services/milestone.service.js";
+import User from "../models/User.js"
+import mongoose from "mongoose";
 
 // Load dotenv only if running locally
 if (process.env.NODE_ENV !== "production") {
@@ -105,27 +108,66 @@ export const handleCancelledPayment = async (req, res) => {
  * 🔍 Verify Payment Status (client check)
  */
 export const verifyPaymentStatus = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
     const { session_id } = req.query;
-    if (!session_id) {
+    if (!session_id)
       return res.status(400).json({ message: "Missing session ID" });
-    }
 
-    const session = await stripe.checkout.sessions.retrieve(session_id);
-    const booking = await Booking.findOne({ stripeSessionId: session_id });
-
-    if (!booking) {
+    const stripeSession = await stripe.checkout.sessions.retrieve(session_id);
+    const booking = await Booking.findOne({ stripeSessionId: session_id }).populate("user");
+    if (!booking)
       return res.status(404).json({ message: "Booking not found" });
+
+    if (stripeSession.payment_status !== "paid") {
+      return res.status(200).json({
+        paid: false,
+        bookingStatus: booking.status,
+        paymentStatus: booking.paymentStatus,
+      });
     }
 
-    return res.status(200).json({
-      paid: session.payment_status === "paid",
+    // ✅ Begin transaction
+    await session.withTransaction(async () => {
+      // Update booking
+      booking.paymentStatus = "paid";
+      booking.isPaid = true;
+      await booking.save({ session });
+
+      // Increment user's total spend
+      await User.updateOne(
+        { _id: booking.user._id },
+        { $inc: { totalSpend: booking.totalPrice } },
+        { session }
+      );
+
+      // Check for other pending paid bookings
+      const pendingPaidBooking = await Booking.exists({
+        user: booking.user._id,
+        isPaid: true,
+        status: { $in: ["pending", "confirmed"] },
+        _id: { $ne: booking._id },
+      });
+
+      // Evaluate milestones only if no other pending paid bookings
+      if (!pendingPaidBooking) {
+        await evaluateMilestonesForUser(booking.user, session);
+      } else {
+        console.log("⏳ Paid booking exists, milestone reward will be queued");
+      }
+    });
+
+    res.status(200).json({
+      paid: true,
       bookingStatus: booking.status,
       paymentStatus: booking.paymentStatus,
     });
   } catch (error) {
     console.error("❌ Verify payment error:", error);
     res.status(500).json({ message: "Server error verifying payment" });
+  } finally {
+    session.endSession();
   }
 };
+
 

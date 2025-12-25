@@ -11,18 +11,19 @@ const milestoneSchema = new mongoose.Schema(
     },
 
     threshold: {
-      type: Number, // e.g. 5 rides, 10 rides, ₵500 spend
+      type: Number, // e.g. 10 rides
       default: 0,
     },
 
     rewardTemplate: {
-      title: String,
-      description: String,
+      title: { type: String, required: true },
+      description: { type: String, default: "" },
       type: {
         type: String,
         enum: ["freeRide", "voucher"],
+        required: true,
       },
-      value: Number, // voucher amount or freeRide value
+      value: { type: Number, default: 0 },
     },
 
     isActive: { type: Boolean, default: true },

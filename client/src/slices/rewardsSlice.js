@@ -1,20 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import * as rewardsApi from "../api/rewards";
 
-// Fetch user's rewards
+// Fetch user rewards
 export const fetchRewards = createAsyncThunk(
   "rewards/fetchRewards",
-  async (_, { rejectWithValue }) => {
+  async (_, { getState, rejectWithValue }) => {
     try {
-      const res = await rewardsApi.fetchMyRewards();
+      const token = getState().auth.userInfo?.token;
+
+      console.log("🎟️ TOKEN USED FOR REWARDS:", token);
+
+      const res = await rewardsApi.fetchMyRewards(token);
       return res.data;
     } catch (err) {
+      console.error("❌ fetchRewards failed:", err.response?.data);
       return rejectWithValue(err.response?.data || "Failed to load rewards");
     }
   }
 );
 
-// Lock a reward for checkout
+// Lock reward for checkout
 export const lockUserReward = createAsyncThunk(
   "rewards/lockUserReward",
   async (rewardId, { rejectWithValue }) => {
@@ -55,8 +60,7 @@ const rewardsSlice = createSlice({
       })
       .addCase(lockUserReward.fulfilled, (state, action) => {
         state.selectedReward = action.payload;
-        // Update the reward in the items array
-        const index = state.items.findIndex(r => r._id === action.payload._id);
+        const index = state.items.findIndex((r) => r._id === action.payload._id);
         if (index !== -1) state.items[index] = action.payload;
       });
   },

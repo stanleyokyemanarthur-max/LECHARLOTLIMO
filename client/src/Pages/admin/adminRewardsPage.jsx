@@ -1,182 +1,140 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAdminRewards, adminUpdateReward } from "../../slices/adminRewardsSlice";
 
 export default function AdminRewardsPage() {
-  const [rewards, setRewards] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+
+  const items = useSelector((state) => state.adminRewards.items || []);
+  const status = useSelector((state) => state.adminRewards.status || "idle");
+  const updatingId = useSelector((state) => state.adminRewards.updatingId || null);
+
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const { userInfo } = useSelector((state) => state.auth);
 
-  const fetchRewards = async () => {
-    try {
-      const res = await axios.get("/api/admin/rewards", {
-        headers: { Authorization: `Bearer ${userInfo?.token}` },
-      });
-
-      setRewards(res.data.rewards || []);
-    } catch (error) {
-      console.error("Error fetching rewards:", error);
-      setRewards([]); // prevent crashes
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
+  // Fetch rewards once on mount
   useEffect(() => {
-    if (userInfo?.token) fetchRewards();
+    dispatch(fetchAdminRewards());
+  }, [dispatch]);
 
-    // Auto-refresh every 15s
-    const interval = setInterval(() => {
-      if (userInfo?.token) fetchRewards();
-    }, 15000);
+  // Memoized filtered rewards
+  const filtered = useMemo(() => {
+    const s = searchTerm.toLowerCase();
+    return items.filter((r) => {
+      const matchStatus = filterStatus === "all" || r.status === filterStatus;
+      const matchSearch =
+        r.user?.name?.toLowerCase().includes(s) ||
+        r.user?.email?.toLowerCase().includes(s);
+      return matchStatus && matchSearch;
+    });
+  }, [items, filterStatus, searchTerm]);
 
-    return () => clearInterval(interval);
-  }, [userInfo]);
-
-  const updateRewardStatus = async (rewardId, status) => {
-    if (!window.confirm(`Change reward status to ${status}?`)) return;
-
-    try {
-      await axios.patch(
-        `/api/admin/rewards/${rewardId}`,
-        { status },
-        { headers: { Authorization: `Bearer ${userInfo?.token}` } }
-      );
-      fetchRewards();
-    } catch (err) {
-      alert("Failed to update reward");
-    }
+  // Helper to handle reward actions
+  const handleUpdate = async (id, action) => {
+    await dispatch(adminUpdateReward({ id, action }));
+    // Refetch rewards after an update to get latest data (new rewards included)
+    dispatch(fetchAdminRewards());
   };
 
-  if (loading)
+  if (status === "loading") {
     return (
-      <div className="flex justify-center items-center min-h-screen text-[#B8860B]">
-        Loading rewards...
+      <div className="min-h-screen flex items-center justify-center text-[#B8860B]">
+        Loading…
       </div>
     );
-
-  const filteredRewards = Array.isArray(rewards)
-    ? rewards.filter((r) => {
-      const matchesStatus =
-        filterStatus === "all" || r.status === filterStatus;
-
-      const name = r.user?.name?.toLowerCase() || "";
-      const email = r.user?.email?.toLowerCase() || "";
-
-      const matchesSearch =
-        name.includes(searchTerm.toLowerCase()) ||
-        email.includes(searchTerm.toLowerCase());
-
-      return matchesStatus && matchesSearch;
-    })
-    : [];
-
+  }
 
   return (
-    <div>
+    <div className="p-4">
       <h1 className="text-2xl font-bold text-[#B8860B] mb-6">User Rewards</h1>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
-        <div className="flex gap-2">
-          {["all", "AVAILABLE", "LOCKED", "QUEUED", "USED", "CANCELLED"].map(
-            (status) => (
-              <button
-                key={status}
-                onClick={() => setFilterStatus(status)}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition ${filterStatus === status
-                    ? "bg-[#B8860B] text-black"
-                    : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                  }`}
-              >
-                {status}
-              </button>
-            )
-          )}
-        </div>
-
+      <div className="flex flex-wrap gap-2 mb-4 items-center">
+        {["all", "AVAILABLE", "LOCKED", "QUEUED", "USED", "CANCELLED"].map((s) => (
+          <button
+            key={s}
+            onClick={() => setFilterStatus(s)}
+            className={`px-3 py-1 rounded font-medium ${
+              filterStatus === s
+                ? "bg-[#B8860B] text-black"
+                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+            }`}
+          >
+            {s}
+          </button>
+        ))}
         <input
-          type="text"
-          placeholder="Search user name or email..."
+          className="bg-gray-800 px-3 py-1 rounded ml-auto text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#B8860B]"
+          placeholder="Search user…"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-gray-800 text-gray-200 border border-gray-600 rounded-md px-3 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#B8860B]"
         />
       </div>
 
-      {/* Rewards Table */}
-      <table className="min-w-full border border-gray-700 text-sm table-fixed">
-        <thead className="bg-[#B8860B] text-black">
-          <tr>
-            <th className="px-4 py-2">User</th>
-            <th className="px-4 py-2">Email</th>
-            <th className="px-4 py-2">Reward</th>
-            <th className="px-4 py-2">Type</th>
-            <th className="px-4 py-2">Status</th>
-            <th className="px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRewards.length > 0 ? (
-            filteredRewards.map((r) => (
-              <tr
-                key={r._id}
-                className="border-t border-gray-700 hover:bg-gray-800"
-              >
-                <td className="px-4 py-2">{r.user.name}</td>
-                <td className="px-4 py-2">{r.user.email}</td>
-                <td className="px-4 py-2">{r.title}</td>
-                <td className="px-4 py-2">{r.type}</td>
-                <td className="px-4 py-2 capitalize">{r.status}</td>
-                <td className="px-4 py-2 space-x-2">
-                  {r.status === "QUEUED" && (
-                    <button
-                      onClick={() =>
-                        updateRewardStatus(r._id, "AVAILABLE")
-                      }
-                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                      Unlock
-                    </button>
-                  )}
-
-                  {r.status === "LOCKED" && (
-                    <button
-                      onClick={() => updateRewardStatus(r._id, "USED")}
-                      className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-                    >
-                      Mark Used
-                    </button>
-                  )}
-
-                  {r.status !== "USED" && r.status !== "QUEUED" && (
-                    <button
-                      onClick={() =>
-                        updateRewardStatus(r._id, "CANCELLED")
-                      }
-                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-                    >
-                      Cancel
-                    </button>
-                  )}
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full border border-gray-700 text-sm">
+          <thead className="bg-[#B8860B] text-black">
+            <tr>
+              <th className="px-3 py-2 text-left">User</th>
+              <th className="px-3 py-2 text-left">Email</th>
+              <th className="px-3 py-2 text-left">Reward</th>
+              <th className="px-3 py-2 text-left">Status</th>
+              <th className="px-3 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="text-center py-6 text-gray-400">
+                  No rewards
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td
-                colSpan="6"
-                className="text-center py-6 text-gray-400 italic"
-              >
-                No rewards found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            ) : (
+              filtered.map((r) => {
+                const isUpdating = updatingId === r._id;
+                return (
+                  <tr key={r._id} className="border-t border-gray-700">
+                    <td className="px-3 py-2">{r.user?.name || "N/A"}</td>
+                    <td className="px-3 py-2">{r.user?.email || "N/A"}</td>
+                    <td className="px-3 py-2">{r.title || "—"}</td>
+                    <td className="px-3 py-2">{r.status || "—"}</td>
+                    <td className="px-3 py-2 space-x-2">
+                      {r.status === "QUEUED" && (
+                        <button
+                          disabled={isUpdating}
+                          onClick={() => handleUpdate(r._id, "unlock")}
+                          className="px-2 py-1 rounded bg-green-600 text-white hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Unlock
+                        </button>
+                      )}
+                      {r.status === "LOCKED" && (
+                        <button
+                          disabled={isUpdating}
+                          onClick={() => handleUpdate(r._id, "used")}
+                          className="px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Used
+                        </button>
+                      )}
+                      {r.status !== "USED" && (
+                        <button
+                          disabled={isUpdating}
+                          onClick={() => handleUpdate(r._id, "cancel")}
+                          className="px-2 py-1 rounded bg-red-600 text-white hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
