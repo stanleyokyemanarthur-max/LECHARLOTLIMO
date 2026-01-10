@@ -61,7 +61,7 @@ function CarDetails() {
         return;
       }
       try {
-        const res = await fetch(`https://selfless-renewal-production-793e.up.railway.app/api/cars/${id}`);
+        const res = await fetch(`https://lecharlotlimo.onrender.com/api/cars/${id}`);
         if (!res.ok) throw new Error("Failed to fetch car");
         const data = await res.json();
         setCar(data);

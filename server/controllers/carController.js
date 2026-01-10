@@ -1,10 +1,17 @@
 import Car from "../models/Car.js";
+import Booking from "../models/Booking.js";
 import dayjs from "dayjs";
 
-// ✅ Create Car
+// ✅ Allowed fields for updates
+const CAR_UPDATE_FIELDS = ["name", "type", "seats", "transmission", "fuel", "speed", "perMileRate"];
+
 export const createCar = async (req, res) => {
   try {
     const { name, type, seats, transmission, fuel, speed, perMileRate } = req.body;
+
+    if (!name || !type || !perMileRate) {
+      return res.status(400).json({ message: "Name, type, and perMileRate are required" });
+    }
 
     const newCar = new Car({
       name,
@@ -13,103 +20,96 @@ export const createCar = async (req, res) => {
       transmission,
       fuel,
       speed,
-      perMileRate, // ✅ per-mile pricing
-      image: req.file?.path, // Cloudinary URL
+      perMileRate,
+      image: req.file?.path,
     });
 
     await newCar.save();
     res.status(201).json(newCar);
-  } catch (error) {
-    res.status(500).json({ message: "Error creating car", error: error.message });
+  } catch (err) {
+    console.error("Create car error:", err);
+    res.status(500).json({ message: "Error creating car", error: err.message });
   }
 };
 
-// ✅ Get all cars
 export const getCars = async (req, res) => {
   try {
     const cars = await Car.find();
     res.json(cars);
-  } catch (error) {
+  } catch (err) {
+    console.error("Get cars error:", err);
     res.status(500).json({ message: "Error fetching cars" });
   }
 };
 
-// ✅ Get single car
 export const getCar = async (req, res) => {
   try {
     const car = await Car.findById(req.params.id);
     if (!car) return res.status(404).json({ message: "Car not found" });
     res.json(car);
-  } catch (error) {
+  } catch (err) {
+    console.error("Get car error:", err);
     res.status(500).json({ message: "Error fetching car" });
   }
 };
 
-// ✅ Update Car
 export const updateCar = async (req, res) => {
   try {
     const car = await Car.findById(req.params.id);
     if (!car) return res.status(404).json({ message: "Car not found" });
 
-    car.name = req.body.name || car.name;
-    car.type = req.body.type || car.type;
-    car.seats = req.body.seats || car.seats;
-    car.transmission = req.body.transmission || car.transmission;
-    car.fuel = req.body.fuel || car.fuel;
-    car.speed = req.body.speed || car.speed;
-    car.perMileRate = req.body.perMileRate || car.perMileRate;
+    // Only update allowed fields
+    CAR_UPDATE_FIELDS.forEach(field => {
+      if (req.body[field] !== undefined) car[field] = req.body[field];
+    });
 
     if (req.file) car.image = req.file.path;
 
     const updatedCar = await car.save();
     res.json(updatedCar);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating car", error: error.message });
+  } catch (err) {
+    console.error("Update car error:", err);
+    res.status(500).json({ message: "Error updating car", error: err.message });
   }
 };
 
-// ✅ Delete Car
 export const deleteCar = async (req, res) => {
   try {
     const car = await Car.findByIdAndDelete(req.params.id);
     if (!car) return res.status(404).json({ message: "Car not found" });
-
     res.json({ message: "Car deleted successfully" });
-  } catch (error) {
+  } catch (err) {
+    console.error("Delete car error:", err);
     res.status(500).json({ message: "Error deleting car" });
   }
 };
 
-// ✅ Check Available Cars
 export const getAvailableCars = async (req, res) => {
   try {
     const { from, to } = req.query;
 
-    // if no dates provided → return all cars
     if (!from || !to) {
-      const cars = await Car.find();
+      const cars = await Car.find({ status: "available" });
       return res.json(cars);
     }
 
-    const selectedFrom = dayjs(from);
-    const selectedTo = dayjs(to);
+    const start = dayjs(from).toDate();
+    const end = dayjs(to).toDate();
 
-    const cars = await Car.find();
+    const bookedCars = await Booking.find({
+      status: { $in: ["pending", "confirmed"] },
+      pickupDate: { $lt: end },
+      dropoffDate: { $gt: start },
+    }).distinct("car");
 
-    const availableCars = cars.filter((car) => {
-      return car.bookedTimeSlots.every((slot) => {
-        const bookingFrom = dayjs(slot.start);
-        const bookingTo = dayjs(slot.end);
-        const overlaps =
-          selectedFrom.isBefore(bookingTo) && selectedTo.isAfter(bookingFrom);
-        return !overlaps;
-      });
+    const availableCars = await Car.find({
+      _id: { $nin: bookedCars },
+      status: "available",
     });
 
     res.json(availableCars);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error checking availability", error: error.message });
+  } catch (err) {
+    console.error("Get available cars error:", err);
+    res.status(500).json({ message: "Error checking availability", error: err.message });
   }
 };

@@ -17,7 +17,7 @@ export default function AdminBroadcast() {
       setLoading(true);
 
       await axios.post(
-        "https://selfless-renewal-production-793e.up.railway.app/api/admin/broadcast",
+        "https://lecharlotlimo.onrender.com/api/admin/broadcast",
         { channel, subject, message },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );

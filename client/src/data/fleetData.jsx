@@ -31,7 +31,7 @@ const fleetData = [
     slug: "chevrolet-suburban",
     name: "Chevrolet Suburban",
     category: "6-7 Passenger",
-    mainImage: "/images/Chvy.png",
+    mainImage: "/images/newchvy.png",
     gallery: [
       "/images/seat-chvy.jpg",
       "/images/int-chvy.png",
@@ -77,7 +77,7 @@ const fleetData = [
     slug: "gmc-yukon-denali",
     name: "GMC Yukon Denali",
     category: "6 Passenger",
-    mainImage: "/images/Gmcc.png",
+    mainImage: "/images/newgmc.png",
     gallery: [
       "/images/gmcint.jpg",
       "/images/ultimate-.jpg",

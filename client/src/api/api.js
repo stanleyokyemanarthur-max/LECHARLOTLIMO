@@ -2,7 +2,7 @@ import axios from "axios";
 import reducer from "../slices/rewardsSlice"; // adjust path if needed
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL || "https://lecharlotlimo.onrender.com/api",
   withCredentials: true,
 });
 

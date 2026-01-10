@@ -154,7 +154,7 @@ export default function ReservationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] flex flex-col items-center mt-10 py-28 px-4 font-[Poppins]">
+    <div className="min-h-screen bg-[#0B0B0B] flex flex-col items-center mt-18 py-28 px-4 font-[Poppins]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

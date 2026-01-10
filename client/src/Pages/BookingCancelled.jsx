@@ -10,7 +10,7 @@ function BookingCancelled() {
 
   useEffect(() => {
     if (sessionId) {
-      fetch(`https://selfless-renewal-production-793e.up.railway.app/api/payments/cancel?session_id=${sessionId}`).catch(() =>
+      fetch(`https://lecharlotlimo.onrender.com/api/payments/cancel?session_id=${sessionId}`).catch(() =>
         console.warn("Failed to update booking status")
       );
     }

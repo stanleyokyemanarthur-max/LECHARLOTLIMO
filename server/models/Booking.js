@@ -46,6 +46,12 @@ const bookingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "cancelled", "refunded"],
+      default: "pending",
+      index: true,
+    },
 
     /** 💰 Paid vs Free */
     isPaid: {
@@ -102,6 +108,23 @@ bookingSchema.pre("save", function (next) {
   }
   next();
 });
+
+/**
+ * 🔒 CRITICAL: Overlap-Protection Index (ANTI-DOUBLE-BOOKING)
+ * Prevents concurrent pending/confirmed bookings for the same car
+ */
+bookingSchema.index(
+  {
+    car: 1,
+    pickupDate: 1,
+    dropoffDate: 1,
+  },
+  {
+    partialFilterExpression: {
+      status: { $in: ["pending", "confirmed"] },
+    },
+  }
+);
 
 export default mongoose.models.Booking ||
   mongoose.model("Booking", bookingSchema);

@@ -30,7 +30,7 @@ const fleetData = [
     slug: "chevrolet-suburban",
     title: "Chevrolet Suburban",
     subtitle: "SUV 6-7 PASSENGER",
-    image: "/images/Chvy.png",
+    image: "/images/newchvy.png",
     specs: [
       { icon: Users, text: "6-7 passengers" },
       { icon: Briefcase, text: "Luggage 8-10 small or 7-8 large" },
@@ -56,7 +56,7 @@ const fleetData = [
     slug: "gmc-yukon-denali",
     title: "GMC Yukon Denali",
     subtitle: "STRETCH LIMO – 6 PASSENGER",
-    image: "/images/Gmcc.png",
+    image: "/images/newgmc.png",
     specs: [
       { icon: Users, text: "6 passengers" },
       { icon: Briefcase, text: "Luggage 3-4 large or 4-5 small" },

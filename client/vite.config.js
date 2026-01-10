@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://selfless-renewal-production-793e.up.railway.app/', // your backend API
+        target: 'https://lecharlotlimo.onrender.com', // your backend API
         changeOrigin: true,
         secure: false,
       },
