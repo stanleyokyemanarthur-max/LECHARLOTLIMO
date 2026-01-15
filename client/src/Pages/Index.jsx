@@ -270,22 +270,22 @@ function Index() {
           and tailored to your needs.
         </p>
 
-        <div className="space-y-6">
-          <p className="text-sm tracking-wide text-white/60">
-            Immediate Assistance
-          </p>
-
-          <p className="text-xl md:text-2xl font-medium text-white">
-            (404) 405-3738
-          </p>
+        <div className="mt-10 flex flex-col md:flex-col md:items-center md:justify-center gap-4">
+          <div className="text-center mb-7 md:text-left">
+            <p className="text-sm tracking-wide text-white/60">Immediate Assistance</p>
+            <a href="tel:4044053738" className="text-xl md:text-2xl font-medium text-white hover:text-[#B8860B] transition-colors">
+              (404) 405-3738
+            </a>
+          </div>
 
           <button
             onClick={() => navigate("/reservation-form")}
-            className="mt-4 inline-flex items-center justify-center gap-3 rounded-full border border-[#b8962e] px-10 py-4 text-xs tracking-widest uppercase text-[#b8962e] hover:bg-[#b8962e] hover:text-black transition-all duration-300"
+            className="mt-4 md:mt-4 inline-flex items-center justify-center gap-3 rounded-full border border-[#B8860B] px-10 py-4 text-xs tracking-widest uppercase text-[#B8860B] hover:bg-[#B8860B] hover:text-black transition-all duration-300"
           >
             Begin Reservation
           </button>
         </div>
+
       </div>
 
 
