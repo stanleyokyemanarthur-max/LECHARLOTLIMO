@@ -13,11 +13,11 @@ function Footer() {
 
       {/* BRAND */}
       <div>
-        <div className="relative h-14 w-44 mb-6">
+        <div className="relative h-14 w-60 mb-6">
           <img
             src="/images/favicon.png"
             alt="Le Charlot Logo"
-            className="absolute -top-10 left-0 w-44 h-auto object-contain cursor-pointer"
+            className="absolute -top-10 left-0 w-60 h-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}
           />
         </div>
@@ -98,8 +98,10 @@ function Footer() {
 
     {/* Bottom */}
     <div className="py-8 text-center text-xs text-white/40 tracking-wide">
-      © 2025 Le Charlot <span className="text-[#d4af37]">Limousine</span>. All rights reserved.
-    </div>
+  © {new Date().getFullYear()} Le Charlot{" "}
+  <span className="text-[#d4af37]">Limousine</span>. All rights reserved.
+</div>
+
 
   </div>
 </footer>

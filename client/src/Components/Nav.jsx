@@ -49,7 +49,7 @@ function Nav() {
       }`}
     >
       {/* Top Contact Bar */}
-      <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-8 lg:px-12 cursor-default">
+      {/* <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-8 lg:px-12 cursor-default">
         <div className="flex flex-wrap items-center gap-6">
           <span className="flex items-center gap-2">
             <i className="ri-mail-line text-[#B8860B]"></i>
@@ -66,16 +66,16 @@ function Nav() {
           <i className="ri-instagram-fill cursor-pointer hover:text-[#B8860B]"></i>
           <i className="ri-twitter-x-fill cursor-pointer hover:text-[#B8860B]"></i>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Nav */}
       <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-8 lg:px-12 relative">
         {/* Logo */}
-        <div className="relative h-12 w-40 overflow-visible">
+        <div className="relative h-12 w-50 overflow-visible">
           <img
             src="/images/favicon.png"
             alt="Le Charlot Logo"
-            className="absolute -top-16 left-0 w-40 h-auto object-contain cursor-pointer"
+            className="absolute -top-7 left-0 w-50 h-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}
           />
         </div>

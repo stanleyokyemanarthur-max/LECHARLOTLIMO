@@ -11,20 +11,16 @@ function About() {
 
   const testimonials = [
     {
-      name: "Olivia H., Atlanta",
-      text: "Pierre's French accent and warm personality make every trip unforgettable. Truly a five-star experience.",
+      name: "Jim W.",
+      text: "Impressive service from start to finish. My chauffeur was punctual, discreet, and the vehicle was spotless. The perfect experience for airport transfers — truly first-class.",
     },
     {
-      name: "Raymond M., Buckhead",
-      text: "I’ve never experienced such class in Georgia. Pierre monitors flights, offers wake-up calls, and even had a warm latte ready.",
+      name: "Fatima B.",
+      text: "Le Charlot Limousine delivers a level of comfort and professionalism you don’t find often. Smooth ride, elegant vehicle, and exceptional attention to detail. Highly recommended.",
     },
     {
-      name: "Daniella & Marcus, Alpharetta",
-      text: "We love the smooth ride, the music selection, and the elegance Pierre brings. Hands down the best black-car service ever.",
-    },
-    {
-      name: "Jasmine P., Midtown",
-      text: "Pierre's service is refined, respectful, and incredibly polished. His French accent, sharp attire, and kindness set the tone.",
+      name: "Caleb C.",
+      text: "From the moment we booked, everything felt effortless. The chauffeur was polished and respectful, and the experience was pure luxury. We arrived in style — exactly what we wanted.",
     },
   ];
 
@@ -32,7 +28,7 @@ function About() {
     <div className="text-white font-poppins bg-[#0a0a0a]">
       {/* Hero Banner */}
       <section
-        className="relative h-[500px] lg:h-[700px] flex items-center justify-center overflow-hidden"
+        className="relative h-[85vh] flex items-center justify-center overflow-hidden"
         style={{
           backgroundImage: "url('/images/cinema.png')",
           backgroundSize: "cover",
@@ -40,51 +36,107 @@ function About() {
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Dark overlay for cinematic luxury feel */}
+        {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/60"></div>
 
-        {/* Content */}
+        {/* Hero Content */}
         <div className="relative z-10 text-center px-4">
           <h1 className="uppercase text-sm lg:text-xl tracking-widest text-white mb-2 font-bricolage">
             Le Charlot <span className="text-[#B8860B]">Limousine</span>
           </h1>
-          <h2 className="text-4xl lg:text-6xl xl:text-8xl font-bold">
-            <span className="text-white">About</span> Us
+          <h2 className="text-4xl lg:text-6xl xl:text-7xl font-bold">
+            <span className="text-white">Executive Chauffeur Service</span> in Atlanta.
           </h2>
-          <p className="text-gray-300 mt-4 lg:text-xl">
-            Redefining luxury transportation, one journey at a time.
+          <p className="text-gray-300 mt-4 lg:text-xl max-w-3xl mx-auto">
+            From airport transfers to corporate arrivals, Le Charlot Limousine delivers precision, privacy, and prestige — every mile, every moment.
           </p>
-          <button
-            onClick={() => navigate("/reservation-form")}
-            className="mt-6 px-8 py-4 bg-gradient-to-r from-[#B8860B] to-yellow-500 hover:from-yellow-500 hover:to-[#B8860B] transition-all rounded-full font-medium text-lg shadow-lg"
-          >
-            Reserve Your Ride
-          </button>
+          <p className="mt-3 text-xs lg:text-sm uppercase tracking-[0.35em] text-[#B8860B]">
+            Serving Atlanta • Buckhead • Alpharetta • Sandy Springs
+          </p>
+          <div className="mt-6 flex justify-center gap-4 flex-wrap">
+            <button
+              onClick={() => navigate("/reservation-form")}
+              className="px-8 py-4 bg-gradient-to-r from-[#B8860B] to-yellow-500 hover:from-yellow-500 hover:to-[#B8860B] transition-all rounded-full font-medium text-lg shadow-lg"
+            >
+              Reserve Your Ride
+            </button>
+            <button
+              onClick={() => navigate("/fleet")}
+              className="px-8 py-4 border border-[#B8860B] text-[#B8860B] rounded-full font-medium text-lg hover:bg-[#B8860B] hover:text-black transition-all"
+            >
+              View Our Fleet
+            </button>
+          </div>
         </div>
       </section>
 
+      {/* Fleet Teaser Section */}
+      <section className="py-20 lg:py-32 px-8 lg:px-[10%] bg-[#0a0a0a]">
+        <div className="text-center mb-12">
+          <p className="uppercase text-xs md:text-sm tracking-widest text-[#B8860B] mb-2">
+            Our Signature Fleet
+          </p>
+          <h2 className="text-3xl md:text-5xl font-bold font-bricolage">
+            Every journey deserves perfection
+          </h2>
+          <p className="text-gray-400 mt-4 max-w-3xl mx-auto">
+            Each vehicle in our fleet is hand-selected for comfort, elegance, and performance. Whether it’s a wedding, airport transfer, or corporate event, your journey is our priority.
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Vehicle 1 */}
+          <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
+            <img src="/images/-Cadillac.png" alt="Luxury Sedan" className="w-full h-64 object-cover" />
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-2 text-[#B8860B]">Cadillac Escalade</h3>
+              <p className="text-gray-400">Perfect for airport transfers and business travel. Seats 3 passengers comfortably.</p>
+            </div>
+          </div>
+
+          {/* Vehicle 2 */}
+          <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
+            <img src="/images/newgmc.png" alt="Executive SUV" className="w-full h-64 object-cover" />
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-2 text-[#B8860B]">GMC Yukon Denali</h3>
+              <p className="text-gray-400">Spacious and elegant for corporate groups or family travel. Seats up to 6 passengers.</p>
+            </div>
+          </div>
+
+          {/* Vehicle 3 */}
+          <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
+            <img src="/images/newchvy.png" alt="Luxury Sprinter" className="w-full h-64 object-cover" />
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-2 text-[#B8860B]">Chevrolet Suburban</h3>
+              <p className="text-gray-400">Ideal for VIP groups or corporate transfers. Seats up to 8 passengers in comfort.</p>
+            </div>
+          </div>
+          {/* Vehicle 4 */}
+          <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
+            <img src="/images/van.png" alt="Luxury Sprinter" className="w-full h-64 object-cover" />
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-2 text-[#B8860B]">Luxury Sprinter</h3>
+              <p className="text-gray-400">Ideal for group travel or VIP events. Seats up to 12 passengers in total comfort.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Our Story */}
       <section className="py-20 lg:py-32 px-8 lg:px-[10%] grid lg:grid-cols-2 gap-12 items-center">
         <div className="rounded-3xl overflow-hidden transform hover:scale-105 transition-transform duration-700">
-          <img
-            src="/images/3ec.jpg"
-            alt="Luxury Fleet"
-            className="w-full h-full object-cover"
-          />
+          <img src="/images/3ec.jpg" alt="Luxury Fleet" className="w-full h-full object-cover" />
         </div>
         <div>
-          <p className="uppercase text-xs md:text-sm tracking-widest text-[#B8860B] mb-2">
-            Our Story
-          </p>
+          <p className="uppercase text-xs md:text-sm tracking-widest text-[#B8860B] mb-2">Our Story</p>
           <h2 className="text-3xl md:text-5xl font-bold mb-6 font-bricolage">
             Crafting Unforgettable <span className="text-[#B8860B]">Experiences</span>
           </h2>
           <p className="text-gray-400 leading-relaxed mb-4">
-            At Le Charlot Limousine, we don’t just move people; we move moments. Our fleet, expertly maintained and paired with professional chauffeurs, is designed to create unforgettable journeys for every occasion.
+            At Le Charlot Limousine, we don’t just move people; we move moments. Our fleet, expertly maintained and paired with professional chauffeurs, is designed to create unforgettable journeys across Atlanta and surrounding areas.
           </p>
           <p className="text-gray-400 leading-relaxed mb-6">
-            Founded on the principles of discretion, elegance, and precision, our services cater to clients who value refinement and sophistication.
+            Founded on discretion, elegance, and precision, our services cater to clients who value refinement and sophistication.
           </p>
           <ul className="space-y-3">
             <li className="flex items-center gap-3">
@@ -115,14 +167,12 @@ function About() {
       {/* Why Choose Us */}
       <section className="py-20 lg:py-32 px-8 lg:px-[10%] bg-[#1a1a1a] grid lg:grid-cols-2 gap-12 items-center">
         <div>
-          <p className="uppercase text-xs md:text-sm tracking-widest text-[#B8860B] mb-2">
-            Why Choose Us
-          </p>
+          <p className="uppercase text-xs md:text-sm tracking-widest text-[#B8860B] mb-2">Why Choose Us</p>
           <h2 className="text-3xl md:text-5xl font-bold mb-6 font-bricolage">
             Driven by <span className="text-[#B8860B]">Excellence & Elegance</span>
           </h2>
           <p className="text-gray-400 leading-relaxed mb-4">
-            Every ride with Le Charlot Limousine is a promise of refinement, comfort, and precision. We take care of every detail, from vehicle cleanliness to chauffeur etiquette, so you can enjoy the journey in absolute luxury.
+            Every ride with Le Charlot Limousine in Atlanta is a promise of refinement, comfort, and precision. We take care of every detail, from vehicle cleanliness to chauffeur etiquette, so you can enjoy the journey in absolute luxury.
           </p>
           <ul className="space-y-3">
             <li className="flex items-center gap-3">
@@ -144,11 +194,7 @@ function About() {
           </ul>
         </div>
         <div className="rounded-3xl overflow-hidden transform hover:scale-105 transition-transform duration-700">
-          <img
-            src="/images/Experience.jpg"
-            alt="Chauffeur Service"
-            className="w-full h-full object-cover"
-          />
+          <img src="/images/Experience.jpg" alt="Chauffeur Service" className="w-full h-full object-cover" />
         </div>
       </section>
 
@@ -157,14 +203,14 @@ function About() {
         <div className="bg-[#222] rounded-[20px] p-8 relative hover:scale-[1.03] transition-transform duration-500 shadow-lg">
           <h3 className="text-3xl font-bold mb-4 font-bricolage">Our Mission</h3>
           <p className="text-gray-400 leading-relaxed">
-            To deliver a world-class chauffeured experience marked by elegance, precision, and hospitality. We provide seamless, refined transportation for clients who value discretion, comfort, and flawless service.
+            To deliver a world-class chauffeured experience marked by elegance, precision, and hospitality throughout Atlanta. Seamless, refined transportation for clients who value discretion, comfort, and flawless service.
           </p>
           <div className="absolute bottom-4 left-4 w-8 h-8 rounded-full bg-[#B8860B] flex items-center justify-center font-bold text-white shadow-md">1</div>
         </div>
         <div className="bg-[#222] rounded-[20px] p-8 relative hover:scale-[1.03] transition-transform duration-500 shadow-lg">
           <h3 className="text-3xl font-bold mb-4 font-bricolage">Our Values</h3>
           <p className="text-gray-400 leading-relaxed">
-            To be recognized as the most distinguished luxury transportation brand, elevating every journey into a personalized first-class experience with elite chauffeurs and unmatched client care.
+            To be recognized as the most distinguished luxury transportation brand in Atlanta, elevating every journey into a personalized first-class experience with elite chauffeurs and unmatched client care.
           </p>
           <div className="absolute bottom-4 left-4 w-8 h-8 rounded-full bg-[#B8860B] flex items-center justify-center font-bold text-white shadow-md">2</div>
         </div>
@@ -214,7 +260,7 @@ function About() {
         <h2 className="text-4xl md:text-5xl font-bold mb-6 font-bricolage text-[#B8860B]">
           Experience Luxury Today
         </h2>
-        <p className="text-gray-400 mb-8">Your private chauffeur is just a click away.</p>
+        <p className="text-gray-400 mb-8">Your private chauffeur in Atlanta is just a click away.</p>
         <button
           onClick={() => navigate("/reservation-form")}
           className="px-10 py-4 bg-gradient-to-r from-[#B8860B] to-yellow-500 hover:from-yellow-500 hover:to-[#B8860B] transition-all rounded-full font-bold text-lg shadow-xl"
