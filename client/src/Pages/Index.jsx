@@ -82,7 +82,7 @@ function Index() {
                   ATL Airport • Corporate • Events
                 </span>
 
-                <h1 className="font-['Playfair_Display'] text-5xl sm:text-5xl lg:text-5xl xl:text-5xl leading-tight font-semibold mb-6">
+                <h1 className="font-['Playfair_Display'] text-2xl sm:text-3xl lg:text-2xl xl:text-5xl leading-tight font-semibold mb-6">
                   Executive Chauffeur Service, <br />Redefined
                 </h1>
 
@@ -127,7 +127,7 @@ function Index() {
                   Comfort · Class · Precision
                 </span>
 
-                <h1 className="font-['Playfair_Display'] text-5xl sm:text-5xl lg:text-5xl xl:text-5xl leading-tight font-semibold mb-6">
+                <h1 className="font-['Playfair_Display'] text-4xl sm:text-3xl lg:text-4xl xl:text-5xl leading-tight font-semibold mb-6">
                   Drive in Style. <br />Arrive Distinguished
                 </h1>
 
@@ -163,7 +163,7 @@ function Index() {
                   Executive Experience
                 </span>
 
-                <h1 className="font-['Playfair_Display'] text-5xl sm:text-5xl lg:text-5xl xl:text-5xl leading-tight font-semibold mb-6">
+                <h1 className="font-['Playfair_Display'] text-4xl sm:text-3xl lg:text-4xl xl:text-5xl leading-tight font-semibold mb-6">
                   A Seamless Journey, <br />Defined by Excellence
                 </h1>
 
