@@ -71,9 +71,9 @@ function Contact() {
       <div className="banner-section flex justify-center items-center h-[358px] lg:h-[550px]">
         <div className="banner-section-content text-center z-10">
           <h1 className="uppercase text-sm lg:text-xl text-white font-bricolage">
-            GET <span className="text-[#B8860B]">IN TOUCH</span>
+            GET <span className="text-[#D4AF37]">IN TOUCH</span>
           </h1>
-          <h1 className="text-4xl lg:text-5xl xl:text-8xl font-semibold font-bricolage text-[#B8860B]">
+          <h1 className="text-4xl lg:text-5xl xl:text-8xl font-semibold font-bricolage text-[#D4AF37]">
             <span className="text-white font-bricolage">CONTACT</span> US
           </h1>
         </div>
@@ -83,22 +83,22 @@ function Contact() {
       <div className="contact-wrapper lg:px-[12%] px-[8%] pb-[158px]">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-12">
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl">
-            <i className="ri-map-pin-fill text-[#B8860B] text-5xl"></i>
+            <i className="ri-map-pin-fill text-[#D4AF37] text-5xl"></i>
             <h1 className="font-bricolage text-2xl font-semibold mt-8 mb-2">Our Address</h1>
             <p className="text-[#999]">Atlanta, Georgia</p>
           </div>
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl">
-            <i className="ri-mail-fill text-[#B8860B] text-5xl"></i>
+            <i className="ri-mail-fill text-[#D4AF37] text-5xl"></i>
             <h1 className="font-bricolage text-xl font-semibold mt-8 mb-2">Email Us</h1>
             <p className="text-[#999]">info@lecharlotlimousine.com</p>
           </div>
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl">
-            <i className="ri-time-fill text-[#B8860B] text-5xl"></i>
+            <i className="ri-time-fill text-[#D4AF37] text-5xl"></i>
             <h1 className="font-bricolage text-2xl font-semibold mt-8 mb-2">Opening Hours</h1>
             <p className="text-[#999]">Mon-Sun: 9:00 AM - 6:00 PM</p>
           </div>
           <div className="contact-item bg-[#222222] p-12 text-white rounded-xl">
-            <i className="ri-phone-line text-[#B8860B] text-5xl"></i>
+            <i className="ri-phone-line text-[#D4AF37] text-5xl"></i>
             <h1 className="font-bricolage text-2xl font-semibold mt-8 mb-2">Call Us</h1>
             <p className="text-[#999]">(404) 405-3738</p>
           </div>
@@ -120,7 +120,7 @@ function Contact() {
                 <input type="text" placeholder="Message Subject" value={form.subject} disabled={loading} onChange={(e) => setForm({ ...form, subject: e.target.value })} className="bg-[#222] fieldtext text-white rounded-md px-4 py-5" />
               </div>
               <textarea rows="5" placeholder="Your Message" value={form.message} disabled={loading} onChange={(e) => setForm({ ...form, message: e.target.value })} className="bg-[#222] fieldtext text-white rounded-md px-6 py-4 w-full" />
-              <button type="submit" disabled={loading} className="bg-[#B8860B] hover:bg-white hover:text-black text-white px-14 py-4 text-xl rounded-full flex items-center justify-center gap-2 transition">
+              <button type="submit" disabled={loading} className="bg-[#D4AF37] hover:bg-white hover:text-black text-white px-14 py-4 text-xl rounded-full flex items-center justify-center gap-2 transition">
                 {loading ? "Sending..." : "Submit"}
               </button>
             </form>

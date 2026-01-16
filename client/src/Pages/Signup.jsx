@@ -67,7 +67,7 @@ function Signup() {
         onClick={onClick}
         ref={ref}
         placeholder="MM/DD/YYYY"
-        className="calendar-input w-full h-12 p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] pl-4 pr-10 text-sm transition-all"
+        className="calendar-input w-full h-12 p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] pl-4 pr-10 text-sm transition-all"
       />
       <AiOutlineCalendar
         className="calendar-icon absolute right-3 top-1/2 transform -translate-y-1/2 text-white cursor-pointer transition-all"
@@ -91,9 +91,9 @@ function Signup() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 30 }}
         transition={{ duration: 0.8 }}
-        className="relative mt-36 z-10 w-full max-w-md bg-black/50 border border-[#B8860B] rounded-3xl p-10 shadow-2xl backdrop-blur-md"
+        className="relative mt-36 z-10 w-full max-w-md bg-black/50 border border-[#D4AF37] rounded-3xl p-10 shadow-2xl backdrop-blur-md"
       >
-        <h1 className="text-3xl font-bold text-center text-[#B8860B] mb-6">
+        <h1 className="text-3xl font-bold text-center text-[#D4AF37] mb-6">
           Join Le Charlot Elite
         </h1>
 
@@ -108,7 +108,7 @@ function Signup() {
               name="name"
               value={form.name}
               onChange={handleChange}
-              className="w-full h-12 p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition-all"
+              className="w-full h-12 p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition-all"
               required
             />
           </div>
@@ -121,7 +121,7 @@ function Signup() {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="w-full h-12 p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition-all"
+              className="w-full h-12 p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition-all"
               required
             />
           </div>
@@ -134,7 +134,7 @@ function Signup() {
               name="phone"
               value={form.phone}
               onChange={handleChange}
-              className="w-full h-12 p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition-all"
+              className="w-full h-12 p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition-all"
               required
             />
           </div>
@@ -154,7 +154,7 @@ function Signup() {
               yearDropdownItemNumber={100}
               maxDate={new Date()}
               minDate={new Date(new Date().getFullYear() - 100, 0, 1)}
-              calendarClassName="bg-black text-white border border-[#B8860B] rounded-lg shadow-lg transition-all"
+              calendarClassName="bg-black text-white border border-[#D4AF37] rounded-lg shadow-lg transition-all"
               popperClassName="z-50"
               customInput={<CalendarInput />}
               renderCustomHeader={({
@@ -164,10 +164,10 @@ function Signup() {
                 changeYear,
                 changeMonth,
               }) => (
-                <div className="flex justify-between items-center px-2 py-1 bg-[#222] text-white border-b border-[#B8860B] rounded-t-lg">
+                <div className="flex justify-between items-center px-2 py-1 bg-[#222] text-white border-b border-[#D4AF37] rounded-t-lg">
                   <button
                     onClick={decreaseMonth}
-                    className="text-[#B8860B] hover:text-white"
+                    className="text-[#D4AF37] hover:text-white"
                   >
                     {"<"}
                   </button>
@@ -197,7 +197,7 @@ function Signup() {
 
                   <button
                     onClick={increaseMonth}
-                    className="text-[#B8860B] hover:text-white"
+                    className="text-[#D4AF37] hover:text-white"
                   >
                     {">"}
                   </button>
@@ -214,7 +214,7 @@ function Signup() {
               name="password"
               value={form.password}
               onChange={handleChange}
-              className="w-full h-12 p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition-all"
+              className="w-full h-12 p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition-all"
               required
             />
             <span
@@ -228,7 +228,7 @@ function Signup() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#B8860B] text-black font-semibold py-3 rounded-xl shadow-lg hover:bg-[#d4a019] transition-all"
+            className="w-full bg-[#D4AF37] text-black font-semibold py-3 rounded-xl shadow-lg hover:bg-[#d4a019] transition-all"
           >
             {loading ? "Signing up..." : "Sign Up"}
           </button>
@@ -236,7 +236,7 @@ function Signup() {
 
         <p className="mt-6 pt-7  flex flex-wrap  text-center text-gray-300">
           Already a member?{" "}
-          <Link to="/login" className="text-[#B8860B] hover:underline">
+          <Link to="/login" className="text-[#D4AF37] hover:underline">
             Login here
           </Link>
         </p>

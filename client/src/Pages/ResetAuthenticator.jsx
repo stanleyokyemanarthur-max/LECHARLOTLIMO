@@ -122,7 +122,7 @@ export default function ResetAuthenticator() {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-b from-[#080808] to-[#0f0f0f]">
       <div className="space-y-6 w-full max-w-lg">
-        <h2 className="text-2xl font-semibold text-[#B8860B] text-center">Reset Authenticator</h2>
+        <h2 className="text-2xl font-semibold text-[#D4AF37] text-center">Reset Authenticator</h2>
 
         <Card>
           {step === 0 && <p className="text-center text-gray-300">Loading...</p>}
@@ -144,7 +144,7 @@ export default function ResetAuthenticator() {
                   <div>{secret ? maskedSecret(secret) : "—"}</div>
                   <button onClick={handleCopySecret} className="px-2 py-1 bg-[#222] rounded text-sm text-gray-300">Copy</button>
                 </div>
-                <button onClick={() => setStep(2)} className="px-5 py-2 bg-[#B8860B] text-black rounded font-semibold">Next</button>
+                <button onClick={() => setStep(2)} className="px-5 py-2 bg-[#D4AF37] text-black rounded font-semibold">Next</button>
               </div>
             </>
           )}
@@ -154,7 +154,7 @@ export default function ResetAuthenticator() {
               <p className="text-sm text-gray-300 mb-4 text-center">Enter the 6-digit code from your app</p>
               <SixDigitInput onComplete={setCode} />
               <div className="mt-4 flex justify-center gap-4">
-                <button onClick={handleVerify} disabled={loading} className="px-5 py-2 bg-[#B8860B] text-black rounded font-semibold">
+                <button onClick={handleVerify} disabled={loading} className="px-5 py-2 bg-[#D4AF37] text-black rounded font-semibold">
                   {loading ? "Verifying..." : "Verify & Enable"}
                 </button>
               </div>
@@ -166,7 +166,7 @@ export default function ResetAuthenticator() {
             <div className="text-center">
               <p className="text-xl font-semibold text-white mb-2">Authenticator Enabled!</p>
               <p className="text-gray-300 mb-4">You can now use your authenticator app to login.</p>
-              <button onClick={() => navigate("/login")} className="px-5 py-2 bg-[#B8860B] text-black rounded font-semibold">Go to Login</button>
+              <button onClick={() => navigate("/login")} className="px-5 py-2 bg-[#D4AF37] text-black rounded font-semibold">Go to Login</button>
             </div>
           )}
 

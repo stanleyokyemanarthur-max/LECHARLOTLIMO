@@ -228,7 +228,7 @@ function CarDetails() {
       <div className="bg-[#121212] text-white">
         <div className="relative h-[38vh] bg-cover bg-center flex items-end px-[8%] py-12" style={{ backgroundImage: `url(${car.image})` }}>
           <div className="relative z-10">
-            <h6 className="uppercase text-sm tracking-widest text-[#d8c305c5]">{car.type} Cars</h6>
+            <h6 className="uppercase text-sm tracking-widest text-[#D4AF37]">{car.type} Cars</h6>
             <h1 className="text-3xl font-bold">{car.name}</h1>
           </div>
         </div>
@@ -298,7 +298,7 @@ function CarDetails() {
               </div>
             ) : null}
 
-            <button onClick={() => { if (isLoggedIn) handleBooking(); else setShowAuthModal(true); }} className="w-full mt-3 bg-[#d8c305c5] text-black py-2 rounded font-semibold">
+            <button onClick={() => { if (isLoggedIn) handleBooking(); else setShowAuthModal(true); }} className="w-full mt-3 bg-[#D4AF37] text-black py-2 rounded font-semibold">
               {isLoggedIn ? "Rent Now" : "Login / Signup to Book"}
             </button>
           </div>
@@ -323,18 +323,18 @@ function CarDetails() {
 
             {authError && <p className="text-red-400 text-sm mb-3">{authError}</p>}
 
-            <button onClick={handleAuth} className="w-full bg-[#d8c305c5] py-2 rounded-xl text-black font-semibold">{authMode === "login" ? "Login" : "Sign Up"}</button>
+            <button onClick={handleAuth} className="w-full bg-[#D4AF37] py-2 rounded-xl text-black font-semibold">{authMode === "login" ? "Login" : "Sign Up"}</button>
 
             <p className="text-gray-400 text-sm text-center mt-3">
               {authMode === "login" ? (
                 <>
                   Don’t have an account?{" "}
-                  <span onClick={() => setAuthMode("register")} className="text-[#d8c305c5] cursor-pointer">Sign up</span>
+                  <span onClick={() => setAuthMode("register")} className="text-[#D4AF37] cursor-pointer">Sign up</span>
                 </>
               ) : (
                 <>
                   Already have an account?{" "}
-                  <span onClick={() => setAuthMode("login")} className="text-[#d8c305c5] cursor-pointer">Login</span>
+                  <span onClick={() => setAuthMode("login")} className="text-[#D4AF37] cursor-pointer">Login</span>
                 </>
               )}
             </p>

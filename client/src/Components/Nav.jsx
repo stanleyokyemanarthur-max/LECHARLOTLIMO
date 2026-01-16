@@ -52,19 +52,19 @@ function Nav() {
       {/* <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-8 lg:px-12 cursor-default">
         <div className="flex flex-wrap items-center gap-6">
           <span className="flex items-center gap-2">
-            <i className="ri-mail-line text-[#B8860B]"></i>
+            <i className="ri-mail-line text-[#D4AF37]"></i>
             info@LeCharlotLimousine.com
           </span>
           <span className="flex items-center gap-2">
-            <i className="ri-phone-line text-[#B8860B]"></i>
+            <i className="ri-phone-line text-[#D4AF37]"></i>
             (404) 405-3738
           </span>
         </div>
 
         <div className="flex items-center gap-4 text-lg mt-2 lg:mt-0">
-          <i className="ri-facebook-fill cursor-pointer hover:text-[#B8860B]"></i>
-          <i className="ri-instagram-fill cursor-pointer hover:text-[#B8860B]"></i>
-          <i className="ri-twitter-x-fill cursor-pointer hover:text-[#B8860B]"></i>
+          <i className="ri-facebook-fill cursor-pointer hover:text-[#D4AF37]"></i>
+          <i className="ri-instagram-fill cursor-pointer hover:text-[#D4AF37]"></i>
+          <i className="ri-twitter-x-fill cursor-pointer hover:text-[#D4AF37]"></i>
         </div>
       </div> */}
 
@@ -82,7 +82,7 @@ function Nav() {
 
         {/* Mobile Menu Button */}
         <button
-          className="lg:hidden text-3xl text-[#B8860B]"
+          className="lg:hidden text-3xl text-[#D4AF37]"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           <i className={isMobileMenuOpen ? "ri-close-line" : "ri-menu-line"}></i>
@@ -99,7 +99,7 @@ function Nav() {
             <li key={item}>
               <Link
                 to={`/${item === "Home" ? "" : item.toLowerCase()}`}
-                className="nav-link text-white hover:text-[#B8860B] transition"
+                className="nav-link text-white hover:text-[#D4AF37] transition"
               >
                 {item}
               </Link>
@@ -110,7 +110,7 @@ function Nav() {
             <li>
               <Link
                 to="/login"
-                className="text-sm font-semibold uppercase text-[#B8860B] border border-[#B8860B] px-4 py-1.5 rounded-full hover:bg-[#D4AF37] hover:text-black transition-all duration-300"
+                className="text-sm font-semibold uppercase text-[#D4AF37] border border-[#D4AF37] px-4 py-1.5 rounded-full hover:bg-[#D4AF37] hover:text-black transition-all duration-300"
               >
                 Login
               </Link>
@@ -126,7 +126,7 @@ function Nav() {
               {/* Dropdown trigger */}
               <span
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="cursor-pointer font-semibold text-[#B8860B] hover:underline flex items-center gap-1"
+                className="cursor-pointer font-semibold text-[#D4AF37] hover:underline flex items-center gap-1"
               >
                 {userName} <i className="ri-arrow-down-s-line"></i>
               </span>
@@ -143,7 +143,7 @@ function Nav() {
                           navigate("/admin/dashboard");
                           setIsDropdownOpen(false);
                         }}
-                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                        className="px-4 py-3 hover:bg-[#D4AF37] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-dashboard-line"></i> Dashboard
                       </li>
@@ -152,13 +152,13 @@ function Nav() {
                           navigate("/enableauthenticator");
                           setIsDropdownOpen(false);
                         }}
-                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                        className="px-4 py-3 hover:bg-[#D4AF37] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-shield-keyhole-line"></i> Enable Authenticator
                       </li>
                       <li
                         onClick={handleLogout}
-                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                        className="px-4 py-3 hover:bg-[#D4AF37] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-logout-box-line"></i> Logout
                       </li>
@@ -170,7 +170,7 @@ function Nav() {
                           navigate("/mybookings");
                           setIsDropdownOpen(false);
                         }}
-                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                        className="px-4 py-3 hover:bg-[#D4AF37] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-calendar-line"></i> My Bookings
                       </li>
@@ -179,13 +179,13 @@ function Nav() {
                           navigate("/enableauthenticator");
                           setIsDropdownOpen(false);
                         }}
-                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                        className="px-4 py-3 hover:bg-[#D4AF37] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-shield-keyhole-line"></i> Enable Authenticator
                       </li>
                       <li
                         onClick={handleLogout}
-                        className="px-4 py-3 hover:bg-[#B8860B] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
+                        className="px-4 py-3 hover:bg-[#D4AF37] hover:text-black cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-logout-box-line"></i> Logout
                       </li>

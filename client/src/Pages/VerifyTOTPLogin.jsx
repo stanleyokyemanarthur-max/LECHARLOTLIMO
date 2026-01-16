@@ -66,9 +66,9 @@ dispatch(setCredentials({ user: data.user || data, token: data.token }));
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#080808] to-[#0f0f0f] p-6 mt-16">
       <div className="bg-[#0b0b0b] border border-[#2b2b2b] shadow-lg rounded-2xl p-6 w-full max-w-md text-center">
-        <h2 className="text-2xl font-semibold text-[#d8c305c5] mb-4">Verify Authenticator</h2>
+        <h2 className="text-2xl font-semibold text-[#D4AF37] mb-4">Verify Authenticator</h2>
         <p className="text-gray-300 mb-4">
-          Enter the 6-digit code from your authenticator app for <span className="text-[#d8c305] font-semibold">{email}</span>
+          Enter the 6-digit code from your authenticator app for <span className="text-[#D4AF37] font-semibold">{email}</span>
         </p>
 
         {error && <p className="text-red-400 mb-3">{error}</p>}
@@ -87,7 +87,7 @@ dispatch(setCredentials({ user: data.user || data, token: data.token }));
           <button
             type="submit"
             disabled={loading || code.length !== 6}
-            className="w-full bg-[#d8c305c5] text-black py-2 rounded font-semibold hover:bg-[#b5a004] transition"
+            className="w-full bg-[#D4AF37] text-black py-2 rounded font-semibold hover:bg-[#D4AF37] transition"
           >
             {loading ? "Verifying..." : "Verify & Login"}
           </button>

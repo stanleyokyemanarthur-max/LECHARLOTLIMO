@@ -36,10 +36,10 @@ export default function EliteMembership() {
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="mb-12"
                 >
-                    <Crown size={65} className="mx-auto mb-4 text-[#B8860B]" />
+                    <Crown size={65} className="mx-auto mb-4 text-[#D4AF37]" />
 
                     {/* Bilingual Title */}
-                    <h2 className="text-4xl md:text-5xl font-bold text-[#B8860B] tracking-wide">
+                    <h2 className="text-4xl md:text-5xl font-bold text-[#D4AF37] tracking-wide">
                         Le Charlot Elite Membership
                     </h2>
                     <h3 className="text-xl md:text-2xl text-gray-300 italic mt-1">
@@ -68,10 +68,10 @@ export default function EliteMembership() {
                                 delay: i * 0.12,
                                 ease: "easeOut",
                             }}
-                            className="flex items-center gap-4 bg-black/40 border border-[#B8860B]/30 rounded-xl p-4 
+                            className="flex items-center gap-4 bg-black/40 border border-[#D4AF37]/30 rounded-xl p-4 
                                        shadow-md hover:bg-black/50 backdrop-blur-sm transition"
                         >
-                            <div className="text-[#B8860B]">{item.icon}</div>
+                            <div className="text-[#D4AF37]">{item.icon}</div>
                             <p className="text-gray-200">{item.text}</p>
                         </motion.div>
                     ))}
@@ -88,7 +88,7 @@ export default function EliteMembership() {
                 ) : (
                     <button
                         onClick={() => (window.location.href = "/signup")}
-                        className="mt-20 bg-[#B8860B] text-black font-semibold px-8 py-3 rounded-xl shadow-lg 
+                        className="mt-20 bg-[#D4AF37] text-black font-semibold px-8 py-3 rounded-xl shadow-lg 
                                     transition-all"
                     >
                         Join the Elite Membership

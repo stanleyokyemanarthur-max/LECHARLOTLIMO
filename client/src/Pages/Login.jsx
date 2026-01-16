@@ -75,9 +75,9 @@ function Login() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 30 }}
         transition={{ duration: 0.8 }}
-        className="relative z-10 mt-36 w-full max-w-md bg-black/50 border border-[#B8860B] rounded-3xl p-10 shadow-2xl backdrop-blur-md"
+        className="relative z-10 mt-36 w-full max-w-md bg-black/50 border border-[#D4AF37] rounded-3xl p-10 shadow-2xl backdrop-blur-md"
       >
-        <h1 className="text-3xl font-bold text-center text-[#B8860B] mb-6">
+        <h1 className="text-3xl font-bold text-center text-[#D4AF37] mb-6">
           Access Account
         </h1>
 
@@ -92,7 +92,7 @@ function Login() {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] hover:bg-black/30 transition-all"
+              className="w-full p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] hover:bg-black/30 transition-all"
               required
             />
           </div>
@@ -105,7 +105,7 @@ function Login() {
               name="password"
               value={form.password}
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] hover:bg-black/30 transition-all"
+              className="w-full p-3 rounded-lg bg-black/40 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] hover:bg-black/30 transition-all"
               required
             />
             <span
@@ -119,7 +119,7 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#B8860B] text-black font-semibold py-3 rounded-xl shadow-lg hover:bg-[#d4a019] transition-all"
+            className="w-full bg-[#D4AF37] text-black font-semibold py-3 rounded-xl shadow-lg hover:bg-[#d4a019] transition-all"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -127,7 +127,7 @@ function Login() {
 
         <p className="mt-6 pt-7  flex flex-wrap  text-center text-gray-300">
           Not registered?{" "}
-          <Link to="/signup" className="text-[#B8860B] hover:underline">
+          <Link to="/signup" className="text-[#D4AF37] hover:underline">
             Sign Up
           </Link>
         </p>

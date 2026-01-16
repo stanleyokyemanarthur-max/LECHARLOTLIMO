@@ -30,7 +30,7 @@ export default function LostAuthenticator() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#080808] to-[#0f0f0f] p-6">
       <div className="bg-[#0b0b0b] p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-xl font-semibold text-[#B8860B] mb-4 text-center">Lost Authenticator?</h2>
+        <h2 className="text-xl font-semibold text-[#D4AF37] mb-4 text-center">Lost Authenticator?</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="email"
@@ -43,7 +43,7 @@ export default function LostAuthenticator() {
           <button
             type="submit"
             disabled={loading || !email}
-            className="p-3 bg-[#B8860B] text-black rounded font-semibold hover:bg-[#a77b0d] transition"
+            className="p-3 bg-[#D4AF37] text-black rounded font-semibold hover:bg-[#a77b0d] transition"
           >
             {loading ? "Sending..." : "Send Reset Link"}
           </button>

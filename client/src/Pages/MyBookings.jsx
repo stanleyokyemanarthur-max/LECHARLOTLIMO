@@ -80,7 +80,7 @@ function MyBookings() {
         <p className="text-lg">You have no bookings yet.</p>
         <button
           onClick={() => navigate("/fleet")}
-          className="mt-4 bg-[#B8860B] text-white px-5 py-2 rounded-xl hover:bg-[#1f1c01c5] transition"
+          className="mt-4 bg-[#D4AF37] text-white px-5 py-2 rounded-xl hover:bg-[#1f1c01c5] transition"
         >
           Browse Cars
         </button>
@@ -165,7 +165,7 @@ function MyBookings() {
                 </p>
                 <p className="font-semibold text-lg">
                   Total Price:{" "}
-                  <span className="text-[#B8860B]">${booking.totalPrice.toFixed(2)}</span>
+                  <span className="text-[#D4AF37]">${booking.totalPrice.toFixed(2)}</span>
                 </p>
               </div>
 

@@ -221,7 +221,7 @@ function CarsDetails() {
         >
           <div className="absolute inset-0 cars-det-section"></div>
           <div className="relative z-10">
-            <h6 className="uppercase text-xl tracking-widest text-[#d8c305c5] font-bricolage">
+            <h6 className="uppercase text-xl tracking-widest text-[#D4AF37] font-bricolage">
               {car.type} Cars
             </h6>
             <h1 className="text-4xl lg:text-6xl font-bold font-bricolage">{car.name}</h1>
@@ -314,7 +314,7 @@ function CarsDetails() {
                 if (isLoggedIn) handleBooking();
                 else setShowAuthModal(true);
               }}
-              className="bg-[#d8c305c5] text-white py-2 rounded-xl hover:bg-[#1f1c01c5] transition font-bricolage"
+              className="bg-[#D4AF37] text-white py-2 rounded-xl hover:bg-[#1f1c01c5] transition font-bricolage"
             >
               {isLoggedIn ? "Rent Now" : "Login / Signup to Book"}
             </button>
@@ -335,7 +335,7 @@ function CarsDetails() {
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-[#1a1a1a] p-8 rounded-2xl text-center w-[350px]">
-            <h2 className="text-2xl font-bold text-[#d8c305c5] mb-4">
+            <h2 className="text-2xl font-bold text-[#D4AF37] mb-4">
               Booking Confirmed 🎉
             </h2>
             <p className="text-gray-300 mb-6">
@@ -346,7 +346,7 @@ function CarsDetails() {
                 setShowSuccessModal(false);
                 navigate("/mybookings");
               }}
-              className="bg-[#d8c305c5] text-white py-2 px-6 rounded-xl hover:bg-[#b8a705]"
+              className="bg-[#D4AF37] text-white py-2 px-6 rounded-xl hover:bg-[#b8a705]"
             >
               Go Now
             </button>
@@ -392,7 +392,7 @@ function CarsDetails() {
 
             <button
               onClick={handleAuth}
-              className="w-full bg-[#d8c305c5] py-2 rounded-xl text-white font-semibold"
+              className="w-full bg-[#D4AF37] py-2 rounded-xl text-white font-semibold"
             >
               {authMode === "login" ? "Login" : "Sign Up"}
             </button>
@@ -403,7 +403,7 @@ function CarsDetails() {
                   Don’t have an account?{" "}
                   <span
                     onClick={() => setAuthMode("register")}
-                    className="text-[#d8c305c5] cursor-pointer"
+                    className="text-[#D4AF37] cursor-pointer"
                   >
                     Sign up
                   </span>
@@ -413,7 +413,7 @@ function CarsDetails() {
                   Already have an account?{" "}
                   <span
                     onClick={() => setAuthMode("login")}
-                    className="text-[#d8c305c5] cursor-pointer"
+                    className="text-[#D4AF37] cursor-pointer"
                   >
                     Login
                   </span>

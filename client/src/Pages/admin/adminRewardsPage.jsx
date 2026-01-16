@@ -38,7 +38,7 @@ export default function AdminRewardsPage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center text-[#B8860B]">
+      <div className="min-h-screen flex items-center justify-center text-[#D4AF37]">
         Loading…
       </div>
     );
@@ -46,7 +46,7 @@ export default function AdminRewardsPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold text-[#B8860B] mb-6">User Rewards</h1>
+      <h1 className="text-2xl font-bold text-[#D4AF37] mb-6">User Rewards</h1>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2 mb-4 items-center">
@@ -56,7 +56,7 @@ export default function AdminRewardsPage() {
             onClick={() => setFilterStatus(s)}
             className={`px-3 py-1 rounded font-medium ${
               filterStatus === s
-                ? "bg-[#B8860B] text-black"
+                ? "bg-[#D4AF37] text-black"
                 : "bg-gray-800 text-gray-300 hover:bg-gray-700"
             }`}
           >
@@ -64,7 +64,7 @@ export default function AdminRewardsPage() {
           </button>
         ))}
         <input
-          className="bg-gray-800 px-3 py-1 rounded ml-auto text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#B8860B]"
+          className="bg-gray-800 px-3 py-1 rounded ml-auto text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
           placeholder="Search user…"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -74,7 +74,7 @@ export default function AdminRewardsPage() {
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full border border-gray-700 text-sm">
-          <thead className="bg-[#B8860B] text-black">
+          <thead className="bg-[#D4AF37] text-black">
             <tr>
               <th className="px-3 py-2 text-left">User</th>
               <th className="px-3 py-2 text-left">Email</th>

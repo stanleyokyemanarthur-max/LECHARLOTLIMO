@@ -37,10 +37,10 @@ function RewardsIcon() {
         className="relative flex items-center justify-center w-10 h-10 ml-2"
         aria-label={`You have ${rewardsCount} rewards`}
       >
-        <Gift size={28} className="text-[#B8860B]" />
+        <Gift size={28} className="text-[#D4AF37]" />
         <span
           className="absolute -top-1 -right-1 w-5 h-5 rounded-full
-            bg-[#B8860B] text-black text-[17px] font-bold flex items-center justify-center"
+            bg-[#D4AF37] text-black text-[17px] font-bold flex items-center justify-center"
         >
           {rewardsCount > 3 ? "3+" : rewardsCount}
         </span>

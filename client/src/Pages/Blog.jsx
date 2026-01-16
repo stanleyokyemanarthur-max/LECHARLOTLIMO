@@ -7,9 +7,9 @@ function Blog() {
       <div className="banner-section flex justify-center items-center h-[358px] lg:h-[550px]">
         <div className="banner-section-content text-center z-10">
           <h6 className="uppercase text-sm lg:text-xl text-white font-bricolage">
-            BLOG<span className="text-[#d8c305c5]">& NEWS</span>
+            BLOG<span className="text-[#D4AF37]">& NEWS</span>
           </h6>
-          <h1 className="text-4xl lg:text-5xl xl:text-8xl font-semibold font-bricolage text-[#d8c305c5]">
+          <h1 className="text-4xl lg:text-5xl xl:text-8xl font-semibold font-bricolage text-[#D4AF37]">
             <span className="text-white font-bricolage">LATEST</span> NEWS
           </h1>
         </div>
@@ -31,7 +31,7 @@ function Blog() {
 
             {/* Blog Content */}
             <div className="blog-content p-6">
-              <div className="date bg-[#d8c305c5] w-fit px-4 py-1.5 text-sm text-white font-bricolage rounded-md mb-4">
+              <div className="date bg-[#D4AF37] w-fit px-4 py-1.5 text-sm text-white font-bricolage rounded-md mb-4">
                 {blog.date}
               </div>
               <h4 className="text-lg lg:text-2xl font-bricolage text-white font-semibold uppercase mb-3">
@@ -40,7 +40,7 @@ function Blog() {
               <p className="text-gray-400 text-sm leading-relaxed font-bricolage">
                 {blog.description?.slice(0, 120)}...
               </p>
-              <button className="mt-4 text-[#d8c305c5] font-semibold font-bricolage hover:underline">
+              <button className="mt-4 text-[#D4AF37] font-semibold font-bricolage hover:underline">
                 Read More →
               </button>
             </div>

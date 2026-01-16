@@ -54,7 +54,7 @@ function DriverDashboard() {
   return (
     <div>
       {/* Header */}
-      <h1 className="text-3xl font-bold text-[#d8c305c5] mb-6">
+      <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">
         Welcome, {userInfo?.name || "Driver"}
       </h1>
 
@@ -62,7 +62,7 @@ function DriverDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-gray-800 p-6 rounded-xl text-center">
           <h3 className="text-lg text-gray-400">Total Trips</h3>
-          <p className="text-3xl font-bold text-[#d8c305c5]">{totalTrips}</p>
+          <p className="text-3xl font-bold text-[#D4AF37]">{totalTrips}</p>
         </div>
         <div className="bg-gray-800 p-6 rounded-xl text-center">
           <h3 className="text-lg text-gray-400">Completed</h3>
@@ -76,7 +76,7 @@ function DriverDashboard() {
 
       {/* Bookings Table */}
       <table className="min-w-full border border-gray-700 text-sm">
-        <thead className="bg-[#d8c305c5] text-black">
+        <thead className="bg-[#D4AF37] text-black">
           <tr>
             <th className="px-4 py-2">Car</th>
             <th className="px-4 py-2">Pickup</th>

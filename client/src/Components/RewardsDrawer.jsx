@@ -63,7 +63,7 @@ function RewardsDrawer({
                 onClick={onClose}
                 className="w-9 h-9 rounded-full
                   flex items-center justify-center
-                  text-gray-400 hover:text-[#B8860B]
+                  text-gray-400 hover:text-[#D4AF37]
                   hover:bg-white/10 transition"
               >
                 ✕
@@ -98,8 +98,8 @@ function RewardsDrawer({
                         isQueued
                           ? "border-red-700/60 bg-red-900/20 cursor-not-allowed"
                           : isSelected
-                          ? "border-[#B8860B] bg-[#B8860B]/15 shadow-[0_0_30px_#B8860B33]"
-                          : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-[#B8860B]/60"
+                          ? "border-[#D4AF37] bg-[#D4AF37]/15 shadow-[0_0_30px_#B8860B33]"
+                          : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-[#D4AF37]/60"
                       }
                     `}
                   >
@@ -111,7 +111,7 @@ function RewardsDrawer({
                           isQueued
                             ? "bg-red-600 text-white"
                             : isSelected
-                            ? "bg-[#B8860B] text-black"
+                            ? "bg-[#D4AF37] text-black"
                             : "bg-white/10 text-gray-200"
                         }
                       `}
@@ -132,7 +132,7 @@ function RewardsDrawer({
                     </p>
 
                     {!isQueued && !isSelected && (
-                      <p className="mt-3 text-xs text-[#B8860B]">
+                      <p className="mt-3 text-xs text-[#D4AF37]">
                         Tap to apply →
                       </p>
                     )}
@@ -151,7 +151,7 @@ function RewardsDrawer({
               onClick={onClose}
               className="px-5 py-2 rounded-full
                 text-sm font-semibold
-                bg-[#B8860B] text-black
+                bg-[#D4AF37] text-black
                 hover:bg-[#D4AF37] transition"
             >
               Done

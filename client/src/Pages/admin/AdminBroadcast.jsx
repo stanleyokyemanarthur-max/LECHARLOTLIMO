@@ -37,7 +37,7 @@ export default function AdminBroadcast() {
 
   return (
     <div className="min-h-screen flex flex-col items-center pt-12 px-4 lg:px-0" style={{ background: 'linear-gradient(145deg, #1A1A1A, #121212)' }}>
-      <h1 className="text-3xl font-extrabold text-[#B8860B] mb-10 tracking-wide">Admin Broadcast</h1>
+      <h1 className="text-3xl font-extrabold text-[#D4AF37] mb-10 tracking-wide">Admin Broadcast</h1>
 
       <div className="bg-gray-800 bg-opacity-90 w-full max-w-4xl rounded-3xl shadow-2xl p-10 space-y-7 border border-gray-700">
         {/* Channel */}
@@ -46,7 +46,7 @@ export default function AdminBroadcast() {
           <select
             value={channel}
             onChange={(e) => setChannel(e.target.value)}
-            className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition"
+            className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition"
           >
             <option value="email">Email</option>
             <option value="sms">SMS</option>
@@ -63,7 +63,7 @@ export default function AdminBroadcast() {
               placeholder="Enter email subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition"
+              className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition"
             />
           </div>
         )}
@@ -76,7 +76,7 @@ export default function AdminBroadcast() {
             placeholder="Type your message here..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-[#B8860B] transition"
+            className="bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition"
           />
         </div>
 
@@ -84,7 +84,7 @@ export default function AdminBroadcast() {
         <button
           onClick={handleSend}
           disabled={loading}
-          className="w-full bg-[#B8860B] hover:bg-[#d4af37] text-black font-bold py-3 rounded-2xl shadow-lg transform hover:scale-105 transition duration-200"
+          className="w-full bg-[#D4AF37] hover:bg-[#d4af37] text-black font-bold py-3 rounded-2xl shadow-lg transform hover:scale-105 transition duration-200"
         >
           {loading ? "Sending..." : "Send Message"}
         </button>

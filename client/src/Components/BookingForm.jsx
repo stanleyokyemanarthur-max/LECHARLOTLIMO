@@ -36,15 +36,15 @@ const BookingForm = ({ selectedCarType, setSelectedCarType }) => {
           className="flex items-center gap-2 w-full justify-between text-gray-400"
         >
           {selectedCarType}
-          <i className="ri-arrow-down-s-line text-[#d8c305c5]"></i>
+          <i className="ri-arrow-down-s-line text-[#D4AF37]"></i>
         </button>
-        <div className="absolute top-[110%] left-8 w-48 bg-[#1f1f1f] border border-[#d8c305c5] rounded-sm shadow-md opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible transition-all duration-300 ease-out z-50">
+        <div className="absolute top-[110%] left-8 w-48 bg-[#1f1f1f] border border-[#D4AF37] rounded-sm shadow-md opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible transition-all duration-300 ease-out z-50">
           <ul className="divide-y divide-gray-700">
             {["Luxury", "SUV", "Economy"].map((type) => (
               <li
                 key={type}
                 onClick={() => setSelectedCarType(type)}
-                className="px-4 py-2 hover:bg-[#d8c305c5] transition cursor-pointer"
+                className="px-4 py-2 hover:bg-[#D4AF37] transition cursor-pointer"
               >
                 {type}
               </li>
@@ -88,7 +88,7 @@ const BookingForm = ({ selectedCarType, setSelectedCarType }) => {
             calendarClassName="bg-[#1f1f1f] text-white border border-gray-600 rounded-md shadow-md"
             popperPlacement="bottom"
           />
-          <i className="ri-calendar-line text-[#d8c305c5] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <i className="ri-calendar-line text-[#D4AF37] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"></i>
         </div>
       </div>
 
@@ -127,7 +127,7 @@ const BookingForm = ({ selectedCarType, setSelectedCarType }) => {
             calendarClassName="bg-[#1f1f1f] text-white border border-gray-600 rounded-md shadow-md"
             popperPlacement="bottom"
           />
-          <i className="ri-calendar-line text-[#d8c305c5] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <i className="ri-calendar-line text-[#D4AF37] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"></i>
         </div>
       </div>
 
@@ -135,7 +135,7 @@ const BookingForm = ({ selectedCarType, setSelectedCarType }) => {
       <div className="col-span-1 sm:col-span-2 lg:col-span-5 flex justify-center">
         <button
           type="submit"
-          className="mt-2 px-6 py-3 bg-[#d8c305c5] text-white rounded-md hover:bg-[#3d3704c5] transition duration-300"
+          className="mt-2 px-6 py-3 bg-[#D4AF37] text-white rounded-md hover:bg-[#3d3704c5] transition duration-300"
         >
           Search Car
         </button>

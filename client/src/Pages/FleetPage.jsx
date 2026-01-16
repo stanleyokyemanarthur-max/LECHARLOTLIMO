@@ -73,7 +73,7 @@ function FleetPage() {
     <section className="bg-[#0a0a0a] mt-12 min-h-screen py-28 px-6 md:px-12 text-white">
       {/* Title */}
       <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-bricolage font-bold mb-3 text-[#B8860B]">
+        <h1 className="text-4xl md:text-5xl font-bricolage font-bold mb-3 text-[#D4AF37]">
           Our Luxurious Fleet
         </h1>
         <p className="text-gray-300 max-w-2xl mx-auto">
@@ -100,7 +100,7 @@ function FleetPage() {
             <div className="p-6 flex flex-col justify-between flex-grow">
               <div>
                 <h2 className="text-2xl font-bold mb-1 uppercase">{car.title}</h2>
-                <p className="text-[#B8860B] font-semibold mb-4 uppercase tracking-wide">
+                <p className="text-[#D4AF37] font-semibold mb-4 uppercase tracking-wide">
                   {car.subtitle}
                 </p>
 
@@ -109,7 +109,7 @@ function FleetPage() {
                     const Icon = item.icon;
                     return (
                       <li key={idx} className="flex items-center gap-2">
-                        <Icon className="w-5 h-5 text-[#B8860B]" />
+                        <Icon className="w-5 h-5 text-[#D4AF37]" />
                         <span>{item.text}</span>
                       </li>
                     );
@@ -119,7 +119,7 @@ function FleetPage() {
 
               <button
                 onClick={() => navigate(`/fleet/${car.slug}`)}
-                className="bg-gradient-to-r from-[#B8860B] to-[#B8860B] hover:from-yellow-400 hover:to-[#B8860B] text-black font-bold py-3 rounded-full shadow-lg transition-all"
+                className="bg-gradient-to-r from-[#D4AF37] to-[#D4AF37] hover:from-yellow-400 hover:to-[#D4AF37] text-black font-bold py-3 rounded-full shadow-lg transition-all"
               >
                 VIEW DETAILS
               </button>

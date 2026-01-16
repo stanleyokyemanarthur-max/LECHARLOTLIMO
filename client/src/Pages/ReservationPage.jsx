@@ -162,7 +162,7 @@ export default function ReservationPage() {
       >
         {/* Left: Form */}
         <form onSubmit={handlePreviewAndProceed} className="space-y-6 text-[#EDEDED]">
-          <h2 className="text-3xl font-[Playfair_Display] font-semibold text-[#B8860B] tracking-wide mb-4">
+          <h2 className="text-3xl font-[Playfair_Display] font-semibold text-[#D4AF37] tracking-wide mb-4">
             Step 1 — Booking Information
           </h2>
 
@@ -176,7 +176,7 @@ export default function ReservationPage() {
                 value={tripData[f.name]}
                 onChange={(e) => setTripDataState((s) => ({ ...s, [f.name]: e.target.value }))}
                 placeholder={f.placeholder}
-                className="w-full mt-2 bg-transparent border border-[#2D2D2D] text-[#F5F5F5] p-3 rounded-lg focus:border-[#B8860B] focus:ring-1 focus:ring-[#B8860B] transition"
+                className="w-full mt-2 bg-transparent border border-[#2D2D2D] text-[#F5F5F5] p-3 rounded-lg focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition"
                 required
               />
             </div>
@@ -209,7 +209,7 @@ export default function ReservationPage() {
                   setTripDataState((s) => ({ ...s, dropoffDate: dt }));
                 }}
                 options={{ enableTime: true, dateFormat: "Y-m-d H:i", minDate: tripData.pickupDate ? tripData.pickupDate : minPickupDate, time_24hr: false }}
-                className="w-full mt-2 px-4 py-3 rounded-xl bg-black/40 border border-[#2D2D2D] text-white placeholder-gray-500 focus:border-[#B8860B] focus:ring-1 focus:ring-[#B8860B]"
+                className="w-full mt-2 px-4 py-3 rounded-xl bg-black/40 border border-[#2D2D2D] text-white placeholder-gray-500 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
                 placeholder="Select drop-off date & time"
               />
             </div>
@@ -228,7 +228,7 @@ export default function ReservationPage() {
                   value={tripData[f.name]}
                   onChange={handleInputChange}
                   placeholder={f.placeholder}
-                  className="w-full mt-2 bg-transparent border border-[#2D2D2D] text-[#F5F5F5] p-3 rounded-lg focus:border-[#B8860B] focus:ring-1 focus:ring-[#B8860B]"
+                  className="w-full mt-2 bg-transparent border border-[#2D2D2D] text-[#F5F5F5] p-3 rounded-lg focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
                 />
               </div>
             ))}
@@ -241,7 +241,7 @@ export default function ReservationPage() {
             type="submit"
             disabled={loadingRoute || !isLoggedIn}
             onClick={() => !isLoggedIn && navigate("/login")}
-            className="w-full bg-gradient-to-r from-[#B8860B] to-[#B8860B] text-black py-3 rounded-lg font-semibold hover:brightness-110 transition disabled:opacity-60 shadow-[0_0_10px_rgba(212,175,55,0.4)]"
+            className="w-full bg-[#D4AF37] text-black py-3 rounded-lg font-semibold hover:brightness-110 transition disabled:opacity-60 shadow-[0_0_10px_rgba(212,175,55,0.4)]"
           >
             {isLoggedIn ? (loadingRoute ? "Drawing route..." : "Book Now") : "Login to Book"}
           </button>

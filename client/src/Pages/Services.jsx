@@ -25,7 +25,7 @@ function Services() {
             className="rounded-2xl shadow-xl w-full lg:w-1/2 object-cover"
           />
           <div className="lg:w-1/2">
-            <span className="uppercase tracking-widest text-sm text-yellow-500">
+            <span className="uppercase tracking-widest text-sm text-[#D4AF37]">
               Premium Limousine Service
             </span>
             <h1 className="text-4xl lg:text-5xl font-bold mt-3 mb-6">
@@ -55,7 +55,7 @@ function Services() {
       <section className="py-20 px-[8%] lg:px-[12%] bg-[#111]">
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-10">
           <div className="lg:w-1/2 space-y-5">
-            <h2 className="text-3xl font-semibold text-yellow-500">
+            <h2 className="text-3xl font-semibold text-[#D4AF37]">
               Our Commitment to Excellence
             </h2>
             <p className="text-gray-300 text-lg leading-relaxed">
@@ -82,7 +82,7 @@ function Services() {
       {/* Why Choose Us Section */}
       <section className="py-20 px-[8%] lg:px-[12%] border-t border-gray-800">
         <div className="max-w-6xl mx-auto text-center mb-12">
-          <h2 className="text-3xl font-semibold text-yellow-500 mb-3">
+          <h2 className="text-3xl font-semibold text-[#D4AF37] mb-3">
             Why Choose Le Charlot Limousine
           </h2>
           <p className="text-gray-400 text-lg">
@@ -110,7 +110,7 @@ function Services() {
               key={i}
               className="bg-[#1a1a1a] p-8 rounded-2xl shadow-lg hover:shadow-yellow-600/10 transition-all duration-300"
             >
-              <h3 className="text-xl font-semibold mb-3 text-yellow-500">
+              <h3 className="text-xl font-semibold mb-3 text-[#D4AF37]">
                 {feature.title}
               </h3>
               <p className="text-gray-400 leading-relaxed">{feature.text}</p>

@@ -55,7 +55,7 @@ export default function MilestoneForm({ onClose, onCreated }) {
     return (
         <div className="fixed inset-0 mt-50 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-[#111111] p-8 rounded-2xl w-96 shadow-lg border border-gray-800">
-                <h2 className="text-2xl font-bold mb-4 text-[#B8860B]">Create New Milestone</h2>
+                <h2 className="text-2xl font-bold mb-4 text-[#D4AF37]">Create New Milestone</h2>
                 {error && <p className="text-red-500 mb-2">{error}</p>}
 
                 <form onSubmit={handleSubmit} className="space-y-5">
@@ -67,7 +67,7 @@ export default function MilestoneForm({ onClose, onCreated }) {
                             placeholder="E.g., First 5 Rides"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#B8860B] text-white"
+                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#D4AF37] text-white"
                             required
                         />
                         <p className="text-xs text-gray-400 mt-1">The name of the milestone to display to users.</p>
@@ -79,7 +79,7 @@ export default function MilestoneForm({ onClose, onCreated }) {
                         <select
                             value={triggerType}
                             onChange={(e) => setTriggerType(e.target.value)}
-                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#B8860B] text-white"
+                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#D4AF37] text-white"
                         >
                             <option value="RIDES">Rides – after X rides</option>
                             <option value="SPEND">Spend – after spending X amount</option>
@@ -93,7 +93,7 @@ export default function MilestoneForm({ onClose, onCreated }) {
                             placeholder="E.g., 5"
                             value={threshold}
                             onChange={(e) => setThreshold(Number(e.target.value))}
-                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#B8860B] text-white"
+                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#D4AF37] text-white"
                             required
                         />
                         <p className="text-xs text-gray-400 mt-1">
@@ -111,7 +111,7 @@ export default function MilestoneForm({ onClose, onCreated }) {
                             placeholder="E.g., Free Ride, Discount Coupon"
                             value={rewardTitle}
                             onChange={(e) => setRewardTitle(e.target.value)}
-                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#B8860B] text-white"
+                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#D4AF37] text-white"
                             required
                         />
 
@@ -121,7 +121,7 @@ export default function MilestoneForm({ onClose, onCreated }) {
                             placeholder="Optional description for users"
                             value={rewardDescription}
                             onChange={(e) => setRewardDescription(e.target.value)}
-                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#B8860B] text-white"
+                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#D4AF37] text-white"
                         />
 
                         <label className="block text-sm mb-1 mt-3">Reward Value</label>
@@ -130,7 +130,7 @@ export default function MilestoneForm({ onClose, onCreated }) {
                             placeholder="E.g., 1"
                             value={rewardValue}
                             onChange={(e) => setRewardValue(Number(e.target.value))}
-                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#B8860B] text-white"
+                            className="w-full p-3 rounded-lg bg-[#222222] border border-gray-700 focus:outline-none focus:border-[#D4AF37] text-white"
                         />
                     </div>
 
@@ -146,7 +146,7 @@ export default function MilestoneForm({ onClose, onCreated }) {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-4 py-2 rounded-lg bg-[#B8860B] text-black hover:bg-[#b5a004]"
+                            className="px-4 py-2 rounded-lg bg-[#D4AF37] text-black hover:bg-[#b5a004]"
                         >
                             {loading ? "Saving…" : "Create Milestone"}
                         </button>
@@ -155,7 +155,7 @@ export default function MilestoneForm({ onClose, onCreated }) {
                                 setSelectedMilestone(m);
                                 setShowForm(true);
                             }}
-                            className="text-sm text-[#B8860B] hover:underline"
+                            className="text-sm text-[#D4AF37] hover:underline"
                         >
                             Edit
                         </button>

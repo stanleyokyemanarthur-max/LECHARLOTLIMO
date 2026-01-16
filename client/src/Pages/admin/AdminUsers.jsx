@@ -29,7 +29,7 @@ export default function AdminUsers() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-screen text-[#B8860B]">
+      <div className="flex justify-center items-center min-h-screen text-[#D4AF37]">
         Loading users...
       </div>
     );
@@ -45,7 +45,7 @@ export default function AdminUsers() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-[#B8860B] mb-6">Manage Users</h1>
+      <h1 className="text-2xl font-bold text-[#D4AF37] mb-6">Manage Users</h1>
 
       {/* 🔽 Filter + Search Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
@@ -55,7 +55,7 @@ export default function AdminUsers() {
               key={role}
               onClick={() => setFilterRole(role)}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${filterRole === role
-                  ? "bg-[#B8860B] text-black"
+                  ? "bg-[#D4AF37] text-black"
                   : "bg-gray-800 text-gray-300 hover:bg-gray-700"
                 }`}
             >
@@ -69,14 +69,14 @@ export default function AdminUsers() {
           placeholder="Search name or email..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-gray-800 text-gray-200 border border-gray-600 rounded-md px-3 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#B8860B]"
+          className="bg-gray-800 text-gray-200 border border-gray-600 rounded-md px-3 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
         />
       </div>
 
       {/* 🧾 User Table */}
       {/* 🧾 User Table */}
       <table className="min-w-full border border-gray-700 text-sm table-fixed">
-        <thead className="bg-[#B8860B] text-black">
+        <thead className="bg-[#D4AF37] text-black">
           <tr>
             <th className="px-4 py-2 w-1/5">Name</th>
             <th className="px-4 py-2 w-1/5">Email</th>

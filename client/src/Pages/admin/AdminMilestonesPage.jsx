@@ -50,13 +50,13 @@ export default function AdminMilestonesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-[#B8860B]">
+        <h2 className="text-2xl font-bold text-[#D4AF37]">
           Milestone Campaigns
         </h2>
 
         <button
           onClick={openCreateForm}
-          className="bg-[#B8860B] text-black px-4 py-2 rounded-lg font-semibold hover:bg-[#b5a004]"
+          className="bg-[#D4AF37] text-black px-4 py-2 rounded-lg font-semibold hover:bg-[#b5a004]"
         >
           + New Milestone
         </button>
@@ -103,7 +103,7 @@ export default function AdminMilestonesPage() {
 
               <button
                 onClick={() => openEditForm(m)}
-                className="text-sm text-[#B8860B] hover:underline"
+                className="text-sm text-[#D4AF37] hover:underline"
               >
                 Edit
               </button>
