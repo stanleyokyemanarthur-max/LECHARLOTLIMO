@@ -28,7 +28,7 @@ function About() {
     <div className="text-white font-poppins bg-[#0a0a0a]">
       {/* Hero Banner */}
       <section
-        className="relative h-[85vh] flex items-center justify-center overflow-hidden"
+        className="relative h-[85vh] flex items-end overflow-hidden"
         style={{
           backgroundImage: "url('/images/cinema.png')",
           backgroundSize: "cover",
@@ -37,38 +37,56 @@ function About() {
         }}
       >
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-black/50 sm:bg-black/60"></div>
 
         {/* Hero Content */}
-        <div className="relative z-10 text-center px-4">
-          <h1 className="uppercase text-sm lg:text-xl tracking-widest text-white mb-2 font-bricolage">
+        <div
+          className="relative z-10 w-full text-center px-4
+               pb-16 sm:pb-20 lg:pb-2
+               animate-heroFloat"
+        >
+          <h1 className="uppercase text-xs sm:text-sm lg:text-xl tracking-widest text-white mb-2 font-bricolage">
             Le Charlot <span className="text-[#D4AF37]">Limousine</span>
           </h1>
-          <h2 className="text-4xl lg:text-6xl xl:text-7xl font-bold">
-            <span className="text-white">Executive Chauffeur Service</span> in Atlanta.
+
+          <h2 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold leading-tight">
+            <span className="text-white">Executive Chauffeur Service</span>
+            <span className="block sm:inline"> in Atlanta.</span>
           </h2>
-          <p className="text-gray-300 mt-4 lg:text-xl max-w-3xl mx-auto">
-            From airport transfers to corporate arrivals, Le Charlot Limousine delivers precision, privacy, and prestige — every mile, every moment.
+
+          <p className="text-gray-300 mt-4 text-sm sm:text-base lg:text-xl max-w-3xl mx-auto">
+            From airport transfers to corporate arrivals, Le Charlot Limousine delivers
+            precision, privacy, and prestige — every mile, every moment.
           </p>
-          <p className="mt-3 text-xs lg:text-sm uppercase tracking-[0.35em] text-[#D4AF37]">
+
+          <p className="mt-3 text-[10px] sm:text-xs lg:text-sm uppercase tracking-[0.35em] text-[#D4AF37]">
             Serving Atlanta • Buckhead • Alpharetta • Sandy Springs
           </p>
+
           <div className="mt-6 flex justify-center gap-4 flex-wrap">
             <button
               onClick={() => navigate("/reservation-form")}
-              className="px-8 py-4 bg-gradient-to-r from-[#D4AF37] to-[#D4AF37] hover:from-[#D4AF37] hover:to-[#D4AF37] transition-all rounded-full font-medium text-lg shadow-lg"
+              className="px-7 py-3 sm:px-8 sm:py-4
+                   bg-[#D4AF37] text-black
+                   rounded-full font-medium shadow-lg
+                   hover:opacity-90 transition"
             >
               Reserve Your Ride
             </button>
+
             <button
               onClick={() => navigate("/fleet")}
-              className="px-8 py-4 border border-[#D4AF37] text-[#D4AF37] rounded-full font-medium text-lg hover:bg-[#D4AF37] hover:text-black transition-all"
+              className="px-7 py-3 sm:px-8 sm:py-4
+                   border border-[#D4AF37] text-[#D4AF37]
+                   rounded-full font-medium
+                   hover:bg-[#D4AF37] hover:text-black transition"
             >
               View Our Fleet
             </button>
           </div>
         </div>
       </section>
+
 
       {/* Fleet Teaser Section */}
       <section className="py-20 lg:py-32 px-8 lg:px-[10%] bg-[#0a0a0a]">
@@ -154,7 +172,7 @@ function About() {
           </ul>
           <button
             onClick={() => navigate("/reservation-form")}
-            className="mt-6 px-8 py-4 bg-gradient-to-r from-[#D4AF37] to-yellow-500 hover:from-yellow-500 hover:to-[#D4AF37] transition-all rounded-full font-medium text-lg shadow-lg"
+            className="mt-6 px-8 py-4 bg-gradient-to-r from-[#D4AF37] to-[#D4AF37] hover:from-[#D4AF37] hover:to-[#D4AF37] transition-all rounded-full font-medium text-lg shadow-lg"
           >
             Make Reservation
           </button>
@@ -263,7 +281,7 @@ function About() {
         <p className="text-gray-400 mb-8">Your private chauffeur in Atlanta is just a click away.</p>
         <button
           onClick={() => navigate("/reservation-form")}
-          className="px-10 py-4 bg-gradient-to-r from-[#D4AF37] to-yellow-500 hover:from-yellow-500 hover:to-[#D4AF37] transition-all rounded-full font-bold text-lg shadow-xl"
+          className="px-10 py-4 bg-gradient-to-r from-[#D4AF37] to-[#D4AF37] hover:from-[#D4AF37] hover:to-[#D4AF37] transition-all rounded-full font-bold text-lg shadow-xl"
         >
           Reserve Your Ride
         </button>

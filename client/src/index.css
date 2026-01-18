@@ -360,3 +360,17 @@ button:hover { cursor: pointer; }
   color: #B8860B !important;
 }
 
+@keyframes heroFloat {
+  from {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-heroFloat {
+  animation: heroFloat 1.8s ease-out forwards;
+}
