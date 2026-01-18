@@ -115,6 +115,13 @@ function Login() {
               {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
             </span>
           </div>
+          <Link
+            to="/forgot-password"
+            className="text-sm text-[#D4AF37] hover:underline"
+          >
+            Forgot password?
+          </Link>
+
 
           <button
             type="submit"

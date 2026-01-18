@@ -10,7 +10,6 @@ import {
   getProfile,
   updateProfile,
   requestPasswordReset,
-  resetPasswordWithToken,
   changePassword,
   verifyTOTPLogin,
   verifyTOTPSetup,
@@ -20,7 +19,8 @@ import {
   resetAuthenticatorLogin,
   verifyTOTPSetupEmail,
   enableTOTPEmail,
-  getCurrentUser
+  getCurrentUser,
+  resetPassword
 } from "../controllers/authController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 import { sendEmail } from "../lib/nodemailer.js"; // <-- make sure this exists
@@ -36,7 +36,7 @@ router.post("/register", registerUser);
 router.post("/login", loginRequest);                     
 router.post("/verify-otp", verifyOtp);                  
 router.post("/request-password-reset", requestPasswordReset); 
-router.put("/reset-password", resetPasswordWithToken);        
+router.post("/reset-password", resetPassword);        
 router.post("/verify-totp-login", verifyTOTPLogin);   
 router.post("/reset-authenticator-login", resetAuthenticatorLogin);
 router.post("/verify-totp-setup-email", verifyTOTPSetupEmail);

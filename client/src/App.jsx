@@ -42,8 +42,9 @@ import LostAuthenticator from "./Pages/LostAuthenticator.jsx";
 import AdminBroadcast from "./Pages/admin/AdminBroadcast.jsx";
 import AdminRewardsPage from "./Pages/admin/adminRewardsPage.jsx";
 import AdminMilestonesPage from "./Pages/admin/AdminMilestonesPage.jsx";
-
-
+import ForgotPassword from "./Pages/ForgotPassword";
+import ResetPassword from "./Pages/ResetPassword";
+import ScrollToTop from "./Components/ScrollTop.jsx";
 
 
 function App() {
@@ -60,10 +61,14 @@ function App() {
   }, [token, userInfo, dispatch]);
 
   return (
+    <>
+    <ScrollToTop/>
     <Router>
       <Nav />
       <Routes>
         {/* Public routes */}
+
+
         <Route path="/" element={<Index />} />
         <Route path="/car/:id" element={<CarsDetails />} />
         <Route path="/about" element={<About />} />
@@ -85,7 +90,10 @@ function App() {
         <Route path="/verify-totp-login" element={<VerifyTOTPLogin />} />
         <Route path="/lost-authenticator" element={<LostAuthenticator />} />
         <Route path="/reset-totp/:token" element={<ResetTOTP />} />
-        
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+
 
 
 
@@ -115,7 +123,7 @@ function App() {
           path="/admin"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminLayout/>
+              <AdminLayout />
             </ProtectedRoute>
           }
         >
@@ -124,13 +132,14 @@ function App() {
           <Route path="users" element={<ProtectedRoute allowedRoles={["admin"]}><AdminUsers /></ProtectedRoute>} />
           <Route path="cars" element={<ProtectedRoute allowedRoles={["admin"]}><AdminCars /></ProtectedRoute>} />
           <Route path="broadcast" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBroadcast /></ProtectedRoute>} />
-          <Route path="rewards" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminRewardsPage /></ProtectedRoute>}/>
-          <Route path="milestones" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminMilestonesPage /></ProtectedRoute>}/>
-          
-        </Route>  
+          <Route path="rewards" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminRewardsPage /></ProtectedRoute>} />
+          <Route path="milestones" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminMilestonesPage /></ProtectedRoute>} />
+
+        </Route>
       </Routes>
       <Footer />
     </Router >
+    </>
   );
 }
 
