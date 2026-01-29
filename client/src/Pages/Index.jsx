@@ -65,16 +65,16 @@ function Index() {
           slidesPerView={1}
           effect="fade"
           loop
-          autoplay={{ delay: 4200, disableOnInteraction: false }}
-          speed={1800}
+          autoplay={{ delay: 6000, disableOnInteraction: false }}
+          speed={2200}
           className="hero-swiper w-full h-full"
         >
           {/* ================= SLIDE 1 ================= */}
           <SwiperSlide>
             <motion.div
               className="hero-slide hero-slide1 w-full h-full flex items-center px-[10%]"
-              initial={{ opacity: 0, scale: 1.02 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ y: 24, scale: 1.02 }}
+              animate={{ y: 0, scale: 1 }}
               transition={{ duration: 1.6, ease: "easeOut" }}
             >
               <div className="max-w-3xl text-white">
@@ -118,8 +118,8 @@ function Index() {
           <SwiperSlide>
             <motion.div
               className="hero-slide hero-slide2 w-full h-full flex items-center px-[10%]"
-              initial={{ opacity: 0, scale: 1.02 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ y: 24, scale: 1.02 }}
+              animate={{ y: 0, scale: 1 }}
               transition={{ duration: 1.6, ease: "easeOut" }}
             >
               <div className="max-w-3xl text-white">
@@ -154,13 +154,13 @@ function Index() {
           <SwiperSlide>
             <motion.div
               className="hero-slide hero-slide3 w-full h-full flex items-center px-[10%]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ y: 24, scale: 1.02 }}
+              animate={{ y: 0, scale: 1 }}
               transition={{ duration: 1.6, ease: "easeOut" }}
             >
               <div className="max-w-3xl text-white">
                 <span className="block mb-6 text-[13px] font-bold tracking-[0.4em] uppercase text-[#D4AF37]">
-                Licensed · Insured · Professional chauffeurs 
+                  Licensed · Insured · Professional chauffeurs
                 </span>
 
                 <h1 className="font-['Playfair_Display'] text-4xl sm:text-2xl lg:text-3xl xl:text-5xl leading-tight font-semibold mb-6">
@@ -222,14 +222,14 @@ function Index() {
             </h2>
 
             <p className="text-white leading-relaxed mb-6 text-sm lg:text-base max-w-xl">
-              At Le Charlot Limousine, we deliver more than transportation — we curate refined travel 
-              experiences defined by elegance, comfort, 
+              At Le Charlot Limousine, we deliver more than transportation — we curate refined travel
+              experiences defined by elegance, comfort,
               and impeccable attention to detail.
             </p>
 
             <p className="text-white leading-relaxed mb-10 text-sm lg:text-base max-w-xl">
               Proudly serving the <span className=' text-[#D4AF37]'>Atlanta Metropolitan Area</span>, our professional chauffeurs led
-              by Pierre Charlot, combine discretion, warmth, 
+              by Pierre Charlot, combine discretion, warmth,
               and punctuality to ensure every ride feels effortless and distinguished.
             </p>
 
