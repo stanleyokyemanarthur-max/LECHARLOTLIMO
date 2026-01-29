@@ -86,7 +86,7 @@ function Index() {
                   Executive Chauffeur Service, <br />Redefined
                 </h1>
 
-                <p className="text-lg lg:text-xl text-gray-300 leading-relaxed max-w-xl mb-10">
+                <p className="text-lg lg:text-xl text-white leading-relaxed max-w-xl mb-10">
                   From airport arrivals to boardroom entrances, Le Charlot Limousine delivers precision, privacy, and prestige — every mile, every moment.
                 </p>
 
@@ -131,7 +131,7 @@ function Index() {
                   Drive in Style. <br />Arrive Distinguished
                 </h1>
 
-                <p className="text-lg lg:text-xl text-gray-300 leading-relaxed max-w-xl mb-10">
+                <p className="text-lg lg:text-xl text-white leading-relaxed max-w-xl mb-10">
                   Chauffeur-driven luxury crafted for those who value discretion, comfort, and impeccable service.
                 </p>
 
@@ -160,14 +160,14 @@ function Index() {
             >
               <div className="max-w-3xl text-white">
                 <span className="block mb-6 text-[13px] font-bold tracking-[0.4em] uppercase text-[#D4AF37]">
-                  Executive Experience
+                Licensed · Insured · Professional chauffeurs 
                 </span>
 
                 <h1 className="font-['Playfair_Display'] text-4xl sm:text-2xl lg:text-3xl xl:text-5xl leading-tight font-semibold mb-6">
                   A Seamless Journey, <br />Defined by Excellence
                 </h1>
 
-                <p className="text-lg lg:text-xl text-gray-300 leading-relaxed max-w-xl mb-10">
+                <p className="text-lg lg:text-xl text-white leading-relaxed max-w-xl mb-10">
                   From airport transfers to corporate engagements, every detail is curated to exceed expectations.
                 </p>
 
@@ -496,7 +496,7 @@ function Index() {
             What Our Clients Say
           </p>
           <h2 className="text-sm font-bold mb-3 font-bricolage">
-            Trusted by Thousands
+            Trusted by Atlanta Clients
           </h2>
         </div>
         <Swiper

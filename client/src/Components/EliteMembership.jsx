@@ -79,20 +79,26 @@ export default function EliteMembership() {
 
                 {/* CTA Buttons */}
                 {userInfo ? (
+                    <>
                     <button
                         className="mt-20 bg-gray-700 text-gray-300 cursor-default px-8 py-3 rounded-xl border border-gray-600"
                         disabled
                     >
-                        You’re Already a Member
+                        You’re an Elite now
                     </button>
+                    <p className="text-gray-400 pt-2.5">Membership is complimentary. No Fees</p>
+                    </>
                 ) : (
+                    <>
                     <button
                         onClick={() => (window.location.href = "/signup")}
                         className="mt-20 bg-[#D4AF37] text-black font-semibold px-8 py-3 rounded-xl shadow-lg 
                                     transition-all"
                     >
-                        Join the Elite Membership
+                        Join Elite Membership
                     </button>
+                    <p className="text-gray-400 pt-2.5">Membership is complimentary. No Fees</p>
+                    </>
                 )}
             </div>
         </section>

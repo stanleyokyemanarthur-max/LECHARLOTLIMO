@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import { CalendarCheck, PhoneCall } from "lucide-react";
 
 function About() {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ function About() {
                pb-16 sm:pb-20 lg:pb-2
                animate-heroFloat"
         >
-          <h1 className="uppercase text-xs sm:text-sm lg:text-xl tracking-widest text-white mb-2 font-bricolage">
+          {/* <h1 className="uppercase text-xs sm:text-sm lg:text-xl tracking-widest text-white mb-2 font-bricolage">
             Le Charlot <span className="text-[#D4AF37]">Limousine</span>
           </h1>
 
@@ -61,7 +62,7 @@ function About() {
 
           <p className="mt-3 text-[10px] sm:text-xs lg:text-sm uppercase tracking-[0.35em] text-[#D4AF37]">
             Serving Atlanta • Buckhead • Alpharetta • Sandy Springs
-          </p>
+          </p> */}
 
           <div className="mt-6 flex justify-center gap-4 flex-wrap">
             <button
@@ -108,7 +109,7 @@ function About() {
             <img src="/images/-Cadillac.png" alt="Luxury Sedan" className="w-full h-64 object-cover" />
             <div className="p-6">
               <h3 className="text-xl font-bold mb-2 text-[#D4AF37]">Cadillac Escalade</h3>
-              <p className="text-gray-400">Perfect for airport transfers and business travel. Seats 3 passengers comfortably.</p>
+              <p className="text-gray-400">Travel in style and comfort with the Cadillac Escalade. Ideal for airport transfers and corporate journeys. Seats 7 passengers with ample space for luggage.</p>
             </div>
           </div>
 
@@ -117,7 +118,7 @@ function About() {
             <img src="/images/newgmc.png" alt="Executive SUV" className="w-full h-64 object-cover" />
             <div className="p-6">
               <h3 className="text-xl font-bold mb-2 text-[#D4AF37]">GMC Yukon Denali</h3>
-              <p className="text-gray-400">Spacious and elegant for corporate groups or family travel. Seats up to 6 passengers.</p>
+              <p className="text-gray-400">Experience comfort and style with the GMC Yukon Denali. Ideal for airport transfers, business travel, or family trips — seating for up to 7 passengers with ample cargo space</p>
             </div>
           </div>
 
@@ -126,7 +127,7 @@ function About() {
             <img src="/images/newchvy.png" alt="Luxury Sprinter" className="w-full h-64 object-cover" />
             <div className="p-6">
               <h3 className="text-xl font-bold mb-2 text-[#D4AF37]">Chevrolet Suburban</h3>
-              <p className="text-gray-400">Ideal for VIP groups or corporate transfers. Seats up to 8 passengers in comfort.</p>
+              <p className="text-gray-400">a spacious full-size SUV ideal for VIP groups and executive transfers. Seats up to 8 passengers comfortably with ample luggage space.</p>
             </div>
           </div>
           {/* Vehicle 4 */}
@@ -154,7 +155,7 @@ function About() {
             At Le Charlot Limousine, we don’t just move people; we move moments. Our fleet, expertly maintained and paired with professional chauffeurs, is designed to create unforgettable journeys across Atlanta and surrounding areas.
           </p>
           <p className="text-gray-400 leading-relaxed mb-6">
-            Founded on discretion, elegance, and precision, our services cater to clients who value refinement and sophistication.
+          Founded in Atlanta with mission to offer a more discreet, elevated alternative to traditional rideshare.
           </p>
           <ul className="space-y-3">
             <li className="flex items-center gap-3">
@@ -163,7 +164,7 @@ function About() {
             </li>
             <li className="flex items-center gap-3">
               <i className="ri-check-double-line text-[#D4AF37] text-xl"></i>
-              Professional Chauffeurs with Years of Experience
+              Professionally trained Chauffeurs with executive-level etiquette
             </li>
             <li className="flex items-center gap-3">
               <i className="ri-check-double-line text-[#D4AF37] text-xl"></i>
@@ -209,10 +210,14 @@ function About() {
               <i className="ri-star-fill text-[#D4AF37]"></i>
               Personalized VIP & Corporate Services
             </li>
+            <li className="flex items-center gap-3">
+              <i className="ri-star-fill text-[#D4AF37]"></i>
+              Discreet service for VIP clients
+            </li>
           </ul>
         </div>
         <div className="rounded-3xl overflow-hidden transform hover:scale-105 transition-transform duration-700">
-          <img src="/images/Experience.jpg" alt="Chauffeur Service" className="w-full h-full object-cover" />
+          <img src="/images/private.jpg" alt="Chauffeur Service" className="w-full h-full object-cover" />
         </div>
       </section>
 
@@ -238,7 +243,7 @@ function About() {
       <section className="py-20 lg:py-32 px-8 lg:px-[12%]">
         <div className="text-center mb-16">
           <p className="uppercase text-sm tracking-[5px] text-[#D4AF37] mb-2">Client Testimonials</p>
-          <h2 className="text-4xl md:text-5xl font-bold font-bricolage">Trusted by Thousands</h2>
+          <h2 className="text-4xl md:text-5xl font-bold font-bricolage">Trusted by Atlanta Clients</h2>
         </div>
         <Swiper
           modules={[Pagination, Autoplay]}
@@ -285,6 +290,13 @@ function About() {
         >
           Reserve Your Ride
         </button>
+        <a
+          href="tel:4044053738"
+          className="inline-flex  items-center gap-3 mt-8 px-8 py-4 rounded-full border border-[#D4AF37] text-[#D4AF37] text-xs tracking-widest uppercase hover:bg-[#D4AF37] hover:text-black transition-all duration-300"
+        >
+          <PhoneCall size={18} />
+          Call Us Now!
+        </a>
       </section>
     </div>
   );
