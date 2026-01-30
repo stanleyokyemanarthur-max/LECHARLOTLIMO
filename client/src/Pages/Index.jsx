@@ -78,7 +78,7 @@ function Index() {
               transition={{ duration: 1.6, ease: "easeOut" }}
             >
               <div className="max-w-3xl text-white">
-                <span className="block mb-6 text-[13px] font-bold tracking-[0.4em] uppercase text-[#D4AF37]">
+                <span className="block mb-6 text-[16px] font-bold tracking-[0.4em] uppercase text-[#D4AF37]">
                   ATL Airport • Corporate • Events
                 </span>
 
@@ -123,7 +123,7 @@ function Index() {
               transition={{ duration: 1.6, ease: "easeOut" }}
             >
               <div className="max-w-3xl text-white">
-                <span className="block mb-6 text-[13px] font-bold tracking-[0.4em] uppercase text-[#D4AF37]">
+                <span className="block mb-6 text-[16px] font-bold tracking-[0.4em] uppercase text-[#D4AF37]">
                   Comfort · Class · Precision
                 </span>
 
@@ -159,7 +159,7 @@ function Index() {
               transition={{ duration: 1.6, ease: "easeOut" }}
             >
               <div className="max-w-3xl text-white">
-                <span className="block mb-6 text-[13px] font-bold tracking-[0.4em] uppercase text-[#D4AF37]">
+                <span className="block mb-6 text-[16px] font-bold tracking-[0.4em] uppercase text-[#D4AF37]">
                   Licensed · Insured · Professional chauffeurs
                 </span>
 
@@ -212,7 +212,7 @@ function Index() {
 
           {/* CONTENT */}
           <div>
-            <p className="uppercase text-[13px] font-bold tracking-[0.35em] text-[#D4AF37] mb-5">
+            <p className="uppercase text-[16px] font-bold tracking-[0.35em] text-[#D4AF37] mb-5">
               Le Charlot Limousine
             </p>
 
@@ -257,7 +257,7 @@ function Index() {
       {/* ================= Banner Section ================= */}
       <div className="banner-section bg-[#0c0c0c] lg:px-[12%] px-[8%] py-[80px] lg:py-[120px] text-center text-white">
 
-        <p className="uppercase text-[13px] font-bold tracking-[0.4em] text-[#D4AF37] mb-6">
+        <p className="uppercase text-[16px] font-bold tracking-[0.4em] text-[#D4AF37] mb-6">
           Reservations
         </p>
 
