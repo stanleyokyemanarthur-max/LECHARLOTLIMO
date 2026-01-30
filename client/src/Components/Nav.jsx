@@ -71,11 +71,11 @@ function Nav() {
       {/* Main Nav */}
       <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-8 lg:px-12 relative">
         {/* Logo */}
-        <div className="relative h-12 w-50 overflow-visible">
+        <div className="relative h-12 w-55 overflow-visible">
           <img
-            src="/images/favicon.png"
+            src="/images/lecharlot.png"
             alt="Le Charlot Logo"
-            className="absolute -top-7 left-0 w-50 h-auto object-contain cursor-pointer"
+            className="absolute -top-10 left-0 w-55 h-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}
           />
         </div>
