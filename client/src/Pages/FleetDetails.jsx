@@ -58,7 +58,7 @@ function AutoSlideGallery({ images }) {
   );
 }
 
-// --- FAQ Accordion with smooth open ---
+// --- FAQ Accordion ---
 const FAQAccordion = ({ faqs }) => {
   const [openIndex, setOpenIndex] = useState(null);
 
@@ -77,7 +77,7 @@ const FAQAccordion = ({ faqs }) => {
             >
               <button
                 onClick={() => setOpenIndex(isOpen ? null : index)}
-                className="w-full flex justify-between items-center p-5 text-left  transition-colors group"
+                className="w-full flex justify-between items-center p-5 text-left transition-colors group"
               >
                 <div className="flex items-center gap-3">
                   <Plus
@@ -85,7 +85,11 @@ const FAQAccordion = ({ faqs }) => {
                       isOpen ? "rotate-45" : ""
                     }`}
                   />
-                  <span className={`text-gray-200 transition-colors ${isOpen ? "text-yellow-500" : ""}`}>
+                  <span
+                    className={`text-gray-200 transition-colors ${
+                      isOpen ? "text-yellow-500" : ""
+                    }`}
+                  >
                     {faq.question}
                   </span>
                 </div>
@@ -122,6 +126,7 @@ export default function FleetDetails() {
   const navigate = useNavigate();
   const fleet = fleetData.find((car) => car.slug === slug);
 
+  // If fleet not found
   if (!fleet) {
     return (
       <section className="flex flex-col items-center justify-center min-h-screen text-center bg-black text-white">
@@ -135,6 +140,21 @@ export default function FleetDetails() {
       </section>
     );
   }
+
+  // --- Semantic icon resolver ---
+  const resolveFeatureIcon = (feature) => {
+    const text = feature.toLowerCase();
+    if (text.includes("seat")) return Armchair;
+    if (text.includes("passenger")) return Users;
+    if (text.includes("climate")) return Radio;
+    if (text.includes("sound") || text.includes("audio")) return Music;
+    if (text.includes("water")) return GlassWater;
+    if (text.includes("luggage") || text.includes("cargo")) return Briefcase;
+    if (text.includes("privacy") || text.includes("tinted")) return Users;
+    if (text.includes("luxury") || text.includes("premium") || text.includes("lighting"))
+      return Sparkles;
+    return Sparkles; // fallback
+  };
 
   const faqs = [
     {
@@ -154,10 +174,9 @@ export default function FleetDetails() {
     },
   ];
 
-  const iconMap = [Users, Armchair, Music, GlassWater, Sparkles, Briefcase, Radio];
-
   return (
-    <section className="min-h-screen bg-[#0a0a0a] text-gray-300 py-16 px-6 md:px-12">
+    <section className="min-h-screen mt-10 bg-[#0a0a0a] text-gray-300 py-16 px-6 md:px-12">
+      {/* Back Button */}
       <button
         onClick={() => navigate("/fleet")}
         className="flex items-center gap-2 mb-10 text-gray-400 hover:text-[#D4AF37] transition"
@@ -166,7 +185,7 @@ export default function FleetDetails() {
         Back to Fleet
       </button>
 
-      {/* Top Layout: Car + Gallery */}
+      {/* Top Layout: Main Image + Gallery */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-10 max-w-6xl mx-auto mb-20">
         <motion.img
           src={fleet.mainImage}
@@ -183,31 +202,26 @@ export default function FleetDetails() {
 
       {/* Vehicle Details */}
       <div className="max-w-5xl mx-auto p-8 md:p-12">
-        <h1 className="text-3xl md:text-[34px] font-semibold text-white mb-2">
-          {fleet.name}
-        </h1>
-        <p className="text-[#D4AF37] font-medium mb-6 uppercase tracking-wide">
-          {fleet.category}
-        </p>
-
+        <h1 className="text-3xl md:text-[34px] font-semibold text-white mb-2">{fleet.name}</h1>
+        <p className="text-[#D4AF37] font-medium mb-6 uppercase tracking-wide">{fleet.category}</p>
         <p className="text-gray-400 leading-relaxed mb-10">{fleet.description}</p>
 
         <div className="grid md:grid-cols-2 gap-10 mb-12">
+          {/* Capacity & Luggage */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-3">
-              Capacity & Luggage
-            </h3>
+            <h3 className="text-lg font-semibold text-white mb-3">Capacity & Luggage</h3>
             <ul className="space-y-2 text-gray-400">
               <li>👥 {fleet.capacity}</li>
               <li>🧳 {fleet.luggage}</li>
             </ul>
           </div>
 
+          {/* Features */}
           <div>
             <h3 className="text-lg font-semibold text-white mb-3">Key Features</h3>
             <ul className="space-y-3 text-gray-300">
               {fleet.features.map((feature, idx) => {
-                const Icon = iconMap[idx % iconMap.length];
+                const Icon = resolveFeatureIcon(feature);
                 return (
                   <li key={idx} className="flex items-center gap-3">
                     <Icon className="w-5 h-5 text-[#D4AF37]" />
@@ -219,12 +233,15 @@ export default function FleetDetails() {
           </div>
         </div>
 
-        {/* Book Now Button */}
-        <button onClick={() => navigate("/reserve")} className="bg-[#D4AF37] hover:bg-[#D4AF37] text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
+        {/* Book Now */}
+        <button
+          onClick={() => navigate("/reserve")}
+          className="bg-[#D4AF37] hover:bg-[#D4AF37] text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105"
+        >
           Book Now
         </button>
 
-        {/* FAQ Section */}
+        {/* FAQ */}
         <FAQAccordion faqs={faqs} />
       </div>
 
@@ -236,14 +253,16 @@ export default function FleetDetails() {
           </h2>
           <p className="text-gray-400 leading-relaxed mb-6">
             Whether you’re heading to a business meeting, airport, wedding, or night out,
-            our professional chauffeurs ensure a seamless, comfortable, and stylish
-            journey. Experience exceptional service and unmatched luxury in every mile.
+            our professional chauffeurs ensure a seamless, comfortable, and stylish journey.
+            Experience exceptional service and unmatched luxury in every mile.
           </p>
-          <button onClick={() => navigate("/reservation-form")} className="bg-[#D4AF37] hover:bg-[#D4AF37] text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
+          <button
+            onClick={() => navigate("/reservation-form")}
+            className="bg-[#D4AF37] hover:bg-[#D4AF37] text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105"
+          >
             Book Your Ride
           </button>
         </div>
-
         <div className="flex-1">
           <motion.img
             src="/images/Flying.jpg"

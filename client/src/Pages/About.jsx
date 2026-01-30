@@ -106,7 +106,7 @@ function About() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Vehicle 1 */}
           <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
-            <img src="/images/-Cadillac.png" alt="Luxury Sedan" className="w-full h-64 object-cover" />
+            <img src="/images/escasuv.jpg" alt="Luxury Sedan" className="w-full h-64 object-cover" />
             <div className="p-6">
               <h3 className="text-xl font-bold mb-2 text-[#D4AF37]">Cadillac Escalade</h3>
               <p className="text-gray-400">Travel in style and comfort with the Cadillac Escalade. Ideal for airport transfers and corporate journeys. Seats 7 passengers with ample space for luggage.</p>
@@ -115,7 +115,7 @@ function About() {
 
           {/* Vehicle 2 */}
           <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
-            <img src="/images/newgmc.png" alt="Executive SUV" className="w-full h-64 object-cover" />
+            <img src="/images/degmc.jpg" alt="Executive SUV" className="w-full h-64 object-cover" />
             <div className="p-6">
               <h3 className="text-xl font-bold mb-2 text-[#D4AF37]">GMC Yukon Denali</h3>
               <p className="text-gray-400">Experience comfort and style with the GMC Yukon Denali. Ideal for airport transfers, business travel, or family trips — seating for up to 7 passengers with ample cargo space</p>
@@ -124,7 +124,7 @@ function About() {
 
           {/* Vehicle 3 */}
           <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
-            <img src="/images/newchvy.png" alt="Luxury Sprinter" className="w-full h-64 object-cover" />
+            <img src="/images/chevro.jpg" alt="Luxury Sprinter" className="w-full h-64 object-cover" />
             <div className="p-6">
               <h3 className="text-xl font-bold mb-2 text-[#D4AF37]">Chevrolet Suburban</h3>
               <p className="text-gray-400">a spacious full-size SUV ideal for VIP groups and executive transfers. Seats up to 8 passengers comfortably with ample luggage space.</p>
@@ -132,7 +132,7 @@ function About() {
           </div>
           {/* Vehicle 4 */}
           <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
-            <img src="/images/van.png" alt="Luxury Sprinter" className="w-full h-64 object-cover" />
+            <img src="/images/benzz.jpg" alt="Luxury Sprinter" className="w-full h-64 object-cover" />
             <div className="p-6">
               <h3 className="text-xl font-bold mb-2 text-[#D4AF37]">Luxury Sprinter</h3>
               <p className="text-gray-400">Ideal for group travel or VIP events. Seats up to 12 passengers in total comfort.</p>
