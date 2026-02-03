@@ -56,8 +56,7 @@ function Index() {
 
   return (
     <>
-      {/* HERO SECTION */}
-      <div className="hero w-full h-screen overflow-hidden pt-[env(safe-area-inset-top)] mt-24 md:mt-12 xl:mt-8">
+      <div className="hero pt-[env(safe-area-inset-top)] mt-24 md:mt-12 xl:mt-8">
         {loading && <Spinner />}
 
         <Swiper
@@ -67,129 +66,174 @@ function Index() {
           loop
           autoplay={{ delay: 6000, disableOnInteraction: false }}
           speed={2200}
-          className="hero-swiper w-full h-full"
+          className="hero-swiper"
         >
-          {/* ================= SLIDE 1 ================= */}
           <SwiperSlide>
             <motion.div
-              className="hero-slide hero-slide1 w-full h-full flex items-center px-[10%]"
-              initial={{ y: 24, scale: 1.02 }}
-              animate={{ y: 0, scale: 1 }}
-              transition={{ duration: 1.6, ease: "easeOut" }}
+              className="hero-slide"
+              style={{ "--hero-bg": "url('/images/glovs.jpeg')" }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.4, ease: "easeOut" }}
             >
-              <div className="max-w-3xl text-white">
-                <span className="block mb-6 text-[16px] font-bold tracking-[0.4em] uppercase text-[#D4AF37]">
-                  ATL Airport • Corporate • Events
-                </span>
+              <div className="hero-inner">
+                <div className="hero-content">
+                  <span className="hero-eyebrow">COMFORT · CLASS · PRECISION</span>
 
-                <h1 className="font-['Playfair_Display'] text-2xl sm:text-2xl lg:text-3xl xl:text-5xl leading-tight font-semibold mb-6">
-                  Executive Chauffeur Service, <br />Redefined
-                </h1>
+                  <h1 className="hero-title">
+                    Executive Chauffeur <br />Service in Atlanta.
+                  </h1>
 
-                <p className="text-lg lg:text-xl text-white leading-relaxed max-w-xl mb-10">
-                  From airport arrivals to boardroom entrances, Le Charlot Limousine delivers precision, privacy, and prestige — every mile, every moment.
-                </p>
+                  <p className="hero-subcopy">
+                    Premium airport and corporate transportation with professional chauffeurs,
+                    pristine vehicles, and seamless booking.
+                  </p>
 
-                <div className="flex gap-4 flex-wrap">
-                  {/* Primary Button */}
-                  <button
-                    onClick={() => navigate("/reservation-form")}
-                    className="group inline-flex items-center gap-3 rounded-full px-10 py-4 text-sm uppercase tracking-widest bg-[#D4AF37] text-black hover:bg-[#D4AF37] hover:text-white transition-all duration-300"
-                  >
-                    Reserve Your Ride
-                    <i className="bi bi-arrow-up-right transition-transform duration-300 group-hover:translate-x-1"></i>
-                  </button>
+                  <p className="hero-italic">Discretion. Presence. Confidence.</p>
 
-                  {/* Secondary Button */}
-                  <button
-                    onClick={() => navigate("/fleet")}
-                    className="group inline-flex items-center gap-3 rounded-full px-10 py-4 text-sm uppercase tracking-widest border-2 border-[#D4AF37] text-white hover:bg-[#D4AF37] hover:text-black transition-all duration-300"
-                  >
-                    View Our Fleet
-                    <i className="bi bi-arrow-up-right transition-transform duration-300 group-hover:translate-x-1"></i>
-                  </button>
+                  <div className="hero-actions">
+                    <button
+                      onClick={() => navigate("/reservation-form")}
+                      className="hero-btn hero-btn--gold"
+                    >
+                      Reserve Your Chauffeur ↗
+                    </button>
+
+                    <button
+                      onClick={() => navigate("/fleet")}
+                      className="hero-btn hero-btn--link"
+                    >
+                      View Fleet ↗
+                    </button>
+                  </div>
+
+                  <div className="hero-features">
+                    <span>✓ Licensed &amp; Insured</span>
+                    <span>✓ Professional Chauffeurs</span>
+                    <span>✓ 24/7 Support</span>
+                  </div>
                 </div>
+              </div>
 
+              <div className="hero-bottom">
+                <span>↓</span>
+                <span>Discover the Experience</span>
               </div>
             </motion.div>
           </SwiperSlide>
-
-          {/* ================= SLIDE 2 ================= */}
           <SwiperSlide>
             <motion.div
-              className="hero-slide hero-slide2 w-full h-full flex items-center px-[10%]"
-              initial={{ y: 24, scale: 1.02 }}
-              animate={{ y: 0, scale: 1 }}
-              transition={{ duration: 1.6, ease: "easeOut" }}
+              className="hero-slide"
+              style={{ "--hero-bg": "url('/images/gloves.png')" }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.4, ease: "easeOut" }}
             >
-              <div className="max-w-3xl text-white">
-                <span className="block mb-6 text-[16px] font-bold tracking-[0.4em] uppercase text-[#D4AF37]">
-                  Comfort · Class · Precision
-                </span>
+              <div className="hero-inner">
+                <div className="hero-content">
+                  <span className="hero-eyebrow">COMFORT · CLASS · PRECISION</span>
 
-                <h1 className="font-['Playfair_Display'] text-4xl sm:text-2xl lg:text-3xl xl:text-5xl leading-tight font-semibold mb-6">
-                  Drive in Style. <br />Arrive Distinguished
-                </h1>
+                  <h1 className="hero-title">
+                    Drive in Style <br />Arrive Distinguished.
+                  </h1>
 
-                <p className="text-lg lg:text-xl text-white leading-relaxed max-w-xl mb-10">
+                  <p className="hero-subcopy">
                   Chauffeur-driven luxury crafted for those who value discretion, comfort, and impeccable service.
-                </p>
+                  </p>
+                  <p className="hero-subcopy">
+                  Premium airport and corporate transportation across 
+                  Atlanta and its metro areas.
+                
+                  </p>
 
-                <div className="flex gap-4 flex-wrap">
-                  {/* Primary Button */}
-                  <button
-                    onClick={() => navigate("/reservation-form")}
-                    className="group inline-flex items-center gap-3 rounded-full px-10 py-4 text-sm uppercase tracking-widest bg-[#D4AF37] text-black hover:bg-[#D4AF37] hover:text-white transition-all duration-300"
-                  >
-                    Book with Confidence
-                    <i className="bi bi-arrow-up-right transition-transform duration-300 group-hover:translate-x-1"></i>
-                  </button>
+                  <p className="hero-italic">Discretion. Presence. Confidence.</p>
+
+                  <div className="hero-actions">
+                    <button
+                      onClick={() => navigate("/reservation-form")}
+                      className="hero-btn hero-btn--gold"
+                    >
+                      Reserve Your Chauffeur ↗
+                    </button>
+
+                    <button
+                      onClick={() => navigate("/fleet")}
+                      className="hero-btn hero-btn--link"
+                    >
+                      View Fleet ↗
+                    </button>
+                  </div>
+
+                  <div className="hero-features">
+                    <span>✓ Licensed &amp; Insured</span>
+                    <span>✓ Professional Chauffeurs</span>
+                    <span>✓ 24/7 Support</span>
+                  </div>
                 </div>
+              </div>
 
+              <div className="hero-bottom">
+                <span>↓</span>
+                <span>Discover the Experience</span>
               </div>
             </motion.div>
           </SwiperSlide>
-
-          {/* ================= SLIDE 3 ================= */}
           <SwiperSlide>
             <motion.div
-              className="hero-slide hero-slide3 w-full h-full flex items-center px-[10%]"
-              initial={{ y: 24, scale: 1.02 }}
-              animate={{ y: 0, scale: 1 }}
-              transition={{ duration: 1.6, ease: "easeOut" }}
+              className="hero-slide"
+              style={{ "--hero-bg": "url('/images/chau.jpg')" }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.4, ease: "easeOut" }}
             >
-              <div className="max-w-3xl text-white">
-                <span className="block mb-6 text-[16px] font-bold tracking-[0.4em] uppercase text-[#D4AF37]">
-                  Licensed · Insured · Professional chauffeurs
-                </span>
+              <div className="hero-inner">
+                <div className="hero-content">
+                  <span className="hero-eyebrow">COMFORT · CLASS · PRECISION</span>
 
-                <h1 className="font-['Playfair_Display'] text-4xl sm:text-2xl lg:text-3xl xl:text-5xl leading-tight font-semibold mb-6">
-                  A Seamless Journey, <br />Defined by Excellence
-                </h1>
+                  <h1 className="hero-title">
+                   A Seamless Journey, <br />Defined by Excellence
+                  </h1>
 
-                <p className="text-lg lg:text-xl text-white leading-relaxed max-w-xl mb-10">
+                  <p className="hero-subcopy">
                   From airport transfers to corporate engagements, every detail is curated to exceed expectations.
-                </p>
+                  </p>
 
-                <div className="flex gap-4 flex-wrap">
-                  {/* Primary Button */}
-                  <button
-                    onClick={() => navigate("/reservation-form")}
-                    className="group inline-flex items-center gap-3 rounded-full px-10 py-4 text-sm uppercase tracking-widest bg-[#D4AF37] text-black hover:bg-[#D4AF37] hover:text-white transition-all duration-300"
-                  >
-                    Book Executive Travel
-                    <i className="bi bi-arrow-up-right transition-transform duration-300 group-hover:translate-x-1"></i>
-                  </button>
+                  <p className="hero-italic">Discretion. Presence. Confidence.</p>
 
+                  <div className="hero-actions">
+                    <button
+                      onClick={() => navigate("/reservation-form")}
+                      className="hero-btn hero-btn--gold"
+                    >
+                      Reserve Your Chauffeur ↗
+                    </button>
+
+                    <button
+                      onClick={() => navigate("/fleet")}
+                      className="hero-btn hero-btn--link"
+                    >
+                      View Fleet ↗
+                    </button>
+                  </div>
+
+                  <div className="hero-features">
+                    <span>✓ Licensed &amp; Insured</span>
+                    <span>✓ Professional Chauffeurs</span>
+                    <span>✓ 24/7 Support</span>
+                  </div>
                 </div>
+              </div>
 
+              <div className="hero-bottom">
+                <span>↓</span>
+                <span>Discover the Experience</span>
               </div>
             </motion.div>
           </SwiperSlide>
+
+          {/* Add more slides by changing only --hero-bg */}
         </Swiper>
       </div>
-
-
 
       <div>
         <EliteMembership />
@@ -212,7 +256,7 @@ function Index() {
 
           {/* CONTENT */}
           <div>
-            <p className="uppercase text-[16px] font-bold tracking-[0.35em] text-[#D4AF37] mb-5">
+            <p className="uppercase text-[16px] font-bold tracking-[0.35em] text-[#B08D57] mb-5">
               Le Charlot Limousine
             </p>
 
@@ -228,7 +272,7 @@ function Index() {
             </p>
 
             <p className="text-white leading-relaxed mb-10 text-sm lg:text-base max-w-xl">
-              Proudly serving the <span className=' text-[#D4AF37]'>Atlanta Metropolitan Area</span>, our professional chauffeurs led
+              Proudly serving the <span className=' text-[#B08D57]'>Atlanta Metropolitan Area</span>, our professional chauffeurs led
               by Pierre Charlot, combine discretion, warmth,
               and punctuality to ensure every ride feels effortless and distinguished.
             </p>
@@ -236,14 +280,14 @@ function Index() {
             {/* VALUES */}
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <i className="ri-check-double-line text-[#D4AF37]"></i>
+                <i className="ri-check-double-line text-[#B08D57]"></i>
                 <span className="text-sm tracking-wide text-white">
                   Service Delivered with Grace
                 </span>
               </div>
 
               <div className="flex items-center gap-4">
-                <i className="ri-check-double-line text-[#D4AF37]"></i>
+                <i className="ri-check-double-line text-[#B08D57]"></i>
                 <span className="text-sm tracking-wide text-white">
                   Precision & On-Time Commitment
                 </span>
@@ -257,7 +301,7 @@ function Index() {
       {/* ================= Banner Section ================= */}
       <div className="banner-section bg-[#0c0c0c] lg:px-[12%] px-[8%] py-[80px] lg:py-[120px] text-center text-white">
 
-        <p className="uppercase text-[16px] font-bold tracking-[0.4em] text-[#D4AF37] mb-6">
+        <p className="uppercase text-[16px] font-bold tracking-[0.4em] text-[#B08D57] mb-6">
           Reservations
         </p>
 
@@ -274,14 +318,14 @@ function Index() {
         <div className="mt-10 flex flex-col md:flex-col md:items-center md:justify-center gap-4">
           <div className="text-center mb-7 md:text-left">
             <p className="text-sm tracking-wide text-white">Immediate Assistance</p>
-            <a href="tel:4044053738" className="text-xl md:text-2xl font-medium text-white hover:text-[#D4AF37] transition-colors">
+            <a href="tel:4044053738" className="text-xl md:text-2xl font-medium text-white hover:text-[#B08D57] transition-colors">
               (404) 405-3738
             </a>
           </div>
 
           <button
             onClick={() => navigate("/reservation-form")}
-            className="mt-4 md:mt-4 inline-flex items-center justify-center gap-3 rounded-full border border-[#D4AF37] px-10 py-4 text-xs tracking-widest uppercase text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition-all duration-300"
+            className="mt-4 md:mt-4 inline-flex items-center justify-center gap-3 rounded-full border border-[#D4AF37] px-10 py-4 text-xs tracking-widest uppercase text-[#B08D57] hover:bg-[#D4AF37] hover:text-black transition-all duration-300"
           >
             Begin Reservation
           </button>
@@ -304,32 +348,32 @@ function Index() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
           <div className="flex flex-col items-center">
-            <Car size={32} className="text-[#D4AF37] mb-2" />
+            <Car size={32} className="text-[#B08D57] mb-2" />
             <p className="font-medium">Luxury Cars</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <Clock size={32} className="text-[#D4AF37] mb-2" />
+            <Clock size={32} className="text-[#B08D57] mb-2" />
             <p className="font-medium">24/7 Support</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <Zap size={32} className="text-[#D4AF37] mb-2" />
+            <Zap size={32} className="text-[#B08D57] mb-2" />
             <p className="font-medium">Instant Booking</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <Droplet size={32} className="text-[#D4AF37] mb-2" />
+            <Droplet size={32} className="text-[#B08D57] mb-2" />
             <p className="font-medium">Sanitized</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <CreditCard size={32} className="text-[#D4AF37] mb-2" />
+            <CreditCard size={32} className="text-[#B08D57] mb-2" />
             <p className="font-medium">Flexible Payments</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <UserCheck size={32} className="text-[#D4AF37] mb-2" />
+            <UserCheck size={32} className="text-[#B08D57] mb-2" />
             <p className="font-medium">Professional Drivers</p>
           </div>
         </div>
@@ -443,7 +487,7 @@ function Index() {
       {/* Vision, Mission, Values Section */}
       <div className="our-service lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]">
         <div className="our-service-content mb-20 text-center text-white">
-          <p className="uppercase text-sm tracking-[5px] text-[#D4AF37] mb-2">
+          <p className="uppercase text-sm tracking-[5px] text-[#B08D57] mb-2">
             Our Philosophy
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-3 font-bricolage">
@@ -462,7 +506,7 @@ function Index() {
                 Our mission is to deliver a world-class chauffeured experience marked by elegance, precision, and exceptional hospitality. We provide seamless, refined transportation for high-earning professionals who value discretion, comfort, and flawless service in every mile.
               </p>
               <div className="curv absolute left-0 bottom-0">
-                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#D4AF37] flex items-center justify-center text-white text-lg font-bold shadow-md">
+                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B08D57] flex items-center justify-center text-white text-lg font-bold shadow-md">
                   1
                 </div>
               </div>
@@ -477,7 +521,7 @@ function Index() {
                 Our vision is to become Georgia’s most distinguished luxury transportation brand—recognized for our impeccable presentation, elite chauffeurs, and unforgettable client care. We aim to elevate every journey into a personalized, first-class experience.
               </p>
               <div className="curv absolute left-0 bottom-0">
-                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#D4AF37] flex items-center justify-center text-white text-lg font-bold shadow-md">
+                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B08D57] flex items-center justify-center text-white text-lg font-bold shadow-md">
                   2
                 </div>
               </div>
@@ -492,7 +536,7 @@ function Index() {
       {/* Testimonials */}
       <section className='testimonials lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]'>
         <div className="testimonials-content mb-20 text-center text-white">
-          <p className="uppercase text-3xl md:text-4xl tracking-[5px] text-[#D4AF37] mb-2">
+          <p className="uppercase text-3xl md:text-4xl tracking-[5px] text-[#B08D57] mb-2">
             What Our Clients Say
           </p>
           <h2 className="text-sm font-bold mb-3 font-bricolage">
@@ -516,12 +560,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#D4AF37] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#D4AF37]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
                   ))}
                 </div>
               </div>
@@ -529,7 +573,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 Le Charlot Limousine is the gold standard. Discreet, punctual, and always immaculate — I trust them with every executive arrival.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#D4AF37]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
               </div>
 
               {/* User Info */}
@@ -544,7 +588,7 @@ function Index() {
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#D4AF37]">James R., Private Wealth Advisor</p>
+                  <p className="font-bricolage text-xl text-[#B08D57]">James R., Private Wealth Advisor</p>
                 </div>
               </div>
             </div>
@@ -554,12 +598,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#D4AF37] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#D4AF37]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
                   ))}
                 </div>
               </div>
@@ -567,7 +611,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 From the first call to the final drop-off, the experience was flawless. My clients were impressed — and so was I.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#D4AF37]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
               </div>
 
               {/* User Info */}
@@ -582,7 +626,7 @@ function Index() {
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#D4AF37]">Danielle M., Event Planner</p>
+                  <p className="font-bricolage text-xl text-[#B08D57]">Danielle M., Event Planner</p>
                 </div>
               </div>
             </div>
@@ -592,12 +636,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#D4AF37] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#D4AF37]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
                   ))}
                 </div>
               </div>
@@ -605,7 +649,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 Pierre&apos;s French accent and warm personality make every trip unforgettable. He dresses sharply, the vehicle is immaculate, and he even stocked the refreshments I asked for. Truly a five-star experience.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#D4AF37]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
               </div>
 
               {/* User Info */}
@@ -620,7 +664,7 @@ function Index() {
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#D4AF37]">Olivia H., Atlanta</p>
+                  <p className="font-bricolage text-xl text-[#B08D57]">Olivia H., Atlanta</p>
                 </div>
               </div>
             </div>
@@ -630,12 +674,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#D4AF37] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#D4AF37]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
                   ))}
                 </div>
               </div>
@@ -643,7 +687,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 I&apos;ve never experienced such class in Georgia. Pierre monitors flights, offers wake-up calls, and even had a warm latte ready for me at pickup. His professionalism and bedside manner are unmatched.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#D4AF37]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
               </div>
 
               {/* User Info */}
@@ -658,7 +702,7 @@ function Index() {
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#D4AF37]">Raymond M., Buckhead</p>
+                  <p className="font-bricolage text-xl text-[#B08D57]">Raymond M., Buckhead</p>
                 </div>
               </div>
             </div>
@@ -668,12 +712,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#D4AF37] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#D4AF37]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
                   ))}
                 </div>
               </div>
@@ -681,7 +725,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 We love the smooth ride, the music selection, and the elegance Pierre brings. He even let us choose the refreshments ahead of time. Hands down the best black-car service we&apos;ve ever used.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#D4AF37]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
               </div>
 
               {/* User Info */}
@@ -696,7 +740,7 @@ function Index() {
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#D4AF37]">Daniella &amp; Marcus,Alpharetta </p>
+                  <p className="font-bricolage text-xl text-[#B08D57]">Daniella &amp; Marcus,Alpharetta </p>
                 </div>
               </div>
             </div>
@@ -706,12 +750,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#D4AF37] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#D4AF37]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
                   ))}
                 </div>
               </div>
@@ -719,7 +763,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 Pierre&apos;s service is refined, respectful, and incredibly polished. His French accent, sharp attire, and kindness set the tone for a luxurious experience. Highly recommended.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#D4AF37]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
               </div>
 
               {/* User Info */}
@@ -734,7 +778,7 @@ function Index() {
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#D4AF37]">Jasmine P., Midtown </p>
+                  <p className="font-bricolage text-xl text-[#B08D57]">Jasmine P., Midtown </p>
                 </div>
               </div>
             </div>

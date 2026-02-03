@@ -8,7 +8,7 @@ function AllServices() {
   return (
     <div className="bg-black mt-18 text-white py-20 px-[8%] lg:px-[12%]">
       <div className="text-center mb-16">
-        <p className="uppercase text-sm tracking-[5px] text-[#D4AF37] mb-2">
+        <p className="uppercase text-sm tracking-[5px] text-[#B08D57] mb-2">
           Our Expertise
         </p>
         <h2 className="text-4xl md:text-5xl font-bold mb-3 font-bricolage">
@@ -40,7 +40,7 @@ function AllServices() {
             </p>
             <button
               onClick={() => navigate(`/services/${service.slug}`)}
-              className="bg-[#D4AF37] text-black font-semibold px-5 py-2 rounded-full hover:bg-[#D4AF37] transition"
+              className="bg-[#D4AF37] hover:bg-[#B08D57] text-black font-semibold px-5 py-2 rounded-full transition"
             >
               Read More
             </button>

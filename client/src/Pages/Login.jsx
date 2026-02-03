@@ -77,7 +77,7 @@ function Login() {
         transition={{ duration: 0.8 }}
         className="relative z-10 mt-36 w-full max-w-md bg-black/50 border border-[#D4AF37] rounded-3xl p-10 shadow-2xl backdrop-blur-md"
       >
-        <h1 className="text-3xl font-bold text-center text-[#D4AF37] mb-6">
+        <h1 className="text-3xl font-bold text-center text-[#B08D57] mb-6">
           Access Account
         </h1>
 
@@ -109,7 +109,7 @@ function Login() {
               required
             />
             <span
-              className="absolute right-3 top-2/3 transform -translate-y-1/2 cursor-pointer text-white hover:text-[#FFD700] transition-all"
+              className="absolute right-3 top-2/3 transform -translate-y-1/2 cursor-pointer text-white hover:text-[#D4AF37] transition-all"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
@@ -117,7 +117,7 @@ function Login() {
           </div>
           <Link
             to="/forgot-password"
-            className="text-sm text-[#D4AF37] hover:underline"
+            className="text-sm text-[#B08D57] hover:underline"
           >
             Forgot password?
           </Link>
@@ -126,7 +126,7 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#D4AF37] text-black font-semibold py-3 rounded-xl shadow-lg hover:bg-[#d4a019] transition-all"
+            className="w-full bg-[#D4AF37] text-black font-semibold py-3 rounded-xl shadow-lg hover:bg-[#D4AF37] transition-all"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -134,7 +134,7 @@ function Login() {
 
         <p className="mt-6 pt-7  flex flex-wrap  text-center text-gray-300">
           Not registered?{" "}
-          <Link to="/signup" className="text-[#D4AF37] hover:underline">
+          <Link to="/signup" className="text-[#B08D57] hover:underline">
             Sign Up
           </Link>
         </p>

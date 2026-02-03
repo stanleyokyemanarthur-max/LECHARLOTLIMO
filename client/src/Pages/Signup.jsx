@@ -93,7 +93,7 @@ function Signup() {
         transition={{ duration: 0.8 }}
         className="relative mt-36 z-10 w-full max-w-md bg-black/50 border border-[#D4AF37] rounded-3xl p-10 shadow-2xl backdrop-blur-md"
       >
-        <h1 className="text-3xl font-bold text-center text-[#D4AF37] mb-6">
+        <h1 className="text-3xl font-bold text-center text-[#B08D57] mb-6">
           Join Le Charlot Elite
         </h1>
 
@@ -167,7 +167,7 @@ function Signup() {
                 <div className="flex justify-between items-center px-2 py-1 bg-[#222] text-white border-b border-[#D4AF37] rounded-t-lg">
                   <button
                     onClick={decreaseMonth}
-                    className="text-[#D4AF37] hover:text-white"
+                    className="text-[#B08D57] hover:text-white"
                   >
                     {"<"}
                   </button>
@@ -197,7 +197,7 @@ function Signup() {
 
                   <button
                     onClick={increaseMonth}
-                    className="text-[#D4AF37] hover:text-white"
+                    className="text-[#B08D57] hover:text-white"
                   >
                     {">"}
                   </button>
@@ -236,7 +236,7 @@ function Signup() {
 
         <p className="mt-6 pt-7  flex flex-wrap  text-center text-gray-300">
           Already a member?{" "}
-          <Link to="/login" className="text-[#D4AF37] hover:underline">
+          <Link to="/login" className="text-[#B08D57] hover:underline">
             Login here
           </Link>
         </p>

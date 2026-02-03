@@ -39,7 +39,7 @@ export default function ForgotPassword() {
         onSubmit={submitHandler}
         className="bg-black/60 border border-[#D4AF37] p-8 rounded-2xl w-full max-w-md"
       >
-        <h2 className="text-2xl text-[#D4AF37] mb-6 text-center">
+        <h2 className="text-2xl text-[#B08D57] mb-6 text-center">
           Reset Password
         </h2>
 
@@ -58,7 +58,7 @@ export default function ForgotPassword() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-6 bg-[#D4AF37] text-black py-3 rounded-xl"
+          className="w-full mt-6 bg-[#B08D57] text-black py-3 rounded-xl"
         >
           {loading ? "Sending..." : "Send Reset Link"}
         </button>

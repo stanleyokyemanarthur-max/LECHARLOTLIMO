@@ -52,11 +52,11 @@ function Nav() {
       {/* <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-8 lg:px-12 cursor-default">
         <div className="flex flex-wrap items-center gap-6">
           <span className="flex items-center gap-2">
-            <i className="ri-mail-line text-[#D4AF37]"></i>
+            <i className="ri-mail-line text-[#B08D57]"></i>
             info@LeCharlotLimousine.com
           </span>
           <span className="flex items-center gap-2">
-            <i className="ri-phone-line text-[#D4AF37]"></i>
+            <i className="ri-phone-line text-[#B08D57]"></i>
             (404) 405-3738
           </span>
         </div>
@@ -69,20 +69,20 @@ function Nav() {
       </div> */}
 
       {/* Main Nav */}
-      <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-8 lg:px-12 relative">
+      <div className="w-full mx-auto flex justify-between items-center py-4 px-8 lg:px-12 relative">
         {/* Logo */}
         <div className="relative h-12 w-55 overflow-visible">
           <img
-            src="/images/lecharlot.png"
+            src="/images/lecharlotgold.png"
             alt="Le Charlot Logo"
-            className="absolute -top-10 left-0 w-55 h-auto object-contain cursor-pointer"
+            className="absolute -top-10 right-0 w-55 h-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}
           />
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="lg:hidden text-3xl text-[#D4AF37]"
+          className="lg:hidden text-3xl text-[#B08D57]"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           <i className={isMobileMenuOpen ? "ri-close-line" : "ri-menu-line"}></i>
@@ -110,7 +110,7 @@ function Nav() {
             <li>
               <Link
                 to="/login"
-                className="text-sm font-semibold uppercase text-[#D4AF37] border border-[#D4AF37] px-4 py-1.5 rounded-full hover:bg-[#D4AF37] hover:text-black transition-all duration-300"
+                className="text-sm font-semibold uppercase text-[#B08D57] border border-[#D4AF37] px-4 py-1.5 rounded-full hover:bg-[#D4AF37] hover:text-black transition-all duration-300"
               >
                 Login
               </Link>
@@ -126,7 +126,7 @@ function Nav() {
               {/* Dropdown trigger */}
               <span
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="cursor-pointer font-semibold text-[#D4AF37] hover:underline flex items-center gap-1"
+                className="cursor-pointer font-semibold text-[#B08D57] hover:underline flex items-center gap-1"
               >
                 {userName} <i className="ri-arrow-down-s-line"></i>
               </span>
