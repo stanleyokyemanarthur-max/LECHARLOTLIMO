@@ -36,9 +36,9 @@ function LandingFleetSection() {
 
   {/* Fleet Lineup (Background) */}
   <img
-    src="/images/lineup.png"
+    src="/images/fleet.jpeg"
     alt="Fleet Lineup"
-    className="absolute top-0 right-0 z-0 w-[95%] md:w-full max-w-3xl
+    className="absolute top-0 right-0 z-0 w-[95%] md:w-full rounded-full max-w-2xl
                object-contain opacity-95 pointer-events-none
                translate-y-0 md:-translate-y-2 lg:-translate-y-4"
   />
