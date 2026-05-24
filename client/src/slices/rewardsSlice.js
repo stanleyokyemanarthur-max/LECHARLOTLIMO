@@ -22,15 +22,19 @@ export const fetchRewards = createAsyncThunk(
 // Lock reward for checkout
 export const lockUserReward = createAsyncThunk(
   "rewards/lockUserReward",
-  async (rewardId, { rejectWithValue }) => {
+  async (rewardId, { getState, rejectWithValue }) => {
     try {
-      const res = await rewardsApi.lockReward(rewardId);
+      const token = getState().auth.token;
+      const res = await rewardsApi.lockReward(rewardId, token);
       return res.data.reward;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Failed to lock reward");
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to lock reward"
+      );
     }
   }
 );
+
 
 const rewardsSlice = createSlice({
   name: "rewards",
