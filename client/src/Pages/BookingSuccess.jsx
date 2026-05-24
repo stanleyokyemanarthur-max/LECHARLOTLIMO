@@ -3,23 +3,34 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight, Home, XCircle } from "lucide-react";
 
+const API_BASE = "https://lecharlotlimo.onrender.com";
+
 function BookingSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
   const [verified, setVerified] = useState(null);
+  const [bookingStatus, setBookingStatus] = useState(null);
+
   const sessionId = new URLSearchParams(location.search).get("session_id");
 
   useEffect(() => {
     window.scrollTo(0, 0);
 
     if (sessionId) {
-      fetch(`https://lecharlotlimo.onrender.com/api/payments/verify?session_id=${sessionId}`)
+      fetch(`${API_BASE}/api/payments/verify?session_id=${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
-          if (data.success) setVerified(true);
-          else setVerified(false);
+          // ✅ FIX: backend returns paid, not success
+          if (data?.paid) {
+            setVerified(true);
+            setBookingStatus(data?.bookingStatus || "pending");
+          } else {
+            setVerified(false);
+          }
         })
         .catch(() => setVerified(false));
+    } else {
+      setVerified(false);
     }
   }, [sessionId]);
 
@@ -57,6 +68,15 @@ function BookingSuccess() {
     );
   }
 
+  // ✅ New messaging: payment received, may still be awaiting confirmation
+  const title =
+    bookingStatus === "confirmed" ? "Booking Confirmed!" : "Payment Received ✅";
+
+  const desc =
+    bookingStatus === "confirmed"
+      ? "Your booking has been confirmed by our dispatch team."
+      : "We’ve received your payment. Your booking is now awaiting confirmation from our dispatch team.";
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col items-center justify-center px-6 py-16 text-center">
       <motion.div
@@ -74,13 +94,13 @@ function BookingSuccess() {
           <CheckCircle2 className="text-green-500 w-20 h-20 mb-4" />
         </motion.div>
 
-        <h1 className="text-3xl font-bold text-gray-800 mb-3">
-          Booking Confirmed!
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-3">{title}</h1>
+
         <p className="text-gray-600 mb-6">
           Thank you for choosing{" "}
           <span className="font-semibold text-black">Le Charlot Limousine</span>.
-          Your booking and payment have been successfully confirmed.
+          <br />
+          {desc}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">

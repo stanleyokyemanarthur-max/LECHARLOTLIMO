@@ -27,7 +27,7 @@ function ServiceDetails() {
           {service.hero.cta && (
             <a
               href={service.hero.cta.link}
-              className="inline-block bg-[#B08D57] text-black font-semibold px-6 py-3 rounded hover:bg-[#D4AF37] transition mt-4"
+              className="inline-block btn btn-gold text-black font-semibold px-6 py-3 rounded hover:bg-[#D4AF37] transition mt-4"
             >
               {service.hero.cta.text}
             </a>

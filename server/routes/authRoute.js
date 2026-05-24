@@ -23,7 +23,7 @@ import {
   resetPassword
 } from "../controllers/authController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
-import { sendEmail } from "../lib/nodemailer.js"; // <-- make sure this exists
+import { sendEmail } from "../lib/sendEmail.js"; // <-- make sure this exists
 import dotenv from "dotenv";
 
 dotenv.config();

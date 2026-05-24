@@ -28,7 +28,7 @@ function AutoSlideGallery({ images }) {
   }, [images.length]);
 
   return (
-    <div className="relative mt-20 w-full h-[320px] md:h-[420px] overflow-hidden rounded-2xl">
+    <div className="relative mt-0 w-full h-[320px] md:h-[420px] overflow-hidden rounded-2xl">
       <AnimatePresence mode="wait">
         <motion.img
           key={images[current]}
@@ -124,11 +124,11 @@ export default function FleetDetails() {
 
   if (!fleet) {
     return (
-      <section className="flex flex-col items-center justify-center min-h-screen text-center bg-black text-white">
+      <section className=" flex flex-col items-center justify-center min-h-screen text-center bg-black text-white">
         <h1 className="text-3xl font-bold mb-4">Vehicle not found</h1>
         <button
           onClick={() => navigate("/fleet")}
-          className="bg-[#D4AF37] hover:bg-[#D4AF37] text-black font-semibold px-6 py-2 rounded-lg transition"
+          className="btn btn-gold text-black font-semibold px-6 py-2 rounded-lg transition"
         >
           Back to Fleet
         </button>
@@ -140,7 +140,7 @@ export default function FleetDetails() {
     {
       question: "Can I request a specific vehicle color?",
       answer:
-        "While color requests depend on availability, we’ll do our best to accommodate your preferences.",
+      "No, all our vehecles are black luxury SUV vehicles.",
     },
     {
       question: "Is there Wi-Fi available in the vehicle?",
@@ -148,16 +148,16 @@ export default function FleetDetails() {
         "Yes, most of our premium vehicles come equipped with complimentary Wi-Fi for your convenience.",
     },
     {
-      question: "Do you offer hourly rental options?",
+      question: "Do you offer hourly booking options?",
       answer:
-        "Yes, our services are available for hourly, daily, and long-term bookings to suit your needs.",
+        " our services are available for hourly, daily, and long-term bookings to suit your needs.",
     },
   ];
 
   const iconMap = [Users, Armchair, Music, GlassWater, Sparkles, Briefcase, Radio];
 
   return (
-    <section className="min-h-screen bg-[#0a0a0a] text-gray-300 py-16 px-6 md:px-12">
+    <section className="mt-12 min-h-screen bg-[#0a0a0a] text-gray-300 py-16 px-6 md:px-12">
       <button
         onClick={() => navigate("/fleet")}
         className="flex items-center gap-2 mb-10 text-gray-400 hover:text-[#D4AF37] transition"
@@ -220,7 +220,7 @@ export default function FleetDetails() {
         </div>
 
         {/* Book Now Button */}
-        <button onClick={() => navigate("/reserve")} className="bg-[#D4AF37] hover:bg-[#D4AF37] text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
+        <button onClick={() => navigate("/reserve")} className="btn btn-gold text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
           Book Now
         </button>
 
@@ -239,7 +239,7 @@ export default function FleetDetails() {
             our professional chauffeurs ensure a seamless, comfortable, and stylish
             journey. Experience exceptional service and unmatched luxury in every mile.
           </p>
-          <button onClick={() => navigate("/reservation-form")} className="bg-[#D4AF37] hover:bg-[#D4AF37] text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
+          <button onClick={() => navigate("/reservation-form")} className="btn btn-gold text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
             Book Your Ride
           </button>
         </div>

@@ -32,7 +32,7 @@ function Signup() {
     setError("");
 
     try {
-      const res = await fetch("https://lecharlotlimo.onrender.com/api/auth/register", {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -228,7 +228,7 @@ function Signup() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#D4AF37] text-black font-semibold py-3 rounded-xl shadow-lg hover:bg-[#d4a019] transition-all"
+            className="w-full btn btn-gold btn--hero text-black font-semibold py-3 rounded-xl shadow-lg hover:bg-[#d4a019] transition-all"
           >
             {loading ? "Signing up..." : "Sign Up"}
           </button>

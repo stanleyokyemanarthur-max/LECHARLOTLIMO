@@ -27,7 +27,7 @@ export default function ScrollToTop() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 40 }}
           transition={{ duration: 0.3 }}
-          className="fixed bottom-6 right-6 z-50 bg-[#D4AF37] text-black p-4 rounded-full shadow-xl hover:scale-110 transition"
+          className="fixed bottom-6 right-6 z-50 btn-gold text-black p-4 rounded-full shadow-xl hover:scale-110 transition"
         >
           <ArrowUp size={20} />
         </motion.button>

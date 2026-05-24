@@ -15,16 +15,16 @@ function Footer() {
       <div>
         <div className="relative h-14 w-60 mb-6">
           <img
-            src="/images/lecharlotgold.png"
+            src="/images/logoi.png"
             alt="Le Charlot Logo"
-            className="absolute -top-10 left-0 w-60 h-auto object-contain cursor-pointer"
+            className="absolute -top-10 left-0 w-40 h-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}
           />
         </div>
 
         <p className="text-sm leading-relaxed text-white/60 max-w-sm">
           Chauffeur-driven luxury designed for discerning clients.
-          Airport transfers, executive travel, and special occasions —
+          Airport transfers, executive travels, and special occasions —
           delivered with precision and discretion.
         </p>
 
@@ -65,13 +65,13 @@ function Footer() {
           </Link>
         </div>
 
-        <Link
+        {/* <Link
           to="/reservation-form"
-          className="inline-flex items-center gap-3 mt-8 px-8 py-4 rounded-full border border-[#D4AF37] text-[#B08D57] text-xs tracking-widest uppercase hover:bg-[#D4AF37] hover:text-black transition-all duration-300"
+          className="inline-flex items-center gap-3 mt-8 px-8 py-4 rounded-full border btn btn-gold btn--hero text-xs tracking-widest uppercase hover:text-black transition-all duration-300"
         >
           <CalendarCheck size={18} />
           Schedule a Ride
-        </Link>
+        </Link> */}
       </div>
 
       {/* LINKS */}

@@ -2,13 +2,13 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { GoogleMap, DirectionsRenderer } from "@react-google-maps/api";
 import dayjs from "dayjs";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/dark.css"; // Flatpickr dark theme
 import { useDispatch, useSelector } from "react-redux";
 import { setTripData } from "../slices/bookingSlice";
+import { GoogleMap, DirectionsRenderer, useJsApiLoader } from "@react-google-maps/api";
 
 const MAP_CONTAINER_STYLE = { width: "100%", height: "400px" };
 const DEFAULT_CENTER = { lat: 39.8283, lng: -98.5795 }; // Center of USA
@@ -16,9 +16,13 @@ const DEFAULT_CENTER = { lat: 39.8283, lng: -98.5795 }; // Center of USA
 export default function ReservationPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   // Get login state from Redux
   const isLoggedIn = useSelector((state) => !!state.auth?.token);
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries: ["places"],
+  });
 
   const [tripData, setTripDataState] = useState({
     pickupLocation: "",
@@ -41,7 +45,7 @@ export default function ReservationPage() {
 
   // Google Autocomplete setup
   useEffect(() => {
-    if (!window.google || !window.google.maps || !window.google.maps.places) return;
+    if (!isLoaded) return;
     const options = { types: ["geocode"], componentRestrictions: { country: "us" } };
 
     const pickupAutocomplete = new window.google.maps.places.Autocomplete(pickupRef.current, options);
@@ -84,7 +88,7 @@ export default function ReservationPage() {
   useEffect(() => {
     const autoDrawRoute = async () => {
       if (!tripData.pickupLocation || !tripData.dropoffLocation) return;
-      if (!window.google) return;
+      if (!isLoaded) return;
 
       setLoadingRoute(true);
       setError("");
@@ -152,6 +156,13 @@ export default function ReservationPage() {
     dispatch(setTripData(payload));
     navigate("/select-car");
   };
+  if (loadError) {
+    return <div style={{ color: "red", padding: "20px" }}>Map failed to load</div>;
+  }
+
+  if (!isLoaded) {
+    return <div style={{ color: "white", padding: "20px" }}>Loading map...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-[#0B0B0B] flex flex-col items-center mt-18 py-28 px-4 font-[Poppins]">
@@ -167,7 +178,7 @@ export default function ReservationPage() {
           </h2>
 
           {[{ label: "Pickup Location", name: "pickupLocation", ref: pickupRef, placeholder: "e.g. Raleigh Convention Center" },
-            { label: "Drop-off Location", name: "dropoffLocation", ref: dropoffRef, placeholder: "e.g. Crown Complex, Fayetteville" }].map((f) => (
+          { label: "Drop-off Location", name: "dropoffLocation", ref: dropoffRef, placeholder: "e.g. Crown Complex, Fayetteville" }].map((f) => (
             <div key={f.name}>
               <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">{f.label}</label>
               <input
@@ -218,7 +229,7 @@ export default function ReservationPage() {
           {/* Passengers / Luggage */}
           <div className="grid grid-cols-2 gap-4">
             {[{ label: "Passengers", name: "passengers", placeholder: "3" },
-              { label: "Luggage", name: "luggage", placeholder: "2" }].map((f) => (
+            { label: "Luggage", name: "luggage", placeholder: "2" }].map((f) => (
               <div key={f.name}>
                 <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">{f.label}</label>
                 <input
@@ -241,7 +252,7 @@ export default function ReservationPage() {
             type="submit"
             disabled={loadingRoute || !isLoggedIn}
             onClick={() => !isLoggedIn && navigate("/login")}
-            className="w-full bg-[#D4AF37] text-black py-3 rounded-lg font-semibold hover:brightness-110 transition disabled:opacity-60 shadow-[0_0_10px_rgba(212,175,55,0.4)]"
+            className="w-full btn btn-gold btn--hero text-black py-3 rounded-lg font-semibold hover:brightness-110 transition disabled:opacity-60 shadow-[0_0_10px_rgba(212,175,55,0.4)]"
           >
             {isLoggedIn ? (loadingRoute ? "Drawing route..." : "Book Now") : "Login to Book"}
           </button>
@@ -249,24 +260,28 @@ export default function ReservationPage() {
 
         {/* Google Map */}
         <div className="rounded-xl overflow-hidden border border-[#2A2A2A]">
-          <GoogleMap
-            mapContainerStyle={MAP_CONTAINER_STYLE}
-            center={directionsResult ? undefined : DEFAULT_CENTER}
-            zoom={directionsResult ? undefined : 4}
-            onLoad={(map) => {
-              if (directionsResult && directionsResult.routes && directionsResult.routes[0]) {
-                const bounds = directionsResult.routes[0].bounds;
-                map.fitBounds(bounds);
-              }
-            }}
-          >
-            {directionsResult && (
-              <DirectionsRenderer
-                directions={directionsResult}
-                options={{ suppressMarkers: false, polylineOptions: { strokeColor: "#D4AF37", strokeWeight: 5 } }}
-              />
-            )}
-          </GoogleMap>
+          {isLoaded && (
+            <GoogleMap
+              mapContainerStyle={MAP_CONTAINER_STYLE}
+              center={directionsResult ? undefined : DEFAULT_CENTER}
+              zoom={directionsResult ? undefined : 4}
+              onLoad={(map) => {
+                if (directionsResult?.routes?.[0]) {
+                  map.fitBounds(directionsResult.routes[0].bounds);
+                }
+              }}
+            >
+              {directionsResult && (
+                <DirectionsRenderer
+                  directions={directionsResult}
+                  options={{
+                    suppressMarkers: false,
+                    polylineOptions: { strokeColor: "#D4AF37", strokeWeight: 5 },
+                  }}
+                />
+              )}
+            </GoogleMap>
+          )}
         </div>
       </motion.div>
     </div>

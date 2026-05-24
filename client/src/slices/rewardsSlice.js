@@ -6,7 +6,7 @@ export const fetchRewards = createAsyncThunk(
   "rewards/fetchRewards",
   async (_, { getState, rejectWithValue }) => {
     try {
-      const token = getState().auth.userInfo?.token;
+      const token = getState().auth.token;
 
       console.log("🎟️ TOKEN USED FOR REWARDS:", token);
 

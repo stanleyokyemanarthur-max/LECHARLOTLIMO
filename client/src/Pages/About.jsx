@@ -6,6 +6,8 @@ import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import { CalendarCheck, PhoneCall } from "lucide-react";
+import { motion } from "framer-motion";
+
 
 function About() {
   const navigate = useNavigate();
@@ -24,8 +26,33 @@ function About() {
       text: "From the moment we booked, everything felt effortless. The chauffeur was polished and respectful, and the experience was pure luxury. We arrived in style — exactly what we wanted.",
     },
   ];
+  const sectionVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.12, delayChildren: 0.05 },
+    },
+  };
+
+  const itemUp = {
+    hidden: { opacity: 0, y: 18 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: "easeOut" } },
+  };
+
+  const itemLeft = {
+    hidden: { opacity: 0, x: -20 },
+    show: { opacity: 1, x: 0, transition: { duration: 0.65, ease: "easeOut" } },
+  };
+
+  const itemRight = {
+    hidden: { opacity: 0, x: 20 },
+    show: { opacity: 1, x: 0, transition: { duration: 0.65, ease: "easeOut" } },
+  };
+
 
   return (
+
+
     <div className="text-white font-poppins bg-[#0a0a0a]">
       {/* Hero Banner */}
       <section
@@ -38,7 +65,7 @@ function About() {
         }}
       >
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/50 sm:bg-black/60"></div>
+        <div className="absolute inset-0 bg-black/30 sm:bg-black/30"></div>
 
         {/* Hero Content */}
         <div
@@ -68,7 +95,7 @@ function About() {
             <button
               onClick={() => navigate("/reservation-form")}
               className="px-7 py-3 sm:px-8 sm:py-4
-                   bg-[#D4AF37] hover:bg-[#b08d57] text-black
+              btn-gold btn text-black
                    rounded-full font-medium shadow-lg
                    hover:opacity-90 transition"
             >
@@ -78,9 +105,9 @@ function About() {
             <button
               onClick={() => navigate("/fleet")}
               className="px-7 py-3 sm:px-8 sm:py-4
-                   border border-[#D4AF37] text-[#B08D57]
+                   border btn text-[#B08D57]
                    rounded-full font-medium
-                   hover:bg-[#B08D57] hover:text-black transition"
+                   btn-gold  hover:text-black transition"
             >
               View Our Fleet
             </button>
@@ -89,73 +116,21 @@ function About() {
       </section>
 
 
-      {/* Fleet Teaser Section */}
-      <section className="py-20 lg:py-32 px-8 lg:px-[10%] bg-[#0a0a0a]">
-        <div className="text-center mb-12">
-          <p className="uppercase text-xs md:text-sm tracking-widest text-[#B08D57] mb-2">
-            Our Signature Fleet
-          </p>
-          <h2 className="text-3xl md:text-5xl font-bold font-bricolage">
-            Every journey deserves perfection
-          </h2>
-          <p className="text-gray-400 mt-4 max-w-3xl mx-auto">
-            Each vehicle in our fleet is hand-selected for comfort, elegance, and performance. Whether it’s a wedding, airport transfer, or corporate event, your journey is our priority.
-          </p>
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Vehicle 1 */}
-          <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
-            <img src="/images/escasuv.jpg" alt="Luxury Sedan" className="w-full h-64 object-cover" />
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-2 text-[#B08D57]">Cadillac Escalade</h3>
-              <p className="text-gray-400">Travel in style and comfort with the Cadillac Escalade. Ideal for airport transfers and corporate journeys. Seats 7 passengers with ample space for luggage.</p>
-            </div>
-          </div>
-
-          {/* Vehicle 2 */}
-          <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
-            <img src="/images/degmc.jpg" alt="Executive SUV" className="w-full h-64 object-cover" />
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-2 text-[#B08D57]">GMC Yukon Denali</h3>
-              <p className="text-gray-400">Experience comfort and style with the GMC Yukon Denali. Ideal for airport transfers, business travel, or family trips — seating for up to 7 passengers with ample cargo space</p>
-            </div>
-          </div>
-
-          {/* Vehicle 3 */}
-          <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
-            <img src="/images/chevro.jpg" alt="Luxury Sprinter" className="w-full h-64 object-cover" />
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-2 text-[#B08D57]">Chevrolet Suburban</h3>
-              <p className="text-gray-400">a spacious full-size SUV ideal for VIP groups and executive transfers. Seats up to 8 passengers comfortably with ample luggage space.</p>
-            </div>
-          </div>
-          {/* Vehicle 4 */}
-          <div className="bg-[#222] rounded-3xl overflow-hidden shadow-lg hover:scale-[1.03] transition-transform duration-500">
-            <img src="/images/benzz.jpg" alt="Luxury Sprinter" className="w-full h-64 object-cover" />
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-2 text-[#B08D57]">Luxury Sprinter</h3>
-              <p className="text-gray-400">Ideal for group travel or VIP events. Seats up to 12 passengers in total comfort.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Our Story */}
       <section className="py-20 lg:py-32 px-8 lg:px-[10%] grid lg:grid-cols-2 gap-12 items-center">
         <div className="rounded-3xl overflow-hidden transform hover:scale-105 transition-transform duration-700">
           <img src="/images/3ec.jpg" alt="Luxury Fleet" className="w-full h-full object-cover" />
         </div>
         <div>
-          <p className="uppercase text-xs md:text-sm tracking-widest text-[#B08D57] mb-2">Our Story</p>
+          <p className="uppercase text-xs md:text-sm tracking-widest rolex-gold-text mb-2">Our Story</p>
           <h2 className="text-3xl md:text-5xl font-bold mb-6 font-bricolage">
-            Crafting Unforgettable <span className="text-[#B08D57]">Experiences</span>
+            Crafting Unforgettable <span className="rolex-gold-text">Experiences</span>
           </h2>
           <p className="text-gray-400 leading-relaxed mb-4">
             At Le Charlot Limousine, we don’t just move people; we move moments. Our fleet, expertly maintained and paired with professional chauffeurs, is designed to create unforgettable journeys across Atlanta and surrounding areas.
           </p>
           <p className="text-gray-400 leading-relaxed mb-6">
-          Founded in Atlanta with mission to offer a more discreet, elevated alternative to traditional rideshare.
+            Founded in Atlanta with mission to offer a more discreet, elevated alternative to traditional rideshare.
           </p>
           <ul className="space-y-3">
             <li className="flex items-center gap-3">
@@ -173,12 +148,180 @@ function About() {
           </ul>
           <button
             onClick={() => navigate("/reservation-form")}
-            className="mt-6 px-8 py-4 bg-[#D4AF37] hover:bg-[#B08D57]  transition-all rounded-full font-medium text-lg shadow-lg"
+            className="mt-6 px-8 py-4 btn-gold btn  transition-all rounded-full font-medium text-lg shadow-lg"
           >
             Make Reservation
           </button>
         </div>
       </section>
+
+      {/* The Le Charlot Experience (replaces Fleet Teaser) */}
+      <motion.section
+        className="py-20 lg:py-32 px-8 lg:px-[10%] bg-[#0a0a0a]"
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.18 }}
+      >
+        {/* Header */}
+        <motion.div className="text-center mb-14" variants={itemUp}>
+          <p className="uppercase text-xs md:text-sm tracking-widest rolex-gold-text mb-2">
+            The Le Charlot Experience
+          </p>
+          <h2 className="text-3xl md:text-5xl font-bold font-bricolage">
+            Luxury you can feel, before you arrive.
+          </h2>
+          <p className="text-gray-400 mt-4 max-w-3xl mx-auto">
+            We focus on precision, privacy, and comfort. From your first click to your final drop-off,
+            everything is curated to feel effortless, polished, and premium.
+          </p>
+        </motion.div>
+
+        {/* Experience Cards */}
+        <motion.div className="grid lg:grid-cols-3 gap-8" variants={sectionVariants}>
+          {[
+            {
+              tag: "Precision",
+              title: "Always on time",
+              desc: "Your schedule matters. We plan ahead, confirm details, and operate with dispatcher-level attention.",
+            },
+            {
+              tag: "Privacy",
+              title: "Discreet by design",
+              desc: "Quiet professionalism, respectful presence, and a smooth ride — ideal for executives and VIP clients.",
+            },
+            {
+              tag: "Comfort",
+              title: "Immaculate vehicles",
+              desc: "Every ride is prepared and inspected so you step into a clean, elegant space that feels first-class.",
+            },
+          ].map((c, i) => (
+            <motion.div
+              key={i}
+              variants={itemUp}
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 220, damping: 18 }}
+              className="bg-[#151515] rounded-3xl p-8 border border-[#2a2a2a] shadow-lg
+                   hover:border-[#B08D57]/60 hover:shadow-[#B08D57]/10
+                   transition"
+            >
+              <p className="text-[#B08D57] uppercase text-xs tracking-[0.25em] mb-3">{c.tag}</p>
+              <h3 className="text-2xl font-bold mb-3 font-bricolage">{c.title}</h3>
+              <p className="text-gray-400 leading-relaxed">{c.desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* How it Works + Moments */}
+        <div className="mt-16 grid lg:grid-cols-2 gap-10 items-start">
+          {/* How it Works */}
+          <motion.div
+            variants={itemLeft}
+            className="bg-[#111] rounded-3xl p-10 border border-[#2a2a2a]"
+            whileHover={{ scale: 1.01 }}
+            transition={{ type: "spring", stiffness: 180, damping: 18 }}
+          >
+            <p className="uppercase text-xs md:text-sm tracking-widest rolex-gold-text mb-2">
+              How it works
+            </p>
+            <h3 className="text-2xl md:text-3xl font-bold font-bricolage mb-6">
+              A smooth process, every time
+            </h3>
+
+            <div className="space-y-5">
+              {[
+                { n: 1, t: "Reserve in minutes", d: "Choose your ride details and confirm your pickup time." },
+                { n: 2, t: "Payment received", d: "You’ll get an email confirming payment and reservation details." },
+                { n: 3, t: "Dispatch confirmation", d: "We confirm the ride and you receive your final confirmation email." },
+                { n: 4, t: "Chauffeur arrives", d: "Professional pickup, smooth transport, and a premium arrival." },
+              ].map((s, i) => (
+                <motion.div
+                  key={i}
+                  variants={itemUp}
+                  className="flex gap-4"
+                  whileHover={{ x: 4 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                >
+                  <div className="w-9 h-9 rounded-full bg-[#B08D57] text-black flex items-center justify-center font-bold">
+                    {s.n}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white">{s.t}</p>
+                    <p className="text-gray-400 text-sm">{s.d}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Moments / Occasions */}
+          <motion.div
+            variants={itemRight}
+            className="bg-[#111] rounded-3xl p-10 border border-[#2a2a2a]"
+            whileHover={{ scale: 1.01 }}
+            transition={{ type: "spring", stiffness: 180, damping: 18 }}
+          >
+            <p className="uppercase text-xs md:text-sm tracking-widest rolex-gold-text mb-2">
+              Moments we elevate
+            </p>
+            <h3 className="text-2xl md:text-3xl font-bold font-bricolage mb-6">
+              Built for your occasion
+            </h3>
+
+            <motion.div className="grid sm:grid-cols-2 gap-4" variants={sectionVariants}>
+              {[
+                { title: "Airport Transfers", desc: "Reliable pickups and smooth arrivals." },
+                { title: "Corporate Travel", desc: "Quiet, polished, executive-ready." },
+                { title: "Weddings & Events", desc: "Arrive with elegance and ease." },
+                { title: "VIP Nights Out", desc: "Discreet service for premium evenings." },
+                { title: "Hourly Charters", desc: "Flexible time blocks for your plans." },
+                { title: "Group Transport", desc: "Comfort for guests and teams." },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  variants={itemUp}
+                  whileHover={{ y: -4 }}
+                  transition={{ type: "spring", stiffness: 220, damping: 18 }}
+                  className="bg-[#151515] rounded-2xl p-5 border border-[#2a2a2a]
+                       hover:border-[#B08D57]/60 transition"
+                >
+                  <p className="font-semibold text-white">{item.title}</p>
+                  <p className="text-gray-400 text-sm mt-1">{item.desc}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <motion.div
+              className="mt-8 flex flex-wrap gap-3"
+              variants={itemUp}
+            >
+              <motion.button
+                onClick={() => navigate("/reservation-form")}
+                whileTap={{ scale: 0.98 }}
+                whileHover={{ y: -2 }}
+                className="inline-flex items-center gap-2 px-7 py-3 btn-gold btn
+                     text-black rounded-full font-semibold transition"
+              >
+                <CalendarCheck size={18} />
+                Make a Reservation
+              </motion.button>
+
+              <motion.a
+                href="tel:4044053738"
+                whileTap={{ scale: 0.98 }}
+                whileHover={{ y: -2 }}
+                className="inline-flex items-center gap-2 px-7 py-3 rounded-full border border-[#D4AF37]
+                btn-gold btn hover:text-black transition"
+              >
+                <PhoneCall size={18} />
+                Call Us
+              </motion.a>
+            </motion.div>
+          </motion.div>
+        </div>
+      </motion.section>
+
+
 
       {/* Elite Membership */}
       <EliteMembership />
@@ -280,19 +423,19 @@ function About() {
 
       {/* Final CTA */}
       <section className="py-20 lg:py-32 bg-[#000] text-center">
-        <h2 className="text-4xl md:text-5xl font-bold mb-6 font-bricolage text-[#B08D57]">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 font-bricolage rolex-gold-text">
           Experience Luxury Today
         </h2>
         <p className="text-gray-400 mb-8">Your private chauffeur in Atlanta is just a click away.</p>
         <button
           onClick={() => navigate("/reservation-form")}
-          className="px-10 py-4 bg-[#D4AF37] hover:bg-[#B08D57] transition-all rounded-full font-bold text-lg shadow-xl"
+          className="px-10 py-4 btn-gold btn transition-all rounded-full font-bold text-lg shadow-xl"
         >
           Reserve Your Ride
         </button>
         <a
           href="tel:4044053738"
-          className="inline-flex  items-center gap-3 mt-8 px-8 py-4 rounded-full border border-[#D4AF37] text-[#B08D57] text-xs tracking-widest uppercase hover:bg-[#B08D57] hover:text-black transition-all duration-300"
+          className="inline-flex  items-center gap-3 mt-8 px-8 py-4 rounded-full btn btn-gold  text-[#B08D57] text-xs tracking-widest uppercase hover:bg-[#B08D57] hover:text-black transition-all duration-300"
         >
           <PhoneCall size={18} />
           Call Us Now!

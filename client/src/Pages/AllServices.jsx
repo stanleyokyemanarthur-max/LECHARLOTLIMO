@@ -15,15 +15,15 @@ function AllServices() {
           Our Services
         </h2>
         <p className="text-gray-400 max-w-2xl mx-auto">
-          Le Charlot Limousine offers a wide range of professional chauffeur and travel services to meet every need.
+          Le Charlot Limousine offers premium chauffeur services across Metro Atlanta—built for comfort, timing, and discretion.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
-        {servicesData.map((service, index) => (
+        {servicesData.map((service) => (
           <div
-            key={index}
-            className="bg-[#1c1c1c] p-6 rounded-2xl shadow-md hover:bg-[#262626] transition-all duration-300"
+            key={service.id}
+            className="bg-[#1c1c1c] p-6 rounded-2xl shadow-md hover:bg-[#262626] transition-all duration-300 border border-gray-800"
           >
             <div className="flex items-center gap-3 mb-4">
               <img
@@ -35,12 +35,20 @@ function AllServices() {
                 {service.title}
               </h3>
             </div>
+
+            {service.tagline && (
+              <p className="text-[#D4AF37] text-sm font-semibold mb-2">
+                {service.tagline}
+              </p>
+            )}
+
             <p className="text-gray-400 text-md mb-6 leading-relaxed">
               {service.description}
             </p>
+
             <button
               onClick={() => navigate(`/services/${service.slug}`)}
-              className="bg-[#D4AF37] hover:bg-[#B08D57] text-black font-semibold px-5 py-2 rounded-full transition"
+              className="btn btn-gold btn--hero text-black font-semibold px-5 py-2 rounded-full transition"
             >
               Read More
             </button>

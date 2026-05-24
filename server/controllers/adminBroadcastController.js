@@ -1,7 +1,7 @@
 import User from "../models/User.js";
-import { sendEmail } from "../lib/sendgrid.js";
-import twilio from "twilio";
+import { sendEmail } from "../lib/sendEmail.js";
 import dotenv from "dotenv";
+import twilio from "twilio";
 
 dotenv.config();
 
@@ -32,44 +32,53 @@ export const broadcastMessage = async (req, res) => {
   try {
     const users = await User.find({}, "email phone");
 
-    const emailJobs = [];
-    const smsJobs = [];
+    let emailSent = 0;
+    let smsSent = 0;
 
-    for (const user of users) {
-      // 📧 EMAIL
-      if ((channel === "email" || channel === "both") && user.email) {
-        emailJobs.push(
-          sendEmail({
-            to: user.email,
-            subject,
-            html: `<p>${message}</p>`,
-          })
-        );
-      }
+    // 🔁 Process in batches (prevents overload)
+    const batchSize = 20;
 
-      // 📱 SMS
-      if (
-        (channel === "sms" || channel === "both") &&
-        user.phone &&
-        twilioClient
-      ) {
-        smsJobs.push(
-          twilioClient.messages.create({
-            body: message,
-            from: process.env.TWILIO_PHONE,
-            to: user.phone,
-          })
-        );
-      }
+    for (let i = 0; i < users.length; i += batchSize) {
+      const batch = users.slice(i, i + batchSize);
+
+      const jobs = batch.map(async (user) => {
+        try {
+          // 📧 EMAIL
+          if ((channel === "email" || channel === "both") && user.email) {
+            await sendEmail({
+              to: user.email,
+              subject,
+              html: `<p>${message}</p>`,
+            });
+            emailSent++;
+          }
+
+          // 📱 SMS
+          if (
+            (channel === "sms" || channel === "both") &&
+            user.phone &&
+            twilioClient
+          ) {
+            await twilioClient.messages.create({
+              body: message,
+              from: process.env.TWILIO_PHONE,
+              to: user.phone,
+            });
+            smsSent++;
+          }
+        } catch (err) {
+          console.error(`❌ Failed for user ${user.email || user.phone}`, err.message);
+        }
+      });
+
+      // ✅ safer than Promise.all (won’t crash everything)
+      await Promise.allSettled(jobs);
     }
-
-    // Run all jobs in parallel
-    await Promise.all([...emailJobs, ...smsJobs]);
 
     return res.json({
       success: true,
-      emailSent: emailJobs.length,
-      smsSent: smsJobs.length,
+      emailSent,
+      smsSent,
     });
   } catch (error) {
     console.error("❌ Broadcast error:", error);

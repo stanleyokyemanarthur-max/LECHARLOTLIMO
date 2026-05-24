@@ -7,9 +7,9 @@ export default function EliteMembership() {
     const { userInfo } = useSelector((state) => state.auth);
 
     const features = [
-        { icon: <Gift size={26} />, text: "Free birthday ride every year" },
-        { icon: <Star size={26} />, text: "Free ride after every 10 bookings" },
-        { icon: <Music size={26} />, text: "Saved music & drink preferences" },
+        { icon: <Gift size={26} />, text: "Your rides are fully tailored to your preferences" },
+        { icon: <Star size={26} />, text: "A personalized in-cabin experience" },
+        { icon: <Music size={26} />, text: "Curated for your comfort, from pickup to drop-off" },
         { icon: <Coffee size={26} />, text: "Warm coffee for early flights" },
         { icon: <Plane size={26} />, text: "Real-time flight monitoring" },
         { icon: <Clock size={26} />, text: "Complimentary wake-up call" },
@@ -39,18 +39,18 @@ export default function EliteMembership() {
                     <Crown size={65} className="mx-auto mb-4 text-[#B08D57]" />
 
                     {/* Bilingual Title */}
-                    <h2 className="text-4xl md:text-5xl font-bold text-[#B08D57] tracking-wide">
+                    <h2 className="text-4xl md:text-5xl font-bold rolex-gold-text tracking-wide">
                         Le Charlot Elite Membership
                     </h2>
                     <h3 className="text-xl md:text-2xl text-gray-300 italic mt-1">
-                        L’adhésion Élité Le Charlot
+                        L’adhésion Élite Le Charlot
                     </h3>
 
                     {/* Market Leadership Subtitle */}
                     <p className="text-gray-200 mt-4 text-lg max-w-2xl mx-auto">
-                        Georgia’s #1 Luxury Chauffeur Experience
+                        The Benchmark for Luxury Chauffeur Service in Georgia
                         <br />
-                        La première expérience de chauffeur de luxe en Géorgie
+                        La première expérience de chauffeur de luxe en Georgie
                     </p>
                 </motion.div>
 
@@ -68,10 +68,10 @@ export default function EliteMembership() {
                                 delay: i * 0.12,
                                 ease: "easeOut",
                             }}
-                            className="flex items-center gap-4 bg-black/40 border border-[#D4AF37]/50 rounded-xl p-4 
+                            className="flex items-center gap-4 bg-black/40 border rolex-gold-text rounded-xl p-4 
                                        shadow-md hover:bg-black/50 backdrop-blur-sm transition"
                         >
-                            <div className="text-[#D4AF37]">{item.icon}</div>
+                            <div className="text-[#D4AF37]/80">{item.icon}</div>
                             <p className="text-gray-200">{item.text}</p>
                         </motion.div>
                     ))}
@@ -92,7 +92,7 @@ export default function EliteMembership() {
                     <>
                     <button
                         onClick={() => (window.location.href = "/signup")}
-                        className="mt-20 bg-[#D4AF37] hover:bg-[#B08D57] text-black font-semibold px-8 py-3 rounded-xl shadow-lg 
+                        className="mt-20 btn-gold  text-black font-semibold px-8 py-3 rounded-full shadow-lg 
                                     transition-all"
                     >
                         Join Elite Membership

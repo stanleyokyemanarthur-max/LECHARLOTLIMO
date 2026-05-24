@@ -23,7 +23,7 @@ function Login() {
     setError("");
 
     try {
-      const res = await fetch("https://lecharlotlimo.onrender.com/api/auth/login", {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -126,7 +126,7 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#D4AF37] text-black font-semibold py-3 rounded-xl shadow-lg hover:bg-[#D4AF37] transition-all"
+            className="w-full btn btn-gold btn--hero text-black font-semibold py-3 rounded-xl shadow-lg  transition-all"
           >
             {loading ? "Logging in..." : "Login"}
           </button>

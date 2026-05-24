@@ -70,7 +70,7 @@ const services = [
     id: 9,
     title: "FBO Executive Chauffeur Service",
     slug: "fbo-executive-chauffeur-service",
-    image: "/images/fbo.png",
+    image: "/images/fboimg.jpeg",
     description:
       "Celebrate prom night in a glamorous limo with your friends, ensuring a memorable and safe experience.",
   },
@@ -82,7 +82,7 @@ function ChauffeurServices() {
       <div className="max-w-6xl mx-auto px-4">
         {/* Title */}
         <h2 className="text-3xl font-semibold text-gray-900 mb-2">
-          Our Chauffeur Services
+          Our Services
         </h2>
         <div className="w-16 h-1 bg-[#B08D57] mx-auto mb-8 rounded-full"></div>
 
@@ -110,12 +110,13 @@ function ChauffeurServices() {
         </div>
 
         {/* Button */}
+       
         <div className="mt-10">
           <a
             href="/services"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-[#D4AF37] hover:bg-[#B08D57] text-black font-medium px-6 py-4 rounded  transition"
+            className="btn btn-gold text-black font-medium px-8 py-3 rounded-full  transition"
           >
             View All Services
           </a>

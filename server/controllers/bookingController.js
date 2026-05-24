@@ -6,6 +6,7 @@ import Reward from "../models/Reward.js";
 import { getDistanceInMiles } from "../utils/getDistance.js";
 import { evaluateMilestonesForUser } from "../services/milestone.service.js";
 import mongoose from "mongoose";
+import { sendEmail } from "../lib/sendEmail.js"; // ✅ adjust path if needed
 
 /* 
 ==============================
@@ -47,9 +48,10 @@ export const createBooking = async (req, res) => {
     const defaultDriver = await User.findOne({ role: "driver" });
 
     await session.withTransaction(async () => {
+      // ✅ IMPORTANT: include enroute in overlap block
       const overlap = await Booking.findOne({
         car,
-        status: { $in: ["pending", "confirmed"] },
+        status: { $in: ["pending", "confirmed", "enroute"] },
         pickupDate: { $lt: new Date(dropoffDate) },
         dropoffDate: { $gt: new Date(pickupDate) },
       }).session(session);
@@ -72,6 +74,7 @@ export const createBooking = async (req, res) => {
             isPaid,
             reward: reward?._id || null,
             status: "pending",
+            // paymentStatus default is "pending" in schema
           },
         ],
         { session }
@@ -139,12 +142,13 @@ export const estimateBooking = async (req, res) => {
 
 /* 
 =============================
- 🚗 DRIVER/ADMIN: ALL BOOKINGS
+ 🚗 DRIVER: MY BOOKINGS ONLY (FIXED)
 =============================
 */
 export const getDriverBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find().populate("user car");
+    // ✅ Security: driver sees only assigned bookings
+    const bookings = await Booking.find({ driver: req.user._id }).populate("user car driver");
     res.json(bookings);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -172,20 +176,78 @@ export const getUserBookings = async (req, res) => {
 */
 export const getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find().populate("user car");
+    const bookings = await Booking.find().populate("user car").populate("driver","name email");
     res.json(bookings);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+// ✅ ADMIN: assign a driver to a booking
+export const assignDriver = async (req, res) => {
+  const session = await mongoose.startSession();
+
+  try {
+    const { driverId } = req.body;
+
+    const booking = await Booking.findById(req.params.id)
+      .populate("user")
+      .populate("car")
+      .session(session);
+
+    if (!booking) return res.status(404).json({ error: "Booking not found" });
+
+    if (driverId === null || driverId === "null" || driverId === "") {
+      await session.withTransaction(async () => {
+        booking.driver = null;
+        await booking.save({ session });
+      });
+    
+      const updated = await Booking.findById(booking._id)
+        .populate("user")
+        .populate("car")
+        .populate("driver", "name email");
+    
+      return res.json(updated);
+    }
+    
+
+    if (!mongoose.Types.ObjectId.isValid(driverId)) {
+      return res.status(400).json({ error: "Invalid driverId" });
+    }
+
+    const driver = await User.findById(driverId).select("name email role status");
+    if (!driver) return res.status(404).json({ error: "Driver not found" });
+    if (driver.role !== "driver") return res.status(400).json({ error: "User is not a driver" });
+    if (driver.status !== "active") return res.status(400).json({ error: "Driver is not active" });
+
+    await session.withTransaction(async () => {
+      booking.driver = driver._id;
+      await booking.save({ session });
+    });
+
+    const updated = await Booking.findById(booking._id)
+      .populate("user")
+      .populate("car")
+      .populate("driver", "name email");
+
+    res.json(updated);
+  } catch (err) {
+    console.error("Assign driver error:", err);
+    res.status(500).json({ error: err.message });
+  } finally {
+    session.endSession();
+  }
+};
+
 /* 
 =============================
- 🔄 UPDATE BOOKING STATUS
+ 🔄 UPDATE BOOKING STATUS (ADMIN)
 =============================
 */
 export const updateBookingStatus = async (req, res) => {
   const session = await mongoose.startSession();
+
   try {
     const booking = await Booking.findById(req.params.id)
       .populate("user")
@@ -194,14 +256,42 @@ export const updateBookingStatus = async (req, res) => {
 
     if (!booking) return res.status(404).json({ error: "Booking not found" });
 
+    const requestedStatus = req.body.status || booking.status;
+
+    // ✅ BACKEND GUARD: cannot confirm/enroute unpaid bookings (unless free/reward/admin-free)
+    const requiresPayment = booking.isPaid === true; // paid bookings
+    const isPaidInSystem = booking.paymentStatus === "paid";
+    const isFreeBooking = booking.isPaid === false;
+
+    if (
+      ["confirmed", "enroute"].includes(requestedStatus) &&
+      requiresPayment &&
+      !isPaidInSystem &&
+      !isFreeBooking
+    ) {
+      return res.status(400).json({
+        error: "Cannot confirm/enroute a booking before payment is completed.",
+      });
+    }
+
+    let prevStatus;
+    let newStatus;
+
     await session.withTransaction(async () => {
-      const prevStatus = booking.status;
-      const newStatus = req.body.status || booking.status;
+      prevStatus = booking.status;
+      newStatus = requestedStatus;
+
       booking.status = newStatus;
+
+      // ✅ ensure flags object exists
+      if (!booking.notificationFlags) booking.notificationFlags = {};
+
       await booking.save({ session });
 
+      // 🎁 Reward handling
       if (booking.reward) {
         const reward = await Reward.findById(booking.reward).session(session);
+
         if (prevStatus !== "completed" && newStatus === "completed") {
           reward.status = "USED";
           reward.usedAt = new Date();
@@ -217,6 +307,7 @@ export const updateBookingStatus = async (req, res) => {
         }
       }
 
+      // 📈 Milestones / spend update on completed paid booking
       if (prevStatus !== "completed" && newStatus === "completed" && booking.isPaid) {
         await User.updateOne(
           { _id: booking.user._id },
@@ -227,13 +318,83 @@ export const updateBookingStatus = async (req, res) => {
         const pendingPaid = await Booking.exists({
           user: booking.user._id,
           isPaid: true,
-          status: { $in: ["pending", "confirmed"] },
+          status: { $in: ["pending", "confirmed", "enroute"] },
           _id: { $ne: booking._id },
         }).session(session);
 
         if (!pendingPaid) await evaluateMilestonesForUser(booking.user, session);
       }
     });
+
+    // =========================
+    // ✉️ EMAIL NOTIFICATIONS (outside transaction)
+    // =========================
+    try {
+      const userEmail = booking.user?.email;
+
+      // ✅ make sure flags exist on the doc in memory
+      if (!booking.notificationFlags) booking.notificationFlags = {};
+
+      // ✅ Booking confirmed email (SEND ONCE EVER)
+      if (
+        userEmail &&
+        newStatus === "confirmed" &&
+        booking.notificationFlags.bookingConfirmedNotifiedUser !== true
+      ) {
+        await sendEmail({
+          to: userEmail,
+          subject: "Booking confirmed — Le Charlot Limousine",
+          html: `
+            <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+              <h2 style="margin:0 0 8px;">Booking confirmed</h2>
+              <p style="margin:0 0 16px;">
+                Your booking <b>${booking._id}</b> has been confirmed.
+              </p>
+              <div style="padding:12px 14px;border:1px solid #eee;border-radius:10px;">
+                <p style="margin:0;"><b>Pickup:</b> ${booking.pickupLocation}</p>
+                <p style="margin:0;"><b>Drop-off:</b> ${booking.dropoffLocation}</p>
+                <p style="margin:0;"><b>Pickup time:</b> ${new Date(booking.pickupDate).toLocaleString()}</p>
+              </div>
+              <p style="margin:16px 0 0;">Le Charlot Limousine</p>
+            </div>
+          `,
+        });
+
+        booking.notificationFlags.bookingConfirmedNotifiedUser = true;
+        await booking.save(); // ✅ persist flag
+      }
+
+      // ✅ Enroute email (SEND ONCE EVER)
+      if (
+        userEmail &&
+        newStatus === "enroute" &&
+        booking.notificationFlags.enrouteNotifiedUser !== true
+      ) {
+        await sendEmail({
+          to: userEmail,
+          subject: "Your chauffeur is en route — Le Charlot Limousine",
+          html: `
+            <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+              <h2 style="margin:0 0 8px;">Your chauffeur is en route</h2>
+              <p style="margin:0 0 16px;">
+                Your chauffeur is on the way for booking <b>${booking._id}</b>.
+              </p>
+              <p style="margin:0;"><b>Pickup:</b> ${booking.pickupLocation}</p>
+              <p style="margin:0;"><b>Pickup time:</b> ${new Date(booking.pickupDate).toLocaleString()}</p>
+              <p style="margin:16px 0 0;">Le Charlot Limousine</p>
+            </div>
+          `,
+        });
+
+        booking.notificationFlags.enrouteNotifiedUser = true;
+        await booking.save(); // ✅ persist flag
+      }
+    } catch (emailErr) {
+      console.error(
+        "❌ Email notification failed (non-blocking):",
+        emailErr?.response?.body || emailErr
+      );
+    }
 
     res.json(booking);
   } catch (err) {
@@ -244,9 +405,10 @@ export const updateBookingStatus = async (req, res) => {
   }
 };
 
+
 /* 
 =============================
- ❌ CANCEL BOOKING
+ ❌ CANCEL BOOKING (USER)
 =============================
 */
 export const cancelBooking = async (req, res) => {

@@ -16,11 +16,11 @@ const fleetData = [
     id: 1,
     slug: "cadillac-escalade",
     title: "Cadillac Escalade",
-    subtitle: "EXECUTIVE SUV · 1–6 PASSENGERS",
+    subtitle: "EXECUTIVE SUV ",
     image: "/images/escasuv.jpg",
     specs: [
       { icon: Users, text: "1–6 passengers" },
-      { icon: Briefcase, text: "2–3 medium suitcases" },
+      { icon: Briefcase, text: "6-10 suitcases" },
       { icon: Armchair, text: "Captain’s leather seating" },
       { icon: Sparkles, text: "Quiet luxury cabin" },
     ],
@@ -29,11 +29,11 @@ const fleetData = [
     id: 2,
     slug: "chevrolet-suburban",
     title: "Chevrolet Suburban",
-    subtitle: "FULL-SIZE SUV · 5–7 PASSENGERS",
+    subtitle: "FULL-SIZE SUV ",
     image: "/images/chevro.jpg",
     specs: [
-      { icon: Users, text: "5–7 passengers" },
-      { icon: Briefcase, text: "6–8 large suitcases" },
+      { icon: Users, text: "1-6 passengers" },
+      { icon: Briefcase, text: "6-10 suitcases" },
       { icon: Armchair, text: "Captain’s leather seats" },
       { icon: GlassWater, text: "Rear climate & comfort features" },
     ],
@@ -42,10 +42,10 @@ const fleetData = [
     id: 3,
     slug: "sprinter-van",
     title: "Mercedes-Benz Sprinter",
-    subtitle: "EXECUTIVE VAN · 11–14 PASSENGERS",
+    subtitle: "EXECUTIVE VAN ",
     image: "/images/benzz.jpg",
     specs: [
-      { icon: Users, text: "11–14 passengers" },
+      { icon: Users, text: "11–15 passengers" },
       { icon: Briefcase, text: "10–12 large suitcases" },
       { icon: Armchair, text: "Forward-facing high-back seating" },
       { icon: Radio, text: "Onboard audio system" },
@@ -55,11 +55,11 @@ const fleetData = [
     id: 4,
     slug: "gmc-yukon-denali",
     title: "GMC Yukon Denali",
-    subtitle: "LUXURY SUV · 5–6 PASSENGERS",
+    subtitle: "LUXURY SUV",
     image: "/images/degmc.jpg",
     specs: [
-      { icon: Users, text: "5–6 passengers" },
-      { icon: Briefcase, text: "4–5 large suitcases" },
+      { icon: Users, text: "1–7 passengers" },
+      { icon: Briefcase, text: "6–10 suitcases" },
       { icon: Armchair, text: "Captain’s leather seating" },
       { icon: Music, text: "Premium sound system" },
     ],
@@ -74,7 +74,7 @@ function FleetPage() {
     <section className="bg-[#0a0a0a] mt-12 min-h-screen py-28 px-6 md:px-12 text-white">
       {/* Title */}
       <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-bricolage font-bold mb-3 text-[#B08D57]">
+        <h1 className="text-4xl md:text-5xl font-bricolage font-bold mb-3 rolex-gold-text">
           Our Luxurious Fleet
         </h1>
         <p className="text-gray-300 max-w-2xl mx-auto">
@@ -101,7 +101,7 @@ function FleetPage() {
             <div className="p-6 flex flex-col justify-between flex-grow">
               <div>
                 <h2 className="text-2xl font-bold mb-1 uppercase">{car.title}</h2>
-                <p className="text-[#B08D57] font-semibold mb-4 uppercase tracking-wide">
+                <p className="rolex-gold-text font-semibold mb-4 uppercase tracking-wide">
                   {car.subtitle}
                 </p>
 
@@ -120,7 +120,7 @@ function FleetPage() {
 
               <button
                 onClick={() => navigate(`/fleet/${car.slug}`)}
-                className="bg-[#D4AF37] hover:bg-[#B08D57]  text-black font-bold py-3 rounded-full shadow-lg transition-all"
+                className="btn btn-gold btn--hero  text-black font-bold py-3 rounded-full shadow-lg transition-all"
               >
                 VIEW DETAILS
               </button>

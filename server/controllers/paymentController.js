@@ -107,95 +107,51 @@ export const handleCancelledPayment = async (req, res) => {
   }
 };
 
+
 /**
- * 🔍 Verify Payment Status (client check)
+ * 🔍 Verify Payment Status (client check) — READ-ONLY
+ * Webhook is responsible for updating booking/payment states.
  */
 export const verifyPaymentStatus = async (req, res) => {
-  const session = await mongoose.startSession();
   try {
     const { session_id } = req.query;
     if (!session_id) return res.status(400).json({ message: "Missing session ID" });
 
     const stripeSession = await stripe.checkout.sessions.retrieve(session_id);
+    const stripePaid = stripeSession?.payment_status === "paid";
 
-    await session.withTransaction(async () => {
-      const booking = await Booking.findOne({ stripeSessionId: session_id })
-        .populate("user")
-        .populate("reward")
-        .session(session);
+    const booking = await Booking.findOne({ stripeSessionId: session_id })
+      .populate("user")
+      .populate("car")
+      .populate("reward");
 
-      if (!booking) throw new Error("Booking not found");
+    if (!booking) {
+      return res.status(404).json({ success: false, paid: stripePaid, message: "Booking not found" });
+    }
 
-      if (stripeSession.payment_status !== "paid") {
-        return res.status(200).json({
-          paid: false,
-          bookingStatus: booking.status,
-          paymentStatus: booking.paymentStatus,
-        });
-      }
-
-      // 🔒 Check for overlapping bookings
-      const overlap = await Booking.findOne({
-        _id: { $ne: booking._id },
-        car: booking.car,
-        status: { $in: ["pending", "confirmed"] },
-        pickupDate: { $lt: booking.dropoffDate },
-        dropoffDate: { $gt: booking.pickupDate },
-      }).session(session);
-
-      if (overlap) {
-        booking.status = "cancelled";
-        booking.paymentStatus = "refunded";
-        await booking.save({ session });
-
-        if (booking.reward) {
-          const reward = await Reward.findById(booking.reward).session(session);
-          reward.status = "AVAILABLE";
-          reward.booking = null;
-          reward.lockedAt = null;
-          reward.isSlotFull = false;
-          await reward.save({ session });
-        }
-
-        throw new Error("Vehicle already booked during this time");
-      }
-
-      // ✅ Update booking as paid
-      booking.paymentStatus = "paid";
-      booking.isPaid = true;
-      await booking.save({ session });
-
-      // ✅ Increment user's total spend
-      await User.updateOne(
-        { _id: booking.user._id },
-        { $inc: { totalSpend: booking.totalPrice } },
-        { session }
-      );
-
-      // ✅ Evaluate milestones if no other pending paid bookings
-      const pendingPaid = await Booking.exists({
-        user: booking.user._id,
-        isPaid: true,
-        status: { $in: ["pending", "confirmed"] },
-        _id: { $ne: booking._id },
-      });
-
-      if (!pendingPaid) {
-        await evaluateMilestonesForUser(booking.user, session);
-      } else {
-        console.log("⏳ Paid booking exists, milestone reward will be queued");
-      }
-
-      res.status(200).json({
+    // If Stripe is paid but webhook hasn't updated DB yet, show "processing"
+    if (stripePaid && booking.paymentStatus !== "paid") {
+      return res.status(200).json({
+        success: true,
         paid: true,
+        processing: true, // 👈 tell UI to show “Payment received, updating booking…”
         bookingStatus: booking.status,
         paymentStatus: booking.paymentStatus,
+        booking, // optional
       });
+    }
+
+    return res.status(200).json({
+      success: stripePaid,
+      paid: stripePaid,
+      processing: false,
+      bookingStatus: booking.status,
+      paymentStatus: booking.paymentStatus,
+      booking, // optional
     });
   } catch (err) {
     console.error("❌ Verify payment error:", err);
-    res.status(500).json({ message: err.message || "Server error verifying payment" });
-  } finally {
-    session.endSession();
+    return res.status(500).json({ success: false, message: err.message || "Server error verifying payment" });
   }
 };
+

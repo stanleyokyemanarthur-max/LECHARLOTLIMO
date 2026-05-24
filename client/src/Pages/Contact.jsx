@@ -81,23 +81,23 @@ function Contact() {
 
       {/* Contact Info Cards */}
       <div className="contact-wrapper lg:px-[12%] px-[8%] pb-[158px]">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-12">
-          <div className="contact-item bg-[#222222] p-12 text-white rounded-xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+          <div className=" bg-[#222222] p-8 text-white rounded-xl">
             <i className="ri-map-pin-fill text-[#B08D57] text-5xl"></i>
             <h1 className="font-bricolage text-2xl font-semibold mt-8 mb-2">Our Address</h1>
             <p className="text-[#999]">Atlanta, Georgia</p>
           </div>
-          <div className="contact-item bg-[#222222] p-12 text-white rounded-xl">
+          <div className=" bg-[#222222] p-8 text-white rounded-xl">
             <i className="ri-mail-fill text-[#B08D57] text-5xl"></i>
             <h1 className="font-bricolage text-xl font-semibold mt-8 mb-2">Email Us</h1>
-            <p className="text-[#999]">info@lecharlotlimousine.com</p>
+            <p className="text-[#999] pr-8 text-sm">info@lecharlotlimousine.com</p>
           </div>
-          <div className="contact-item bg-[#222222] p-12 text-white rounded-xl">
+          <div className=" bg-[#222222] p-8 text-white rounded-xl">
             <i className="ri-time-fill text-[#B08D57] text-5xl"></i>
             <h1 className="font-bricolage text-2xl font-semibold mt-8 mb-2">Opening Hours</h1>
-            <p className="text-[#999]">Mon-Sun: 9:00 AM - 6:00 PM</p>
+            <p className="text-[#999]">Mon-Sun: 24hours</p>
           </div>
-          <div className="contact-item bg-[#222222] p-12 text-white rounded-xl">
+          <div className=" bg-[#222222] p-8 text-white rounded-xl">
             <i className="ri-phone-line text-[#B08D57] text-5xl"></i>
             <h1 className="font-bricolage text-2xl font-semibold mt-8 mb-2">Call Us</h1>
             <p className="text-[#999]">(404) 405-3738</p>
@@ -120,7 +120,7 @@ function Contact() {
                 <input type="text" placeholder="Message Subject" value={form.subject} disabled={loading} onChange={(e) => setForm({ ...form, subject: e.target.value })} className="bg-[#222] fieldtext text-white rounded-md px-4 py-5" />
               </div>
               <textarea rows="5" placeholder="Your Message" value={form.message} disabled={loading} onChange={(e) => setForm({ ...form, message: e.target.value })} className="bg-[#222] fieldtext text-white rounded-md px-6 py-4 w-full" />
-              <button type="submit" disabled={loading} className="bg-[#D4AF37] hover:bg-[#b08d57] hover:text-black text-white px-14 py-4 text-xl rounded-full flex items-center justify-center gap-2 transition">
+              <button type="submit" disabled={loading} className="btn btn-gold btn--hero hover:text-black text-white px-14 py-4 text-xl rounded-full flex items-center justify-center gap-2 transition">
                 {loading ? "Sending..." : "Submit"}
               </button>
             </form>

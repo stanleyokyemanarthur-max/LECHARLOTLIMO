@@ -14,7 +14,7 @@ export async function evaluateMilestonesForUser(user, session = null) {
   const pendingPaidBooking = await Booking.exists({
     user: user._id,
     isPaid: true,
-    status: { $in: ["pending", "confirmed"] },
+    status: { $in: ["pending", "confirmed","enroute"] },
   });
 
   if (!pendingPaidBooking) {

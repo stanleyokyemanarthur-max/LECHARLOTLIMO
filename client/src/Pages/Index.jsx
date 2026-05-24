@@ -94,7 +94,7 @@ function Index() {
                   <div className="hero-actions">
                     <button
                       onClick={() => navigate("/reservation-form")}
-                      className="hero-btn hero-btn--gold"
+                      className="btn btn-gold btn--hero"
                     >
                       Reserve Your Chauffeur ↗
                     </button>
@@ -151,7 +151,7 @@ function Index() {
                   <div className="hero-actions">
                     <button
                       onClick={() => navigate("/reservation-form")}
-                      className="hero-btn hero-btn--gold"
+                      className="btn btn-gold btn--hero"
                     >
                       Reserve Your Chauffeur ↗
                     </button>
@@ -203,7 +203,7 @@ function Index() {
                   <div className="hero-actions">
                     <button
                       onClick={() => navigate("/reservation-form")}
-                      className="hero-btn hero-btn--gold"
+                      className="btn btn-gold btn--hero"
                     >
                       Reserve Your Chauffeur ↗
                     </button>
@@ -246,7 +246,7 @@ function Index() {
           {/* IMAGE */}
           <div className="relative h-[420px] sm:h-[500px] lg:h-[620px] rounded-3xl overflow-hidden">
             <img
-              src="/images/airport.jpeg"
+              src="/images/charlot.jpeg"
               alt="Le Charlot Limousine Experience"
               className="w-full h-full object-cover scale-[1.03]"
             />
@@ -256,7 +256,7 @@ function Index() {
 
           {/* CONTENT */}
           <div>
-            <p className="uppercase text-[16px] font-bold tracking-[0.35em] text-[#B08D57] mb-5">
+            <p className="uppercase text-[16px] font-bold tracking-[0.35em] rolex-gold-text mb-5">
               Le Charlot Limousine
             </p>
 
@@ -272,7 +272,7 @@ function Index() {
             </p>
 
             <p className="text-white leading-relaxed mb-10 text-sm lg:text-base max-w-xl">
-              Proudly serving the <span className=' text-[#B08D57]'>Atlanta Metropolitan Area</span>, our professional chauffeurs led
+              Proudly serving the <span className=' rolex-gold-text'>Atlanta and the surrounding Metropolitan Area</span>, our professional chauffeurs led
               by Pierre Charlot, combine discretion, warmth,
               and punctuality to ensure every ride feels effortless and distinguished.
             </p>
@@ -280,14 +280,14 @@ function Index() {
             {/* VALUES */}
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <i className="ri-check-double-line text-[#B08D57]"></i>
+                <i className="ri-check-double-line rolex-gold-text"></i>
                 <span className="text-sm tracking-wide text-white">
                   Service Delivered with Grace
                 </span>
               </div>
 
               <div className="flex items-center gap-4">
-                <i className="ri-check-double-line text-[#B08D57]"></i>
+                <i className="ri-check-double-line rolex-gold-text"></i>
                 <span className="text-sm tracking-wide text-white">
                   Precision & On-Time Commitment
                 </span>
@@ -301,12 +301,12 @@ function Index() {
       {/* ================= Banner Section ================= */}
       <div className="banner-section bg-[#0c0c0c] lg:px-[12%] px-[8%] py-[80px] lg:py-[120px] text-center text-white">
 
-        <p className="uppercase text-[16px] font-bold tracking-[0.4em] text-[#B08D57] mb-6">
+        <p className="uppercase text-[16px] font-bold tracking-[0.4em] rolex-gold-text mb-6">
           Reservations
         </p>
 
         <h2 className="font-['4layfair_Dis4lay'] text-4xl md:text-4xl leading-tight font-semibold mb-6">
-          Reserve Your Chauffeur Experience
+          Reserve Your Chauffeured Experience
         </h2>
 
         <p className="text-white max-w-2xl mx-auto text-base md:text-lg leading-relaxed mb-10">
@@ -317,15 +317,16 @@ function Index() {
 
         <div className="mt-10 flex flex-col md:flex-col md:items-center md:justify-center gap-4">
           <div className="text-center mb-7 md:text-left">
-            <p className="text-sm tracking-wide text-white">Immediate Assistance</p>
-            <a href="tel:4044053738" className="text-xl md:text-2xl font-medium text-white hover:text-[#B08D57] transition-colors">
-              (404) 405-3738
+            <p className="text-sm tracking-wide text-white"></p>
+            <a href="tel:4044053738" className="text-xl md:text-xl font-medium text-white btn  transition-colors">
+              <span className='text-md'>Immediate Assistance:</span>
+              404-405-3738
             </a>
           </div>
 
           <button
             onClick={() => navigate("/reservation-form")}
-            className="mt-4 md:mt-4 inline-flex items-center justify-center gap-3 rounded-full border border-[#D4AF37] px-10 py-4 text-xs tracking-widest uppercase text-[#B08D57] hover:bg-[#D4AF37] hover:text-black transition-all duration-300"
+            className="mt-4 md:mt-4 inline-flex items-center justify-center gap-3 rounded-full border btn-gold px-10 py-4 text-xs tracking-widest uppercase  hover:text-black transition-all duration-300"
           >
             Begin Reservation
           </button>
@@ -339,7 +340,7 @@ function Index() {
       <section className="bg-black text-white py-16 px-[8%] lg:px-[12%]">
         <div className="text-center mb-12">
           <h3 className="text-3xl md:text-4xl font-semibold mb-3 font-bricolage">
-            We Make Sure Your Every Trip is Safe & Special
+            Every Trip is designed with your Safety & Comfort in mind.
           </h3>
           <p className="text-white text-sm md:text-base">
             Experience premium comfort, style, and reliability wherever you go.
@@ -348,32 +349,32 @@ function Index() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
           <div className="flex flex-col items-center">
-            <Car size={32} className="text-[#B08D57] mb-2" />
+            <Car size={32} className="rolex-gold-text mb-2" />
             <p className="font-medium">Luxury Cars</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <Clock size={32} className="text-[#B08D57] mb-2" />
+            <Clock size={32} className="rolex-gold-text mb-2" />
             <p className="font-medium">24/7 Support</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <Zap size={32} className="text-[#B08D57] mb-2" />
+            <Zap size={32} className="rolex-gold-text mb-2" />
             <p className="font-medium">Instant Booking</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <Droplet size={32} className="text-[#B08D57] mb-2" />
+            <Droplet size={32} className="rolex-gold-text mb-2" />
             <p className="font-medium">Sanitized</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <CreditCard size={32} className="text-[#B08D57] mb-2" />
+            <CreditCard size={32} className="rolex-gold-text mb-2" />
             <p className="font-medium">Flexible Payments</p>
           </div>
 
           <div className="flex flex-col items-center">
-            <UserCheck size={32} className="text-[#B08D57] mb-2" />
+            <UserCheck size={32} className="rolex-gold-text mb-2" />
             <p className="font-medium">Professional Drivers</p>
           </div>
         </div>
@@ -487,7 +488,7 @@ function Index() {
       {/* Vision, Mission, Values Section */}
       <div className="our-service lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]">
         <div className="our-service-content mb-20 text-center text-white">
-          <p className="uppercase text-sm tracking-[5px] text-[#B08D57] mb-2">
+          <p className="uppercase text-sm tracking-[5px] rolex-gold-text mb-2">
             Our Philosophy
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-3 font-bricolage">
@@ -506,7 +507,7 @@ function Index() {
                 Our mission is to deliver a world-class chauffeured experience marked by elegance, precision, and exceptional hospitality. We provide seamless, refined transportation for high-earning professionals who value discretion, comfort, and flawless service in every mile.
               </p>
               <div className="curv absolute left-0 bottom-0">
-                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B08D57] flex items-center justify-center text-white text-lg font-bold shadow-md">
+                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full btn btn-gold btn--hero flex items-center justify-center text-white text-lg font-bold shadow-md">
                   1
                 </div>
               </div>
@@ -518,10 +519,14 @@ function Index() {
                 Our Values
               </h1>
               <p className="text-white text-md leading-relaxed">
-                Our vision is to become Georgia’s most distinguished luxury transportation brand—recognized for our impeccable presentation, elite chauffeurs, and unforgettable client care. We aim to elevate every journey into a personalized, first-class experience.
+                We operate with an uncompromising commitment to precision, discretion, and accountability.
+Every detail is anticipated. Every standard is enforced. Every journey is executed with discipline and control.
+
+We understand that our clients do not measure value in cost, but in time, reliability, and trust.
+For that reason, we deliver a level of service defined by consistency, professionalism, and quiet excellence—without exception.
               </p>
               <div className="curv absolute left-0 bottom-0">
-                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full bg-[#B08D57] flex items-center justify-center text-white text-lg font-bold shadow-md">
+                <div className="service-item-curv section-item-curv w-6 h-6 rounded-full btn btn-gold btn--hero flex items-center justify-center text-white text-lg font-bold shadow-md">
                   2
                 </div>
               </div>
@@ -536,7 +541,7 @@ function Index() {
       {/* Testimonials */}
       <section className='testimonials lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]'>
         <div className="testimonials-content mb-20 text-center text-white">
-          <p className="uppercase text-3xl md:text-4xl tracking-[5px] text-[#B08D57] mb-2">
+          <p className="uppercase text-3xl md:text-4xl tracking-[5px] rolex-gold-text mb-2">
             What Our Clients Say
           </p>
           <h2 className="text-sm font-bold mb-3 font-bricolage">
@@ -560,12 +565,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
                   ))}
                 </div>
               </div>
@@ -573,7 +578,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 Le Charlot Limousine is the gold standard. Discreet, punctual, and always immaculate — I trust them with every executive arrival.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
               </div>
 
               {/* User Info */}
@@ -581,14 +586,14 @@ function Index() {
                 <div className="curv">
                   <div>
                     <img
-                      src=""
+                      src="/images/india.jpeg"
                       alt="user"
                       className="rounded-full h-16 w-16 object-cover mr-4"
                     />
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#B08D57]">James R., Private Wealth Advisor</p>
+                  <p className="font-bricolage text-xl rolex-gold-text">Abhinav, Private Wealth Advisor</p>
                 </div>
               </div>
             </div>
@@ -598,12 +603,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
                   ))}
                 </div>
               </div>
@@ -611,7 +616,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 From the first call to the final drop-off, the experience was flawless. My clients were impressed — and so was I.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
               </div>
 
               {/* User Info */}
@@ -619,14 +624,14 @@ function Index() {
                 <div className="curv">
                   <div>
                     <img
-                      src=""
+                      src="/images/japan.jpeg"
                       alt="user"
                       className="rounded-full h-16 w-16 object-cover mr-4"
                     />
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#B08D57]">Danielle M., Event Planner</p>
+                  <p className="font-bricolage text-xl rolex-gold-text">Lee M., Event Planner</p>
                 </div>
               </div>
             </div>
@@ -636,12 +641,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
                   ))}
                 </div>
               </div>
@@ -649,7 +654,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 Pierre&apos;s French accent and warm personality make every trip unforgettable. He dresses sharply, the vehicle is immaculate, and he even stocked the refreshments I asked for. Truly a five-star experience.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
               </div>
 
               {/* User Info */}
@@ -657,14 +662,14 @@ function Index() {
                 <div className="curv">
                   <div>
                     <img
-                      src=""
+                      src="/images/blaq.jpeg"
                       alt="user"
                       className="rounded-full h-16 w-16 object-cover mr-4"
                     />
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#B08D57]">Olivia H., Atlanta</p>
+                  <p className="font-bricolage text-xl rolex-gold-text">Olivia H., Atlanta</p>
                 </div>
               </div>
             </div>
@@ -674,12 +679,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
                   ))}
                 </div>
               </div>
@@ -687,7 +692,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 I&apos;ve never experienced such class in Georgia. Pierre monitors flights, offers wake-up calls, and even had a warm latte ready for me at pickup. His professionalism and bedside manner are unmatched.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
               </div>
 
               {/* User Info */}
@@ -695,14 +700,14 @@ function Index() {
                 <div className="curv">
                   <div>
                     <img
-                      src=""
+                      src="/images/birace.jpeg"
                       alt="user"
                       className="rounded-full h-16 w-16 object-cover mr-4"
                     />
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#B08D57]">Raymond M., Buckhead</p>
+                  <p className="font-bricolage text-xl rolex-gold-text">Daniella ,Alpharetta </p>
                 </div>
               </div>
             </div>
@@ -712,12 +717,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
                   ))}
                 </div>
               </div>
@@ -725,7 +730,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 We love the smooth ride, the music selection, and the elegance Pierre brings. He even let us choose the refreshments ahead of time. Hands down the best black-car service we&apos;ve ever used.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
               </div>
 
               {/* User Info */}
@@ -733,14 +738,14 @@ function Index() {
                 <div className="curv">
                   <div>
                     <img
-                      src=""
+                      src="/images/ceo.jpeg"
                       alt="user"
                       className="rounded-full h-16 w-16 object-cover mr-4"
                     />
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#B08D57]">Daniella &amp; Marcus,Alpharetta </p>
+                  <p className="font-bricolage text-xl rolex-gold-text">Raymond M., Buckhead </p>
                 </div>
               </div>
             </div>
@@ -750,12 +755,12 @@ function Index() {
               {/* Quote + Stars */}
               <div className="flex items-start justify-between mb-6">
                 {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl text-[#B08D57] mr-4"></i>
+                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
 
                 {/* Stars */}
                 <div className="flex space-x-1">
                   {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl text-[#B08D57]"></i>
+                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
                   ))}
                 </div>
               </div>
@@ -763,7 +768,7 @@ function Index() {
               {/* Review Text with Closing Quote */}
               <div className="text-white text-lg mb-6 font-bricolage italic relative">
                 Pierre&apos;s service is refined, respectful, and incredibly polished. His French accent, sharp attire, and kindness set the tone for a luxurious experience. Highly recommended.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl text-[#B08D57]"></i>
+                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
               </div>
 
               {/* User Info */}
@@ -771,14 +776,14 @@ function Index() {
                 <div className="curv">
                   <div>
                     <img
-                      src=""
+                      src="/images/nigeri.jpeg"
                       alt="user"
                       className="rounded-full h-16 w-16 object-cover mr-4"
                     />
                   </div>
                 </div>
                 <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl text-[#B08D57]">Jasmine P., Midtown </p>
+                  <p className="font-bricolage text-xl rolex-gold-text">Robert P., Midtown </p>
                 </div>
               </div>
             </div>

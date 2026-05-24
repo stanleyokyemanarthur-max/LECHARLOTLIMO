@@ -24,28 +24,27 @@ function ReservationForm() {
           <div className="w-24 h-[3px] bg-[#D4AF37] mx-auto mb-8 rounded-full"></div>
 
           <p className="text-gray-300 text-lg md:text-xl leading-relaxed mb-12">
-            Airport transfers, executive travel, corporate events, and special
+            Airport transfers, executive travels, corporate events, and special
             occasions — experience discreet luxury, punctual service, and
             professional chauffeurs tailored to your journey.
           </p>
 
-          <div className="flex flex-col md:flex-row justify-center items-center gap-6">
+          <div className="md:flex-row justify-center items-center gap-6">
             <button
               onClick={() => navigate("/reserve")}
-              className="bg-gradient-to-r from-[#d4af37] to-[#D4AF37] text-black font-semibold py-4 px-14 rounded-full shadow-2xl hover:scale-105 transition-all duration-500 tracking-wide"
+              className="btn-gold  text-black font-semibold py-4 px-14 rounded-full shadow-2xl hover:scale-105 transition-all duration-500 tracking-wide"
             >
               Reserve Instantly
             </button>
 
-            <div className="text-center md:text-left">
-              <p className="text-gray-400 uppercase tracking-wide mb-1">
-                Or call us
-              </p>
+            <div className=" ml-84 pt-10  text-center md:text-left">
+             
               <a
                 href="tel:+14044053738"
-                className="text-[#D4AF37] text-xl font-bold hover:underline"
+                className=" flex text-[#D4AF37] text-xl font-bold hover:underline"
               >
-                (404) 405-3738
+                <p className="text-white pr-4">Or call us </p>
+                 (404) 405-3738
               </a>
             </div>
           </div>
@@ -105,7 +104,7 @@ function ReservationForm() {
         </h2>
         <button
           onClick={() => navigate("/reserve")}
-          className="bg-gradient-to-r from-[#D4AF37] to-[#D4AF37] text-black font-bold py-4 px-20 rounded-full shadow-2xl hover:scale-105 transition-all duration-500 tracking-wide"
+          className="btn-gold  text-black font-bold py-4 px-20 rounded-full shadow-2xl hover:scale-105 transition-all duration-500 tracking-wide"
         >
           Reserve Now
         </button>

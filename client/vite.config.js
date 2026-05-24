@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://lecharlotlimo.onrender.com', // your backend API
+        target: 'http://localhost:5000', // your backend API
         changeOrigin: true,
         secure: false,
       },

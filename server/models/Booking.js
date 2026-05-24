@@ -46,6 +46,7 @@ const bookingSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "cancelled", "refunded"],
@@ -75,7 +76,7 @@ const bookingSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "confirmed", "completed", "cancelled"],
+      enum: ["pending", "confirmed", "enroute", "completed", "cancelled"],
       default: "pending",
       index: true,
     },
@@ -94,37 +95,52 @@ const bookingSchema = new mongoose.Schema(
     stripeSessionId: {
       type: String,
       default: null,
+      index: true,
+    },
+
+    // ✅ prevents duplicate emails on Stripe retries / admin re-clicks
+    notificationFlags: {
+      paymentReceivedNotifiedUser: { type: Boolean, default: false },
+      paymentReceivedNotifiedAdmin: { type: Boolean, default: false },
+      bookingConfirmedNotifiedUser: { type: Boolean, default: false },
+      enrouteNotifiedUser: { type: Boolean, default: false },
     },
   },
   { timestamps: true }
 );
 
-/** 🚨 Guard against free bookings without rewards */
+/** ✅ Guard against invalid free bookings */
 bookingSchema.pre("save", function (next) {
-  if (!this.isPaid && !this.reward) {
-    return next(
-      new Error("Free bookings must be linked to a reward")
-    );
+  // If booking is free...
+  if (this.isPaid === false) {
+    // Allow reward-free only if reward exists
+    if (this.freeReason === "reward" && !this.reward) {
+      return next(new Error("Free bookings with freeReason=reward must have a reward attached"));
+    }
+
+    // Allow admin-free without a reward
+    if (this.freeReason === "admin") {
+      return next();
+    }
+
+    // If isPaid=false but freeReason missing or invalid
+    return next(new Error("Free bookings must have freeReason='reward' or freeReason='admin'"));
   }
+
   next();
 });
 
 /**
  * 🔒 CRITICAL: Overlap-Protection Index (ANTI-DOUBLE-BOOKING)
- * Prevents concurrent pending/confirmed bookings for the same car
+ * Prevents concurrent pending/confirmed/enroute bookings for the same car
  */
 bookingSchema.index(
-  {
-    car: 1,
-    pickupDate: 1,
-    dropoffDate: 1,
-  },
+  { car: 1, pickupDate: 1, dropoffDate: 1 },
   {
     partialFilterExpression: {
-      status: { $in: ["pending", "confirmed"] },
+      status: { $in: ["pending", "confirmed", "enroute"] },
     },
   }
 );
 
-export default mongoose.models.Booking ||
-  mongoose.model("Booking", bookingSchema);
+export default mongoose.models.Booking || mongoose.model("Booking", bookingSchema);

@@ -1,4 +1,4 @@
-import { sendEmail } from "../lib/sendgrid.js";
+import { sendEmail } from "../lib/sendEmail.js";
 
 export const contactForm = async (req, res) => {
   const { name, email, subject, message } = req.body;
