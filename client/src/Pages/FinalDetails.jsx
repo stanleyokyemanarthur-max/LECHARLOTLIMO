@@ -52,8 +52,13 @@ function FinalDetails() {
         },
         pickupLocation: rideInfo.pickupLocation,
         dropoffLocation: rideInfo.dropoffLocation,
-        pickupDate: rideInfo.pickupDate ? new Date(rideInfo.pickupDate) : null,
-        dropoffDate: rideInfo.dropoffDate ? new Date(rideInfo.dropoffDate) : null,
+        pickupDate: rideInfo.pickupDate
+          ? new Date(rideInfo.pickupDate).toISOString()
+          : null,
+
+        dropoffDate: rideInfo.dropoffDate
+          ? new Date(rideInfo.dropoffDate).toISOString()
+          : null,
         passengers: rideInfo.passengers || 1,
         luggage: rideInfo.luggage || 0,
         distance: Number(rideInfo.distance || 0),
@@ -71,7 +76,8 @@ function FinalDetails() {
         { headers }
       );
 
-      const booking = bookingRes.data;
+      const booking = bookingRes.data.booking || bookingRes.data;
+      console.log("Created booking:", booking);
 
       // 2️⃣ Create Stripe checkout session
       const stripeRes = await axios.post(
@@ -88,8 +94,9 @@ function FinalDetails() {
     } catch (err) {
       console.error("Booking or payment error:", err);
       alert(
+        err?.response?.data?.error ||
         err?.response?.data?.message ||
-        "Something went wrong while processing your booking or payment."
+        "Unable to complete booking."
       );
     } finally {
       setLoading(false);
@@ -132,7 +139,7 @@ function FinalDetails() {
           <h3 className="text-xl font-bold mt-6 mb-3">Vehicle</h3>
           <p>{selectedCar.name}</p>
           {selectedCar.description && <p>{selectedCar.description}</p>}
-          <p className="mt-2 text-yellow-400 font-semibold">
+          <p className="mt-2 btn btn-gold font-semibold">
             Estimated Total: ${estimatedTotal}
           </p>
         </div>
@@ -156,9 +163,8 @@ function FinalDetails() {
               <button
                 onClick={() => handleBookingConfirm()}
                 disabled={loading}
-                className={`bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-6 rounded-full transition duration-300 w-full mt-6 ${
-                  loading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`btn btn-gold  hover:btn btn-gold  text-black font-semibold py-3 px-6 rounded-full transition duration-300 w-full mt-6 ${loading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 {loading ? "Processing..." : "Confirm & Pay"}
               </button>
@@ -198,9 +204,8 @@ function FinalDetails() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-6 rounded-full transition duration-300 w-full ${
-                    loading ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                  className={`btn btn-gold  hover:btn btn-gold  text-black font-semibold py-3 px-6 rounded-full transition duration-300 w-full ${loading ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                 >
                   {loading ? "Processing..." : "Confirm & Pay"}
                 </button>

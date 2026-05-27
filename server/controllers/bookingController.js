@@ -16,86 +16,183 @@ import { sendEmail } from "../lib/sendEmail.js"; // ✅ adjust path if needed
 
 export const createBooking = async (req, res) => {
   const session = await mongoose.startSession();
-  try {
-    const { car, pickupLocation, dropoffLocation, pickupDate, dropoffDate, rewardId } = req.body;
 
+  try {
+    const {
+      car,
+      pickupLocation,
+      dropoffLocation,
+      pickupDate,
+      dropoffDate,
+      rewardId,
+    } = req.body;
+
+    /* =========================
+       VALIDATION
+    ========================== */
     if (!car || !pickupLocation || !dropoffLocation || !pickupDate || !dropoffDate) {
       return res.status(400).json({ error: "All booking fields are required." });
     }
 
-    const carData = await Car.findById(car);
-    if (!carData) return res.status(404).json({ error: "Car not found" });
-
-    const distanceInMiles = await getDistanceInMiles(pickupLocation, dropoffLocation);
-    let totalPrice = Math.max(distanceInMiles * carData.perMileRate, 20);
-    let isPaid = true;
-    let reward = null;
-
-    if (rewardId) {
-      reward = await Reward.findOne({
-        _id: rewardId,
-        user: req.user._id,
-        status: "AVAILABLE",
-        expiresAt: { $gt: new Date() },
-      });
-
-      if (!reward) return res.status(400).json({ error: "Invalid or unavailable reward" });
-
-      isPaid = false;
-      totalPrice = 0;
+    if (!mongoose.Types.ObjectId.isValid(car)) {
+      return res.status(400).json({ error: "Invalid car ID." });
     }
 
-    const defaultDriver = await User.findOne({ role: "driver" });
+    const start = new Date(pickupDate);
+    const end = new Date(dropoffDate);
+
+    if (
+      isNaN(start.getTime()) ||
+      isNaN(end.getTime()) ||
+      start >= end
+    ) {
+      return res.status(400).json({ error: "Invalid booking dates." });
+    }
+
+    let createdBooking;
 
     await session.withTransaction(async () => {
-      // ✅ IMPORTANT: include enroute in overlap block
+
+      /* =========================
+         FETCH CAR (SESSION SAFE)
+      ========================== */
+      const carData = await Car.findById(car).session(session);
+      if (!carData) throw new Error("CAR_NOT_FOUND");
+
+      /* =========================
+         OVERLAP CHECK (ATOMIC)
+      ========================== */
       const overlap = await Booking.findOne({
         car,
         status: { $in: ["pending", "confirmed", "enroute"] },
-        pickupDate: { $lt: new Date(dropoffDate) },
-        dropoffDate: { $gt: new Date(pickupDate) },
+        pickupDate: { $lt: end },
+        dropoffDate: { $gt: start },
       }).session(session);
 
-      if (overlap) throw new Error("Car already booked for this time range");
+      if (overlap) throw new Error("CAR_UNAVAILABLE");
 
+      /* =========================
+         DISTANCE CALC
+      ========================== */
+      let distance = await getDistanceInMiles(pickupLocation, dropoffLocation);
+
+      if (
+        typeof distance !== "number" ||
+        isNaN(distance) ||
+        distance <= 0
+      ) {
+        throw new Error("INVALID_DISTANCE");
+      }
+
+      let totalPrice = Math.max(distance * carData.perMileRate, 20);
+
+      /* =========================
+         REWARD (SESSION SAFE)
+      ========================== */
+      let reward = null;
+      let isPaid = true;
+
+      if (rewardId) {
+        reward = await Reward.findOne({
+          _id: rewardId,
+          user: req.user._id,
+          status: "AVAILABLE",
+          expiresAt: { $gt: new Date() },
+        }).session(session);
+
+        if (!reward) throw new Error("INVALID_REWARD");
+
+        isPaid = false;
+        totalPrice = 0;
+      }
+
+      /* =========================
+         DRIVER
+      ========================== */
+      const driver = await User.findOne({
+        role: "driver",
+        status: "active",
+      }).session(session);
+
+      /* =========================
+         CREATE BOOKING
+      ========================== */
       const [booking] = await Booking.create(
         [
           {
             user: req.user._id,
-            driver: defaultDriver?._id || null,
+            driver: driver?._id || null,
             car,
-            carSnapshot: { name: carData.name, type: carData.type, pricePerMile: carData.perMileRate },
+            carSnapshot: {
+              name: carData.name,
+              type: carData.type,
+              pricePerMile: carData.perMileRate,
+            },
             pickupLocation,
             dropoffLocation,
-            pickupDate,
-            dropoffDate,
-            distance: distanceInMiles,
+            pickupDate: start,
+            dropoffDate: end,
+            distance,
             totalPrice,
             isPaid,
             reward: reward?._id || null,
             status: "pending",
-            // paymentStatus default is "pending" in schema
           },
         ],
         { session }
       );
 
+      /* =========================
+         LOCK REWARD SAFELY
+      ========================== */
       if (reward) {
-        reward.status = "LOCKED";
-        reward.lockedAt = new Date();
-        reward.booking = booking._id;
-        await reward.save({ session });
+        const updatedReward = await Reward.findOneAndUpdate(
+          {
+            _id: reward._id,
+            status: "AVAILABLE",
+          },
+          {
+            $set: {
+              status: "LOCKED",
+              booking: booking._id,
+              lockedAt: new Date(),
+            },
+          },
+          { session, new: true }
+        );
+
+        if (!updatedReward) {
+          throw new Error("INVALID_REWARD");
+        }
       }
+
+      createdBooking = booking;
     });
 
-    res.status(201).json({ message: "Booking created successfully" });
+    return res.status(201).json({
+      message: "Booking created successfully",
+      booking: createdBooking,
+    });
+
   } catch (err) {
-    console.error("Create booking error:", err);
-    res.status(409).json({ error: err.message });
+    console.error(err);
+
+    const map = {
+      CAR_UNAVAILABLE: 409,
+      INVALID_REWARD: 400,
+      CAR_NOT_FOUND: 404,
+      INVALID_DISTANCE: 400,
+    };
+
+    return res.status(map[err.message] || 500).json({
+      error: err.message,
+    });
+
   } finally {
     session.endSession();
   }
 };
+
 
 /* 
 ==============================================
@@ -176,14 +273,62 @@ export const getUserBookings = async (req, res) => {
 */
 export const getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find().populate("user car").populate("driver","name email");
+    const bookings = await Booking.find().populate("user car").populate("driver", "name email");
     res.json(bookings);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+/* 
+=============================
+ 🚘 GET AVAILABLE CARS
+=============================
+*/
+// export const getAvailableCars = async (req, res) => {
+//   try {
+//     const { pickupDate, dropoffDate } = req.query;
+
+//     if (!pickupDate || !dropoffDate) {
+//       return res.status(400).json({
+//         error: "pickupDate and dropoffDate are required",
+//       });
+//     }
+
+
+//     const overlappingBookings = await Booking.find({
+//       status: { $in: ["pending", "confirmed", "enroute"] },
+
+//       pickupDate: {
+//         $lt: new Date(dropoffDate),
+//       },
+
+//       dropoffDate: {
+//         $gt: new Date(pickupDate),
+//       },
+//     }).select("car");
+
+
+//     const bookedCarIds = overlappingBookings.map((b) =>
+//       b.car.toString()
+//     );
+
+
+//     const availableCars = await Car.find({
+//       _id: { $nin: bookedCarIds },
+//     });
+
+//     res.json(availableCars);
+//   } catch (err) {
+//     console.error("Get available cars error:", err);
+//     res.status(500).json({
+//       error: "Failed to fetch available cars",
+//     });
+//   }
+// };
+
 // ✅ ADMIN: assign a driver to a booking
+
 export const assignDriver = async (req, res) => {
   const session = await mongoose.startSession();
 
@@ -202,15 +347,15 @@ export const assignDriver = async (req, res) => {
         booking.driver = null;
         await booking.save({ session });
       });
-    
+
       const updated = await Booking.findById(booking._id)
         .populate("user")
         .populate("car")
         .populate("driver", "name email");
-    
+
       return res.json(updated);
     }
-    
+
 
     if (!mongoose.Types.ObjectId.isValid(driverId)) {
       return res.status(400).json({ error: "Invalid driverId" });

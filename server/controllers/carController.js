@@ -88,28 +88,89 @@ export const getAvailableCars = async (req, res) => {
   try {
     const { from, to } = req.query;
 
-    if (!from || !to) {
-      const cars = await Car.find({ status: "available" });
-      return res.json(cars);
+    const statusFilter = ["pending", "confirmed", "enroute"];
+
+    let start;
+    let end;
+
+    const hasFrom = !!from;
+    const hasTo = !!to;
+
+    // -----------------------------
+    // 1. Strict validation rules
+    // -----------------------------
+    if (hasFrom || hasTo) {
+      if (!hasFrom || !hasTo) {
+        return res.status(400).json({
+          message: "Both 'from' and 'to' must be provided together",
+        });
+      }
+
+      start = new Date(from);
+      end = new Date(to);
+
+      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+        return res.status(400).json({
+          message: "Invalid date format. Use ISO 8601 (UTC recommended).",
+        });
+      }
+
+      if (start >= end) {
+        return res.status(400).json({
+          message: "'from' must be earlier than 'to'",
+        });
+      }
     }
 
-    const start = dayjs(from).toDate();
-    const end = dayjs(to).toDate();
+    // -----------------------------
+    // 2. Build booking query safely
+    // -----------------------------
+    const bookingQuery = {
+      status: { $in: statusFilter },
+    };
 
-    const bookedCars = await Booking.find({
-      status: { $in: ["pending", "confirmed"] },
-      pickupDate: { $lt: end },
-      dropoffDate: { $gt: start },
-    }).distinct("car");
+    if (start && end) {
+      bookingQuery.pickupDate = { $lt: end };
+      bookingQuery.dropoffDate = { $gt: start };
+    }
 
+    // -----------------------------
+    // 3. Find conflicting bookings
+    // -----------------------------
+    const bookedCars = await Booking.find(bookingQuery)
+      .select("car")
+      .lean();
+
+    // normalize + deduplicate safely
+    const bookedCarIds = [
+      ...new Set(
+        bookedCars
+          .map((b) => b.car)
+          .filter(Boolean)
+          .map((id) => id.toString())
+      ),
+    ];
+
+    // -----------------------------
+    // 4. Fetch available cars
+    // -----------------------------
     const availableCars = await Car.find({
-      _id: { $nin: bookedCars },
+      _id: { $nin: bookedCarIds },
       status: "available",
-    });
+    })
+      .lean()
+      .sort({ createdAt: -1 });
 
-    res.json(availableCars);
+    return res.status(200).json(availableCars);
   } catch (err) {
     console.error("Get available cars error:", err);
-    res.status(500).json({ message: "Error checking availability", error: err.message });
+
+    return res.status(500).json({
+      message: "Failed to fetch available cars",
+      error:
+        process.env.NODE_ENV === "production"
+          ? "Internal server error"
+          : err.message,
+    });
   }
 };

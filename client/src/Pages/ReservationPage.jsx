@@ -254,7 +254,7 @@ export default function ReservationPage() {
             onClick={() => !isLoggedIn && navigate("/login")}
             className="w-full btn btn-gold btn--hero text-black py-3 rounded-lg font-semibold hover:brightness-110 transition disabled:opacity-60 shadow-[0_0_10px_rgba(212,175,55,0.4)]"
           >
-            {isLoggedIn ? (loadingRoute ? "Drawing route..." : "Book Now") : "Login to Book"}
+            {isLoggedIn ? (loadingRoute ? "Drawing route..." : "Submit Booking") : "Login to Book"}
           </button>
         </form>
 

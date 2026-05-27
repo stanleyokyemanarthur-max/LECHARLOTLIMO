@@ -22,20 +22,32 @@ export default function SelectCar() {
 
   // Fetch available cars
   useEffect(() => {
+   
     const fetchCars = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get("https://lecharlotlimo.onrender.com/api/cars");
-        setCars(res.data);
-      } catch (err) {
-        console.error(err);
-        setError("Unable to fetch cars from the server.");
-      } finally {
-        setLoading(false);
+  try {
+    setLoading(true);
+
+    const res = await axios.get(
+      "https://lecharlotlimo.onrender.com/api/cars/availability",
+      {
+        params: {
+          from: new Date(tripData.pickupDate).toISOString(),
+          to: new Date(tripData.dropoffDate).toISOString(),
+        },
       }
-    };
+    );
+
+    setCars(res.data);
+  } catch (err) {
+    console.error(err);
+    setError("Unable to fetch cars from the server.");
+  } finally {
+    setLoading(false);
+  }
+};
+    if (!tripData?.pickupDate || !tripData?.dropoffDate) return;
     fetchCars();
-  }, []);
+  }, [tripData?.pickupDate, tripData?.dropoffDate]);
 
   // Calculate price based on distance
   const calculatePrice = (car) => {
@@ -131,13 +143,13 @@ export default function SelectCar() {
                   </div>
 
                   <div className="mt-3 flex items-center justify-between">
-                    <p className="text-lg font-bold text-[#D4AF37]">
+                    <p className="text-lg font-bold btn btn-gold btn--hero">
                       ${calculatePrice(car)}
                     </p>
 
                     <button
                       onClick={() => handleSelect(car)}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-5 rounded-full transition duration-300"
+                      className="btn btn-gold btn--hero text-black font-semibold py-2 px-5 rounded-full transition duration-300"
                     >
                       Book Now
                     </button>

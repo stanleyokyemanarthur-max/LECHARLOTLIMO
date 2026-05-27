@@ -15,7 +15,7 @@ function Footer() {
       <div>
         <div className="relative h-14 w-60 mb-6">
           <img
-            src="/images/logoi.png"
+            src="/images/logoiz.png"
             alt="Le Charlot Logo"
             className="absolute -top-10 left-0 w-40 h-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}

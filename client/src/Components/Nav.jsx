@@ -55,7 +55,7 @@ function Nav() {
         {/* Logo */}
         <div className="relative h-12 w-55 overflow-visible">
           <img
-            src="/images/logoi.png"
+            src="/images/logoiz.png"
             alt="Le Charlot Logo"
             className="absolute -top-5 right-0 w-30 h-auto object-contain cursor-pointer"
             onClick={() => {

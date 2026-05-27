@@ -13,7 +13,14 @@ export const registerUser = async (req, res) => {
     const { name, email, password, phone, birthday } = req.body;
 
     const userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ message: "User already exists" });
+
+    console.log("FOUND USER:", userExists);
+
+    if (userExists) {
+      return res.status(400).json({
+        message: "User already exists",
+      });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -252,7 +259,7 @@ export const verifyTOTPLogin = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        phone:user.phone,
+        phone: user.phone,
         role: user.role,
         isTOTPEnabled: true,
         token: generateToken(user._id, user.role),
@@ -467,17 +474,17 @@ export const resetAuthenticatorLogin = async (req, res) => {
 
     // Send login token
     res.json({
-  user: {
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    phone: user.phone,
-    role: user.role,
-    isTOTPEnabled: false,
-    token: generateToken(user._id, user.role)
-  },
-  token: generateToken(user._id, user.role)
-});
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        isTOTPEnabled: false,
+        token: generateToken(user._id, user.role)
+      },
+      token: generateToken(user._id, user.role)
+    });
 
 
   } catch (err) {
