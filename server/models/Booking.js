@@ -20,11 +20,13 @@ const bookingSchema = new mongoose.Schema(
       ref: "Car",
       required: true,
     },
-
     carSnapshot: {
-      name: String,
-      type: String,
-      pricePerMile: Number,
+      type: {
+        name: String,
+        type: String,
+        pricePerMile: Number,
+      },
+      default: {},
     },
 
     pickupLocation: {
