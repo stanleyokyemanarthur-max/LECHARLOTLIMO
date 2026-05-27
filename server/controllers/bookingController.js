@@ -117,6 +117,17 @@ export const createBooking = async (req, res) => {
       /* =========================
          CREATE BOOKING
       ========================== */
+      
+      console.log(
+        "ACTIVE SCHEMA TYPE:",
+        Booking.schema.paths.carSnapshot?.instance
+      );
+
+      console.log(
+        "FULL PATH:",
+        Booking.schema.paths.carSnapshot
+      );
+
       const [booking] = await Booking.create(
         [
           {

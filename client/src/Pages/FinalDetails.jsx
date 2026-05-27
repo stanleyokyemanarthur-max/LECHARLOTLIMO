@@ -116,7 +116,7 @@ function FinalDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-[8%] py-12">
+    <div className="min-h-screen bg-black text-white px-[8%] pt-12 py-12">
       <h2 className="text-3xl font-semibold mb-6">Final Details</h2>
 
       <div className="grid lg:grid-cols-2 gap-10">
