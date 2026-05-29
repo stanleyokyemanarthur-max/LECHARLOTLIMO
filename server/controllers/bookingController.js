@@ -17,6 +17,13 @@ import { sendEmail } from "../lib/sendEmail.js"; // ✅ adjust path if needed
 export const createBooking = async (req, res) => {
   const session = await mongoose.startSession();
 
+  // shared variables (IMPORTANT FIX: scope safety)
+  let createdBooking;
+  let carData;
+  let distance;
+  let totalPrice;
+  let isPaid = true; // default to true, set to false if reward is applied
+
   try {
     const {
       car,
@@ -41,26 +48,20 @@ export const createBooking = async (req, res) => {
     const start = new Date(pickupDate);
     const end = new Date(dropoffDate);
 
-    if (
-      isNaN(start.getTime()) ||
-      isNaN(end.getTime()) ||
-      start >= end
-    ) {
+    if (isNaN(start.getTime()) || isNaN(end.getTime()) || start >= end) {
       return res.status(400).json({ error: "Invalid booking dates." });
     }
-
-    let createdBooking;
 
     await session.withTransaction(async () => {
 
       /* =========================
-         FETCH CAR (SESSION SAFE)
+         FETCH CAR
       ========================== */
-      const carData = await Car.findById(car).session(session);
+      carData = await Car.findById(car).session(session);
       if (!carData) throw new Error("CAR_NOT_FOUND");
 
       /* =========================
-         OVERLAP CHECK (ATOMIC)
+         OVERLAP CHECK
       ========================== */
       const overlap = await Booking.findOne({
         car,
@@ -72,26 +73,21 @@ export const createBooking = async (req, res) => {
       if (overlap) throw new Error("CAR_UNAVAILABLE");
 
       /* =========================
-         DISTANCE CALC
+         DISTANCE
       ========================== */
-      let distance = await getDistanceInMiles(pickupLocation, dropoffLocation);
+      distance = await getDistanceInMiles(pickupLocation, dropoffLocation);
 
-      if (
-        typeof distance !== "number" ||
-        isNaN(distance) ||
-        distance <= 0
-      ) {
+      if (typeof distance !== "number" || isNaN(distance) || distance <= 0) {
         throw new Error("INVALID_DISTANCE");
       }
 
-      let totalPrice = Math.max(distance * carData.perMileRate, 20);
+      totalPrice = Math.max(distance * carData.perMileRate, 20);
 
       /* =========================
-         REWARD (SESSION SAFE)
+         REWARD
       ========================== */
       let reward = null;
-      let isPaid = true;
-
+      
       if (rewardId) {
         reward = await Reward.findOne({
           _id: rewardId,
@@ -117,17 +113,6 @@ export const createBooking = async (req, res) => {
       /* =========================
          CREATE BOOKING
       ========================== */
-      
-      console.log(
-        "ACTIVE SCHEMA TYPE:",
-        Booking.schema.paths.carSnapshot?.instance
-      );
-
-      console.log(
-        "FULL PATH:",
-        Booking.schema.paths.carSnapshot
-      );
-
       const [booking] = await Booking.create(
         [
           {
@@ -153,8 +138,10 @@ export const createBooking = async (req, res) => {
         { session }
       );
 
+      createdBooking = booking;
+
       /* =========================
-         LOCK REWARD SAFELY
+         LOCK REWARD
       ========================== */
       if (reward) {
         const updatedReward = await Reward.findOneAndUpdate(
@@ -172,13 +159,62 @@ export const createBooking = async (req, res) => {
           { session, new: true }
         );
 
-        if (!updatedReward) {
-          throw new Error("INVALID_REWARD");
-        }
+        if (!updatedReward) throw new Error("INVALID_REWARD");
       }
-
-      createdBooking = booking;
     });
+
+    /* =========================
+       SAFETY CHECK (POST TX)
+    ========================== */
+    if (!createdBooking) {
+      return res.status(500).json({ error: "Booking creation failed" });
+    }
+
+    /* =========================
+       ADMIN EMAIL (OUTSIDE TX)
+    ========================== */
+    const sendWithRetry = async (payload, retries = 3) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await sendEmail(payload);
+      return;
+    } catch (err) {
+      if (i === retries - 1) throw err;
+    }
+  }
+};
+    try {
+      await sendWithRetry({
+        to: process.env.ADMIN_EMAIL,
+        subject: "🚨 New Booking Pending Approval",
+        html: `
+          <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+            <h2>New Booking Created</h2>
+
+            <p>A new booking has been created and is awaiting confirmation.</p>
+
+            <div style="padding:12px;border:1px solid #eee;border-radius:10px;">
+              <p><b>Booking ID:</b> ${createdBooking._id}</p>
+              <p><b>Customer:</b> ${req.user?.name || "N/A"}</p>
+              <p><b>Email:</b> ${req.user?.email || "N/A"}</p>
+              <p><b>Car:</b> ${carData?.name || "N/A"}</p>
+              <p><b>Pickup:</b> ${pickupLocation}</p>
+              <p><b>Drop-off:</b> ${dropoffLocation}</p>
+              <p><b>Pickup Time:</b> ${new Date(start).toLocaleString()}</p>
+              <p><b>Total:</b> $${totalPrice}</p>
+            </div>
+
+            <p style="margin-top:15px;color:#b91c1c;font-weight:bold;">
+              Action required: confirm this booking in admin dashboard.
+            </p>
+          </div>
+        `,
+      });
+
+      console.log("✅ Admin notified of new booking");
+    } catch (err) {
+      console.error("❌ Admin email failed:", err);
+    }
 
     return res.status(201).json({
       message: "Booking created successfully",
