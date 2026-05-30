@@ -19,7 +19,7 @@ export const contactForm = async (req, res) => {
     await sendEmail({
       to: "info@lecharlotlimousine.com", // your inbox
       from: {
-        email: "lecharlotlimousine@gmail.com", // your verified SendGrid sender
+        email: "Info@lecharlotlimousine.com", // your verified SendGrid sender
         name: "Le Charlot Limousine",
       },
       replyTo: email, // ✅ this is key: reply goes directly to user
