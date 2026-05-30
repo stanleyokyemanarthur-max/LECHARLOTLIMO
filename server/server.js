@@ -62,11 +62,11 @@ const startServer = async () => {
       bodyParser.raw({ type: "application/json" }),
       paymentWebhook
     );
-
     // 5️⃣ Regular middleware
     app.use(express.json());
-
+    
     // 6️⃣ Standard API routes
+    app.use(express.static("public"));
     app.use("/api/auth", authRoutes);
     app.use("/api/cars", carRoutes);
     app.use("/api/admin", adminRoutes);
