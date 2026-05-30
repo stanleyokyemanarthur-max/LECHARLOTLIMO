@@ -147,27 +147,6 @@ router.post("/", async (req, res) => {
   <p style="margin-top:20px;opacity:0.8;">
     Action: Confirm booking in dashboard.
   </p>
-`)html: emailShell(`
-  <h2 style="margin-top:0;color:#f2d27a;">New Paid Booking</h2>
-
-  <p style="opacity:0.9;">
-    A new booking has been successfully paid and is awaiting confirmation.
-  </p>
-
-  <div style="margin-top:20px;padding:16px;border-radius:12px;
-    background:rgba(255,255,255,0.03);border:1px solid rgba(255,215,120,0.15);">
-
-    <p><b>Booking:</b> ${bookingRef}</p>
-    <p><b>Customer:</b> ${booking.user?.name || "—"} (${booking.user?.email || "—"})</p>
-    <p><b>Pickup:</b> ${pickup}</p>
-    <p><b>Drop-off:</b> ${dropoff}</p>
-    <p><b>Time:</b> ${pickupTime}</p>
-    <p><b>Total:</b> $${amount}</p>
-  </div>
-
-  <p style="margin-top:20px;opacity:0.8;">
-    Action: Confirm booking in dashboard.
-  </p>
 `),
               });
 
