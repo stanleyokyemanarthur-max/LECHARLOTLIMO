@@ -221,7 +221,7 @@ export default function FleetDetails() {
 
         {/* Book Now Button */}
         <button onClick={() => navigate("/reserve")} className="btn btn-gold text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
-          Book Now
+          Go To Bookings
         </button>
 
         {/* FAQ Section */}
