@@ -332,7 +332,7 @@ function Index() {
 
           <p className="leading-relaxed text-[#CFC7B2]">
             Drawing inspiration from his French heritage, Pierre believes that true luxury is not defined solely by the vehicle,
-            but by the experience. Professionalism, punctuality, discretion, and genuine care are the principles that guide every journey.
+            but by the experience. Professionalism, punctuality, discretion, Elegance, hospitality, Uncompromising service and genuine care…
           </p>
 
           <p className="leading-relaxed text-[#CFC7B2]">

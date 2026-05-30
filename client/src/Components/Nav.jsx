@@ -53,11 +53,11 @@ function Nav() {
     >
       <div className="w-full mx-auto flex justify-between items-center py-4 px-8 lg:px-12 relative">
         {/* Logo */}
-        <div className="relative h-12 w-55 overflow-visible">
+        <div className="relative h-14 w-40 overflow-visible">
           <img
             src="/images/logoiz.png"
             alt="Le Charlot Logo"
-            className="absolute -top-5 right-0 w-30 h-auto object-contain cursor-pointer"
+            className="absolute -top-5 right-0 w-40 h-auto object-contain cursor-pointer"
             onClick={() => {
               navigate("/");
               closeMobile();
