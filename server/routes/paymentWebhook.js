@@ -27,44 +27,40 @@ router.post("/", async (req, res) => {
 
   try {
     switch (event.type) {
-      case "checkout.session.completed": {
-        const sessionObj = event.data.object;
-        const bookingId = sessionObj.metadata?.bookingId;
 
-        if (!bookingId) {
-          console.warn("⚠️ Missing bookingId in Stripe metadata");
-          break;
-        }
+      // =========================
+      // PAYMENT SUCCESS
+      // =========================
+      case "checkout.session.completed": {
+        const session = event.data.object;
+        const bookingId = session.metadata?.bookingId;
+
+        if (!bookingId) break;
 
         const booking = await Booking.findById(bookingId)
           .populate("reward")
           .populate("user");
 
-        if (!booking) {
-          console.warn("⚠️ Booking not found:", bookingId);
-          break;
-        }
+        if (!booking) break;
 
-        // ✅ Ensure flags exist
-        booking.notificationFlags = booking.notificationFlags || {
+        // ensure flags exist
+        booking.notificationFlags ||= {
           paymentReceivedNotifiedUser: false,
           paymentReceivedNotifiedAdmin: false,
         };
 
-        // ✅ 1) Payment update (idempotent)
-        // If already paid, do NOT break — continue to notifications.
+        // =========================
+        // PAYMENT UPDATE
+        // =========================
         if (booking.paymentStatus !== "paid") {
           booking.paymentStatus = "paid";
 
-          // do NOT downgrade if admin already moved it forward
           if (!["confirmed", "enroute", "completed"].includes(booking.status)) {
-            booking.status = "pending"; // awaiting admin confirmation
+            booking.status = "pending";
           }
 
-          await booking.save();
-
-          // 🎁 finalize reward if present
-          if (booking.reward) {
+          // finalize reward
+          if (booking.reward?._id) {
             await Reward.findByIdAndUpdate(booking.reward._id, {
               status: "USED",
               usedAt: new Date(),
@@ -75,7 +71,9 @@ router.post("/", async (req, res) => {
           }
         }
 
-        // Common email fields
+        // =========================
+        // COMMON DATA (IMPORTANT)
+        // =========================
         const bookingRef = booking._id.toString();
         const pickup = booking.pickupLocation;
         const dropoff = booking.dropoffLocation;
@@ -84,95 +82,107 @@ router.post("/", async (req, res) => {
           : "—";
         const amount = Number(booking.totalPrice || 0).toFixed(2);
 
-        // ✅ 2) Customer email (idempotent via flags)
+        // =========================
+        // ADMIN EMAIL
+        // =========================
+        try {
+          if (!booking.notificationFlags.paymentReceivedNotifiedAdmin) {
+            const adminEmails = (process.env.ADMIN_NOTIFY_EMAIL || "")
+              .split(",")
+              .map(e => e.trim())
+              .filter(Boolean);
+
+            if (adminEmails.length > 0) {
+              await sendEmail({
+                to: adminEmails,
+                subject: `PAID booking awaiting confirmation (${bookingRef})`,
+                html: `
+                  <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+                    <h2>New Paid Booking</h2>
+
+                    <div style="padding:12px;border:1px solid #eee;border-radius:10px;">
+                      <p><b>Booking:</b> ${bookingRef}</p>
+                      <p><b>Customer:</b> ${booking.user?.name || "—"} (${booking.user?.email || "—"})</p>
+                      <p><b>Pickup:</b> ${pickup}</p>
+                      <p><b>Drop-off:</b> ${dropoff}</p>
+                      <p><b>Pickup time:</b> ${pickupTime}</p>
+                      <p><b>Total:</b> $${amount}</p>
+                    </div>
+
+                    <p style="margin-top:16px;">Action: Admin dashboard → confirm booking.</p>
+                  </div>
+                `,
+              });
+            }
+
+            booking.notificationFlags.paymentReceivedNotifiedAdmin = true;
+          }
+        } catch (e) {
+          console.error("❌ Admin email failed:", e);
+        }
+
+        // =========================
+        // USER EMAIL
+        // =========================
         try {
           const userEmail = booking.user?.email;
-          if (userEmail && !booking.notificationFlags.paymentReceivedNotifiedUser) {
+
+          if (
+            userEmail &&
+            !booking.notificationFlags.paymentReceivedNotifiedUser
+          ) {
             await sendEmail({
               to: userEmail,
               subject: "Payment received — awaiting confirmation",
               html: `
                 <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-                  <h2 style="margin:0 0 8px;">Payment received</h2>
-                  <p style="margin:0 0 16px;">
+                  <h2>Payment received</h2>
+
+                  <p>
                     We’ve received your payment for booking <b>${bookingRef}</b>.
-                    Your ride is now <b>awaiting confirmation</b>. You’ll receive another message once it’s approved.
+                    Your ride is now awaiting confirmation.
                   </p>
-                  <div style="padding:12px 14px;border:1px solid #eee;border-radius:10px serif;border-radius:10px;">
-                    <p style="margin:0;"><b>Pickup:</b> ${pickup}</p>
-                    <p style="margin:0;"><b>Drop-off:</b> ${dropoff}</p>
-                    <p style="margin:0;"><b>Pickup time:</b> ${pickupTime}</p>
-                    <p style="margin:0;"><b>Total:</b> $${amount}</p>
+
+                  <div style="padding:12px;border:1px solid #eee;border-radius:10px;">
+                    <p><b>Pickup:</b> ${pickup}</p>
+                    <p><b>Drop-off:</b> ${dropoff}</p>
+                    <p><b>Pickup time:</b> ${pickupTime}</p>
+                    <p><b>Total:</b> $${amount}</p>
                   </div>
-                  <p style="margin:16px 0 0;">Le Charlot Limousine</p>
+
+                  <p style="margin-top:16px;">Le Charlot Limousine</p>
                 </div>
               `,
             });
 
             booking.notificationFlags.paymentReceivedNotifiedUser = true;
-            await booking.save();
           }
         } catch (e) {
-          console.error("❌ Customer payment email failed (non-blocking):", e?.response?.body || e);
+          console.error("❌ User email failed:", e);
         }
 
-        // ✅ 3) Admin email (supports comma-separated list)
-        try {
-          if (!booking.notificationFlags.paymentReceivedNotifiedAdmin) {
-            const adminEmails = (process.env.ADMIN_NOTIFY_EMAIL || "")
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean);
+        await booking.save();
 
-            if (!adminEmails.length) {
-              console.warn("⚠️ ADMIN_NOTIFY_EMAIL not set — skipping admin email");
-            } else {
-              await sendEmail({
-                to: adminEmails, // ✅ SendGrid accepts array
-                subject: `PAID booking awaiting confirmation (${bookingRef})`,
-                html: `
-                  <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-                    <h2 style="margin:0 0 8px;">New PAID booking awaiting confirmation</h2>
-                    <div style="padding:12px 14px;border:1px solid #eee;border-radius:10px;">
-                      <p style="margin:0;"><b>Booking:</b> ${bookingRef}</p>
-                      <p style="margin:0;"><b>Customer:</b> ${booking.user?.name || "—"} (${booking.user?.email || "—"})</p>
-                      <p style="margin:0;"><b>Pickup:</b> ${pickup}</p>
-                      <p style="margin:0;"><b>Drop-off:</b> ${dropoff}</p>
-                      <p style="margin:0;"><b>Pickup time:</b> ${pickupTime}</p>
-                      <p style="margin:0;"><b>Total:</b> $${amount}</p>
-                    </div>
-                    <p style="margin:16px 0 0;">Action: Admin dashboard → Bookings → Pending.</p>
-                  </div>
-                `,
-              });
-
-              booking.notificationFlags.paymentReceivedNotifiedAdmin = true;
-              await booking.save();
-            }
-          }
-        } catch (e) {
-          console.error("❌ Admin email failed (non-blocking):", e?.response?.body || e);
-        }
-
-        console.log(`✅ Booking ${bookingId} paid + notifications handled (idempotent)`);
+        console.log(`✅ Booking processed: ${bookingId}`);
         break;
       }
 
-      // ❌ checkout expired → cancel booking + release reward
+      // =========================
+      // EXPIRED SESSION
+      // =========================
       case "checkout.session.expired": {
-        const sessionObj = event.data.object;
-        const bookingId = sessionObj.metadata?.bookingId;
+        const session = event.data.object;
+        const bookingId = session.metadata?.bookingId;
+
         if (!bookingId) break;
 
         const booking = await Booking.findById(bookingId).populate("reward");
         if (!booking) break;
 
-        // cancel booking to avoid "stuck pending"
         booking.status = "cancelled";
         booking.paymentStatus = "cancelled";
-        await booking.save();
 
-        if (booking.reward) {
+        if (booking.reward?._id) {
           await Reward.findByIdAndUpdate(booking.reward._id, {
             status: "AVAILABLE",
             lockedAt: null,
@@ -181,7 +191,9 @@ router.post("/", async (req, res) => {
           });
         }
 
-        console.log(`❌ Booking ${bookingId} checkout expired → cancelled + reward released`);
+        await booking.save();
+
+        console.log(`❌ Booking expired: ${bookingId}`);
         break;
       }
 

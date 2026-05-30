@@ -132,7 +132,8 @@ export const createBooking = async (req, res) => {
             totalPrice,
             isPaid,
             reward: reward?._id || null,
-            status: "pending",
+            status: "awaiting_payment",
+            paymentStatus: "pending",
           },
         ],
         { session }
@@ -170,64 +171,7 @@ export const createBooking = async (req, res) => {
       return res.status(500).json({ error: "Booking creation failed" });
     }
 
-    /* =========================
-       ADMIN EMAIL (OUTSIDE TX)
-    ========================== */
 
-    console.log("🚨 ABOUT TO SEND ADMIN EMAIL");
-console.log("ADMIN EMAIL:", process.env.ADMIN_EMAIL);
-console.log("BOOKING ID:", createdBooking._id);
-
-
-const sendWithRetry = async (payload, retries = 3) => {
-  for (let i = 0; i < retries; i++) {
-    try {
-      console.log(`📨 Attempt ${i + 1} → sending to:`, payload.to);
-
-      const result = await sendEmail(payload);
-
-      console.log("✅ EMAIL SENT RESULT:", result);
-
-      return result;
-    } catch (err) {
-      console.error(`❌ Attempt ${i + 1} failed:`, err?.message || err);
-
-      if (i === retries - 1) throw err;
-    }
-  }
-};
-    try {
-      await sendWithRetry({
-        to: process.env.ADMIN_EMAIL,
-        subject: "🚨 New Booking Pending Approval",
-        html: `
-          <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-            <h2>New Booking Created</h2>
-
-            <p>A new booking has been created and is awaiting confirmation.</p>
-
-            <div style="padding:12px;border:1px solid #eee;border-radius:10px;">
-              <p><b>Booking ID:</b> ${createdBooking._id}</p>
-              <p><b>Customer:</b> ${req.user?.name || "N/A"}</p>
-              <p><b>Email:</b> ${req.user?.email || "N/A"}</p>
-              <p><b>Car:</b> ${carData?.name || "N/A"}</p>
-              <p><b>Pickup:</b> ${pickupLocation}</p>
-              <p><b>Drop-off:</b> ${dropoffLocation}</p>
-              <p><b>Pickup Time:</b> ${new Date(start).toLocaleString()}</p>
-              <p><b>Total:</b> $${totalPrice}</p>
-            </div>
-
-            <p style="margin-top:15px;color:#b91c1c;font-weight:bold;">
-              Action required: confirm this booking in admin dashboard.
-            </p>
-          </div>
-        `,
-      });
-
-      console.log("✅ Admin notified of new booking");
-    } catch (err) {
-      console.error("❌ Admin email failed:", err);
-    }
 
     return res.status(201).json({
       message: "Booking created successfully",
