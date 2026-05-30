@@ -22,7 +22,7 @@ export const sendEmail = async ({ to, subject, html, replyTo }) => {
     if (!html) throw new Error("Email HTML is required");
 
     const response = await resend.emails.send({
-      from: "Le Charlot Limousine <lecharlot@resend.dev>",
+      from: "Le Charlot Limousine <mail.lecharlotlimousine.com>",
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
