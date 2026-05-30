@@ -192,7 +192,7 @@ router.post("/", async (req, res) => {
   </div>
 
   <div style="margin-top:25px;text-align:center;">
-    <a href="https://lecharlotlimo.onrender.com/my-bookings"
+    <a href="https://lecharlotlimo.vercel.app/mybookings"
        style="display:inline-block;padding:12px 28px;border-radius:30px;
        background:linear-gradient(145deg,#7a5a12,#f2d27a,#c79b2a);
        color:#120d05;text-decoration:none;font-weight:bold;">

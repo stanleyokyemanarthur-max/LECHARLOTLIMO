@@ -240,21 +240,21 @@ function Index() {
       </div>
 
       {/* ABOUT SECTION  */}
-      <div className="about bg-[#0c0c0c] text-white lg:px-[10%] px-[8%] py-[70px] lg:py-[110px]">
+      {/* <div className="about bg-[#0c0c0c] text-white lg:px-[10%] px-[8%] py-[70px] lg:py-[110px]">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
 
-          {/* IMAGE */}
+          
           <div className="relative h-[420px] sm:h-[500px] lg:h-[620px] rounded-3xl overflow-hidden">
             <img
               src="/images/charlot.jpeg"
               alt="Le Charlot Limousine Experience"
               className="w-full h-full object-cover scale-[1.03]"
             />
-            {/* soft overlay */}
+          
             <div className="absolute inset-0 bg-black/20"></div>
           </div>
 
-          {/* CONTENT */}
+         
           <div>
             <p className="uppercase text-[16px] font-bold tracking-[0.35em] rolex-gold-text mb-5">
               Le Charlot Limousine
@@ -277,7 +277,7 @@ function Index() {
               and punctuality to ensure every ride feels effortless and distinguished.
             </p>
 
-            {/* VALUES */}
+        
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <i className="ri-check-double-line rolex-gold-text"></i>
@@ -296,8 +296,60 @@ function Index() {
           </div>
 
         </div>
-      </div>
+      </div> */}
+<section className="w-full bg-[#0B0B0B] py-20 px-6 md:px-16">
+      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
 
+        {/* Image Side */}
+        <div className="relative">
+          <div className="rounded-2xl overflow-hidden border border-[#D4AF37]/20 shadow-[0_0_40px_rgba(212,175,55,0.15)]">
+            <img
+              src="/images/headmug.jpeg"
+              alt="Founder - Pierre Charlot"
+              className="w-full h-[500px] object-cover"
+            />
+          </div>
+
+          {/* subtle glow */}
+          <div className="absolute -inset-4 bg-[#D4AF37]/10 blur-3xl rounded-3xl -z-10"></div>
+        </div>
+
+        {/* Text Side */}
+        <div className="text-[#EDEDED] space-y-6">
+          
+          <div>
+            <h2 className="text-3xl md:text-4xl font-[Playfair_Display] text-[#D4AF37]">
+              About the Founder
+            </h2>
+            <div className="w-20 h-[2px] bg-gradient-to-r from-[#7a5a12] via-[#f2d27a] to-[#8a6316] mt-3"></div>
+          </div>
+
+          <p className="leading-relaxed text-[#CFC7B2]">
+            Inspired by the timeless elegance, hospitality, and attention to detail associated
+            with French culture, Pierre Charlot founded <span className="text-[#D4AF37] font-medium">Le Charlot Limousine</span> with a simple vision:
+            to bring a higher standard of service to luxury transportation in Atlanta.
+          </p>
+
+          <p className="leading-relaxed text-[#CFC7B2]">
+            Drawing inspiration from his French heritage, Pierre believes that true luxury is not defined solely by the vehicle,
+            but by the experience. Professionalism, punctuality, discretion, and genuine care are the principles that guide every journey.
+          </p>
+
+          <p className="leading-relaxed text-[#CFC7B2]">
+            Whether serving executives, families, airport travelers, or guests attending special events,
+            Le Charlot Limousine is committed to delivering a seamless experience marked by comfort,
+            reliability, and exceptional service.
+          </p>
+
+          <div className="pt-2">
+            <p className="italic text-[#D4AF37]">
+              “At Le Charlot Limousine, every detail matters—because excellence is never an accident; it is a standard.”
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
       {/* ================= Banner Section ================= */}
       <div className="banner-section bg-[#0c0c0c] lg:px-[12%] px-[8%] py-[80px] lg:py-[120px] text-center text-white">
 
