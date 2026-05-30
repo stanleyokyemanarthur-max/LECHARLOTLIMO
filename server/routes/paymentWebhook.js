@@ -87,7 +87,7 @@ router.post("/", async (req, res) => {
         // =========================
     try {
   if (!booking.notificationFlags.paymentReceivedNotifiedAdmin) {
-    const adminEmails = (process.env.ADMIN_NOTIFY_EMAIL || "")
+    const adminEmails = (process.env.ADMIN_EMAIL || "")
       .split(",")
       .map(e => e.trim())
       .filter(Boolean);
