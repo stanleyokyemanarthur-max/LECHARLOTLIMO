@@ -173,12 +173,25 @@ export const createBooking = async (req, res) => {
     /* =========================
        ADMIN EMAIL (OUTSIDE TX)
     ========================== */
-    const sendWithRetry = async (payload, retries = 3) => {
+
+    console.log("🚨 ABOUT TO SEND ADMIN EMAIL");
+console.log("ADMIN EMAIL:", process.env.ADMIN_EMAIL);
+console.log("BOOKING ID:", createdBooking._id);
+
+
+const sendWithRetry = async (payload, retries = 3) => {
   for (let i = 0; i < retries; i++) {
     try {
-      await sendEmail(payload);
-      return;
+      console.log(`📨 Attempt ${i + 1} → sending to:`, payload.to);
+
+      const result = await sendEmail(payload);
+
+      console.log("✅ EMAIL SENT RESULT:", result);
+
+      return result;
     } catch (err) {
+      console.error(`❌ Attempt ${i + 1} failed:`, err?.message || err);
+
       if (i === retries - 1) throw err;
     }
   }

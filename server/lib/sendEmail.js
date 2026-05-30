@@ -14,6 +14,7 @@ const resend = new Resend(RESEND_API_KEY);
 /**
  * Send Email Function
  */
+
 export const sendEmail = async ({ to, subject, html, replyTo }) => {
   try {
     if (!to) throw new Error("Recipient email is required");
