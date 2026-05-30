@@ -306,7 +306,7 @@ function Index() {
             <img
               src="/images/headmug.jpeg"
               alt="Founder - Pierre Charlot"
-              className="w-full h-[500px] object-cover"
+              className="w-full h-[500px] object-cover object-top"
             />
           </div>
 
