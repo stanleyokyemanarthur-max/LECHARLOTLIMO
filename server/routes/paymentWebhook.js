@@ -7,6 +7,34 @@ import { sendEmail } from "../lib/sendEmail.js";
 
 dotenv.config();
 
+const logoUrl = "https://lecharlotlimo.onrender.com/images/logoiz.png";
+
+const emailShell = (content) => `
+  <div style="background:#0f0d0a;padding:40px 0;font-family:Arial,sans-serif;">
+    <div style="max-width:640px;margin:0 auto;background:#14110c;border-radius:14px;overflow:hidden;border:1px solid rgba(255,215,120,0.15);">
+
+      <!-- HEADER -->
+      <div style="padding:30px;text-align:center;background:linear-gradient(145deg,#7a5a12,#f2d27a,#8a6316);">
+        <img src="${logoUrl}" style="width:140px;margin-bottom:10px;" />
+        <h1 style="margin:0;color:#120d05;font-size:20px;letter-spacing:1px;">
+          Le Charlot Limousine
+        </h1>
+      </div>
+
+      <!-- BODY -->
+      <div style="padding:30px;color:#f5f1e6;">
+        ${content}
+      </div>
+
+      <!-- FOOTER -->
+      <div style="padding:20px;text-align:center;font-size:12px;color:#a89b7a;border-top:1px solid rgba(255,255,255,0.08);">
+        Luxury Chauffeur Service • Accra
+      </div>
+
+    </div>
+  </div>
+`;
+
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -85,32 +113,74 @@ router.post("/", async (req, res) => {
         // =========================
         // ADMIN EMAIL
         // =========================
-    try {
-  if (!booking.notificationFlags.paymentReceivedNotifiedAdmin) {
-    const adminEmails = (process.env.ADMIN_EMAIL || "")
-      .split(",")
-      .map(e => e.trim())
-      .filter(Boolean);
+        try {
+          if (!booking.notificationFlags.paymentReceivedNotifiedAdmin) {
+            const adminEmails = (process.env.ADMIN_EMAIL || "")
+              .split(",")
+              .map(e => e.trim())
+              .filter(Boolean);
 
-    console.log("📧 ADMIN EMAILS:", adminEmails);
+            console.log("📧 ADMIN EMAILS:", adminEmails);
 
-    if (adminEmails.length > 0) {
-      const result = await sendEmail({
-        to: adminEmails,
-        subject: `PAID booking awaiting confirmation (${bookingRef})`,
-        html: `...`,
-      });
+            if (adminEmails.length > 0) {
+              const result = await sendEmail({
+                to: adminEmails,
+                subject: `PAID booking awaiting confirmation (${bookingRef})`,
+                html: emailShell(`
+  <h2 style="margin-top:0;color:#f2d27a;">New Paid Booking</h2>
 
-      console.log("✅ ADMIN EMAIL SENT RESULT:", result);
-    } else {
-      console.warn("⚠️ No admin emails configured");
-    }
+  <p style="opacity:0.9;">
+    A new booking has been successfully paid and is awaiting confirmation.
+  </p>
 
-    booking.notificationFlags.paymentReceivedNotifiedAdmin = true;
-  }
-} catch (e) {
-  console.error("❌ ADMIN EMAIL FAILED HARD:", e?.response?.body || e);
-}
+  <div style="margin-top:20px;padding:16px;border-radius:12px;
+    background:rgba(255,255,255,0.03);border:1px solid rgba(255,215,120,0.15);">
+
+    <p><b>Booking:</b> ${bookingRef}</p>
+    <p><b>Customer:</b> ${booking.user?.name || "—"} (${booking.user?.email || "—"})</p>
+    <p><b>Pickup:</b> ${pickup}</p>
+    <p><b>Drop-off:</b> ${dropoff}</p>
+    <p><b>Time:</b> ${pickupTime}</p>
+    <p><b>Total:</b> $${amount}</p>
+  </div>
+
+  <p style="margin-top:20px;opacity:0.8;">
+    Action: Confirm booking in dashboard.
+  </p>
+`)html: emailShell(`
+  <h2 style="margin-top:0;color:#f2d27a;">New Paid Booking</h2>
+
+  <p style="opacity:0.9;">
+    A new booking has been successfully paid and is awaiting confirmation.
+  </p>
+
+  <div style="margin-top:20px;padding:16px;border-radius:12px;
+    background:rgba(255,255,255,0.03);border:1px solid rgba(255,215,120,0.15);">
+
+    <p><b>Booking:</b> ${bookingRef}</p>
+    <p><b>Customer:</b> ${booking.user?.name || "—"} (${booking.user?.email || "—"})</p>
+    <p><b>Pickup:</b> ${pickup}</p>
+    <p><b>Drop-off:</b> ${dropoff}</p>
+    <p><b>Time:</b> ${pickupTime}</p>
+    <p><b>Total:</b> $${amount}</p>
+  </div>
+
+  <p style="margin-top:20px;opacity:0.8;">
+    Action: Confirm booking in dashboard.
+  </p>
+`),
+              });
+
+              console.log("✅ ADMIN EMAIL SENT RESULT:", result);
+            } else {
+              console.warn("⚠️ No admin emails configured");
+            }
+
+            booking.notificationFlags.paymentReceivedNotifiedAdmin = true;
+          }
+        } catch (e) {
+          console.error("❌ ADMIN EMAIL FAILED HARD:", e?.response?.body || e);
+        }
 
         // =========================
         // USER EMAIL
@@ -125,25 +195,36 @@ router.post("/", async (req, res) => {
             await sendEmail({
               to: userEmail,
               subject: "Payment received — awaiting confirmation",
-              html: `
-                <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-                  <h2>Payment received</h2>
+              html: emailShell(`
+  <h2 style="margin-top:0;color:#f2d27a;">Payment Received</h2>
 
-                  <p>
-                    We’ve received your payment for booking <b>${bookingRef}</b>.
-                    Your ride is now awaiting confirmation.
-                  </p>
+  <p style="opacity:0.9;line-height:1.6;">
+    Your payment for booking <b>${bookingRef}</b> has been successfully received.
+    Your chauffeur service is now being prepared for confirmation.
+  </p>
 
-                  <div style="padding:12px;border:1px solid #eee;border-radius:10px;">
-                    <p><b>Pickup:</b> ${pickup}</p>
-                    <p><b>Drop-off:</b> ${dropoff}</p>
-                    <p><b>Pickup time:</b> ${pickupTime}</p>
-                    <p><b>Total:</b> $${amount}</p>
-                  </div>
+  <div style="margin-top:20px;padding:16px;border-radius:12px;
+    background:rgba(255,255,255,0.03);border:1px solid rgba(255,215,120,0.15);">
 
-                  <p style="margin-top:16px;">Le Charlot Limousine</p>
-                </div>
-              `,
+    <p><b>Pickup:</b> ${pickup}</p>
+    <p><b>Drop-off:</b> ${dropoff}</p>
+    <p><b>Pickup Time:</b> ${pickupTime}</p>
+    <p><b>Total:</b> $${amount}</p>
+  </div>
+
+  <div style="margin-top:25px;text-align:center;">
+    <a href="https://lecharlotlimo.onrender.com/my-bookings"
+       style="display:inline-block;padding:12px 28px;border-radius:30px;
+       background:linear-gradient(145deg,#7a5a12,#f2d27a,#c79b2a);
+       color:#120d05;text-decoration:none;font-weight:bold;">
+       View My Bookings
+    </a>
+  </div>
+
+  <p style="margin-top:20px;font-size:12px;opacity:0.7;">
+    Le Charlot Limousine • Luxury Chauffeur Experience
+  </p>
+`),
             });
 
             booking.notificationFlags.paymentReceivedNotifiedUser = true;
