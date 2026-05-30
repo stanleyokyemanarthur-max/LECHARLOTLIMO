@@ -85,41 +85,32 @@ router.post("/", async (req, res) => {
         // =========================
         // ADMIN EMAIL
         // =========================
-        try {
-          if (!booking.notificationFlags.paymentReceivedNotifiedAdmin) {
-            const adminEmails = (process.env.ADMIN_NOTIFY_EMAIL || "")
-              .split(",")
-              .map(e => e.trim())
-              .filter(Boolean);
+    try {
+  if (!booking.notificationFlags.paymentReceivedNotifiedAdmin) {
+    const adminEmails = (process.env.ADMIN_NOTIFY_EMAIL || "")
+      .split(",")
+      .map(e => e.trim())
+      .filter(Boolean);
 
-            if (adminEmails.length > 0) {
-              await sendEmail({
-                to: adminEmails,
-                subject: `PAID booking awaiting confirmation (${bookingRef})`,
-                html: `
-                  <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-                    <h2>New Paid Booking</h2>
+    console.log("📧 ADMIN EMAILS:", adminEmails);
 
-                    <div style="padding:12px;border:1px solid #eee;border-radius:10px;">
-                      <p><b>Booking:</b> ${bookingRef}</p>
-                      <p><b>Customer:</b> ${booking.user?.name || "—"} (${booking.user?.email || "—"})</p>
-                      <p><b>Pickup:</b> ${pickup}</p>
-                      <p><b>Drop-off:</b> ${dropoff}</p>
-                      <p><b>Pickup time:</b> ${pickupTime}</p>
-                      <p><b>Total:</b> $${amount}</p>
-                    </div>
+    if (adminEmails.length > 0) {
+      const result = await sendEmail({
+        to: adminEmails,
+        subject: `PAID booking awaiting confirmation (${bookingRef})`,
+        html: `...`,
+      });
 
-                    <p style="margin-top:16px;">Action: Admin dashboard → confirm booking.</p>
-                  </div>
-                `,
-              });
-            }
+      console.log("✅ ADMIN EMAIL SENT RESULT:", result);
+    } else {
+      console.warn("⚠️ No admin emails configured");
+    }
 
-            booking.notificationFlags.paymentReceivedNotifiedAdmin = true;
-          }
-        } catch (e) {
-          console.error("❌ Admin email failed:", e);
-        }
+    booking.notificationFlags.paymentReceivedNotifiedAdmin = true;
+  }
+} catch (e) {
+  console.error("❌ ADMIN EMAIL FAILED HARD:", e?.response?.body || e);
+}
 
         // =========================
         // USER EMAIL
