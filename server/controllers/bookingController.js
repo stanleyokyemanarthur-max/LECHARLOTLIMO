@@ -75,6 +75,15 @@ export const createBooking = async (req, res) => {
       });
     }
 
+    const reward = rewardId
+      ? await Reward.findById(rewardId)
+      : null;
+      
+    const financialState = resolveBookingFinancialState({
+      reward,
+      totalPrice: null,
+    });
+
     let createdBooking = null;
 
     await session.withTransaction(async () => {
@@ -85,6 +94,9 @@ export const createBooking = async (req, res) => {
 
       if (!carData) {
         throw new Error("CAR_NOT_FOUND");
+      }
+      if (!carData.fleetKey) {
+        throw new Error("Car data is missing fleetKey");
       }
 
       // =========================
@@ -133,6 +145,9 @@ export const createBooking = async (req, res) => {
       // =========================
       // 5. CREATE BOOKING (ATOMIC INSERT)
       // =========================
+
+
+
       const [booking] = await Booking.create(
         [
           {
@@ -163,6 +178,8 @@ export const createBooking = async (req, res) => {
 
             isPaid: false,
             reward: rewardId || null,
+            freeReason: financialState.freeReason,
+
 
             status: "pending",
             paymentStatus: "awaiting_payment",
@@ -173,6 +190,7 @@ export const createBooking = async (req, res) => {
 
       createdBooking = booking;
     });
+
 
     return res.status(201).json({
       message: "Booking created successfully",
@@ -397,7 +415,7 @@ export const updateBookingStatus = async (req, res) => {
 
   try {
     const booking = await Booking.findById(req.params.id)
-      .populate("user","email name")
+      .populate("user", "email name")
       .populate("reward")
       .populate("driver")
       .session(session);

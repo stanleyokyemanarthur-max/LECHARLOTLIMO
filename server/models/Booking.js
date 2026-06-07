@@ -135,25 +135,34 @@ const bookingSchema = new mongoose.Schema(
 
 /** ✅ Guard against invalid free bookings */
 bookingSchema.pre("save", function (next) {
-  // If booking is free...
-  if (this.isPaid === false) {
-    // Allow reward-free only if reward exists
-    if (this.freeReason === "reward" && !this.reward) {
-      return next(new Error("Free bookings with freeReason=reward must have a reward attached"));
-    }
+  const isFree =
+    this.totalPrice === 0 ||
+    this.paymentStatus === "paid" && this.totalPrice == null;
 
-    // Allow admin-free without a reward
-    if (this.freeReason === "admin") {
-      return next();
-    }
+  // If NOT free → no restriction
+  if (!isFree) return next();
 
-    // If isPaid=false but freeReason missing or invalid
-    return next(new Error("Free bookings must have freeReason='reward' or freeReason='admin'"));
+  // If free → must have reason
+  if (!this.freeReason) {
+    return next(
+      new Error("Free bookings must have freeReason='reward' or 'admin'")
+    );
   }
 
-  next();
-});
+  // If reward-based free booking must have reward
+  if (this.freeReason === "reward" && !this.reward) {
+    return next(
+      new Error("Reward-based free booking must include reward reference")
+    );
+  }
 
+  // admin free is always allowed
+  if (this.freeReason === "admin") return next();
+
+  return next(
+    new Error("Invalid freeReason value")
+  );
+});
 /**
  * 🔒 CRITICAL: Overlap-Protection Index (ANTI-DOUBLE-BOOKING)
  * Prevents concurrent pending/confirmed/enroute bookings for the same car

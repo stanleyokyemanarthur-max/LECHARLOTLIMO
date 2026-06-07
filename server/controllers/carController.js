@@ -17,14 +17,14 @@ export const createCar = async (req, res) => {
     const newCar = new Car({
       name,
       type,
-      seats:Number(seats) ,
+      seats: Number(seats),
       transmission,
       fuel,
       speed,
       perMileRate: Number(perMileRate),
-      rateMultiplier:Number(req.body.rateMultiplier??1),
+      rateMultiplier: Number(req.body.rateMultiplier ?? 1),
 
-      totalUnits: Number(req.body.totalUnits??1),
+      totalUnits: Number(req.body.totalUnits ?? 1),
       fleetKey: req.body.fleetKey,   // 🔥 REQUIRED for fleet system
 
       image: req.file?.path,
@@ -95,28 +95,40 @@ export const getFleetAvailability = async (req, res) => {
   try {
     const { from, to } = req.query;
 
+    if (!from || !to) {
+      return res.status(400).json({ message: "Missing date range" });
+    }
+
     const start = new Date(from);
     const end = new Date(to);
 
     const activeStatuses = ["pending", "confirmed", "enroute"];
 
+    // 1. Get cars
     const cars = await Car.find().lean();
 
+    // 2. Get overlapping bookings
     const bookings = await Booking.find({
       status: { $in: activeStatuses },
       pickupDate: { $lt: end },
       dropoffDate: { $gt: start },
     }).lean();
 
-    const bookingMap = new Map();
+    // 3. Build fleet usage map (KEY FIX)
+    const fleetMap = new Map();
 
     for (const b of bookings) {
-      const id = String(b.car);
-      bookingMap.set(id, (bookingMap.get(id) || 0) + 1);
+      const key = b.fleetKey || b.carSnapshot?.fleetKey;
+
+      if (!key) continue;
+
+      fleetMap.set(key, (fleetMap.get(key) || 0) + 1);
     }
 
+    // 4. Compute availability per fleetKey
     const result = cars.map((car) => {
-      const used = bookingMap.get(String(car._id)) || 0;
+      const used = fleetMap.get(car.fleetKey) || 0;
+
       const availableUnits = Math.max(0, car.totalUnits - used);
 
       return {
@@ -128,6 +140,7 @@ export const getFleetAvailability = async (req, res) => {
     });
 
     return res.json(result);
+
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
