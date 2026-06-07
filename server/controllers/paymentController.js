@@ -25,43 +25,88 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
  */
 export const createCheckoutSession = async (req, res) => {
   const session = await mongoose.startSession();
+
   try {
-    const { bookingId, amount } = req.body;
-    if (!bookingId || !amount) return res.status(400).json({ message: "BookingId and amount required" });
+    const { bookingId } = req.body;
 
+    if (!bookingId) {
+      return res.status(400).json({ message: "BookingId required" });
+    }
+
+    let booking;
+
+    // 1. Fetch booking safely inside session
     await session.withTransaction(async () => {
-      const booking = await Booking.findById(bookingId).session(session);
-      if (!booking) throw new Error("Booking not found");
+      booking = await Booking.findById(bookingId).session(session);
 
-      const stripeSession = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        mode: "payment",
-        line_items: [
-          {
-            price_data: {
-              currency: "usd",
-              product_data: {
-                name: `Car Booking - ${booking.carSnapshot?.name || "Luxury Ride"}`,
-                description: `${booking.pickupLocation} → ${booking.dropoffLocation}`,
-              },
-              unit_amount: Math.round(amount * 100),
-            },
-            quantity: 1,
-          },
-        ],
-        success_url: `${process.env.CLIENT_URL}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.CLIENT_URL}/booking-cancelled?session_id={CHECKOUT_SESSION_ID}`,
-        metadata: { bookingId: booking._id.toString() },
-      });
+      if (!booking) {
+        throw new Error("Booking not found");
+      }
 
-      booking.stripeSessionId = stripeSession.id;
-      booking.paymentStatus = "pending";
+      // Prevent duplicate payment sessions (idempotency guard)
+      if (booking.paymentStatus === "paid") {
+        throw new Error("Booking already paid");
+      }
+
+      // If session already exists, we reuse it (prevents duplicates)
+      if (booking.stripeSessionId) {
+        return;
+      }
+
+      booking.paymentStatus = "awaiting_payment";
       await booking.save({ session });
-      res.status(200).json({ url: stripeSession.url });
     });
+
+    // 2. Always use ONE consistent amount field
+    const amount = booking.totalPrice;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: "Invalid booking amount" });
+    }
+
+    // 3. Create Stripe session OUTSIDE transaction (critical fix)
+    const stripeSession = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `Car Booking - ${booking.carSnapshot?.name || "Luxury Ride"}`,
+              description: `${booking.pickupLocation} → ${booking.dropoffLocation}`,
+            },
+            unit_amount: Math.round(amount * 100),
+          },
+          quantity: 1,
+        },
+      ],
+
+      success_url: `${process.env.CLIENT_URL}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL}/booking-cancelled?session_id={CHECKOUT_SESSION_ID}`,
+
+      metadata: {
+        bookingId: booking._id.toString(),
+      },
+    });
+
+    // 4. Save Stripe session ID AFTER creation
+    booking.stripeSessionId = stripeSession.id;
+    await booking.save();
+
+    return res.status(200).json({
+      url: stripeSession.url,
+      sessionId: stripeSession.id,
+    });
+
   } catch (err) {
-    console.error("❌ Create checkout session error:", err);
-    res.status(500).json({ message: err.message || "Failed to create Stripe session" });
+    console.error("❌ createCheckoutSession error:", err);
+
+    return res.status(500).json({
+      message: err.message || "Failed to create Stripe session",
+    });
+
   } finally {
     session.endSession();
   }

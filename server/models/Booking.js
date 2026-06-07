@@ -14,7 +14,10 @@ const bookingSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
-
+    rateMultiplier: {
+      type: Number,
+      default: 1.0,
+    },
     car: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Car",
@@ -25,20 +28,20 @@ const bookingSchema = new mongoose.Schema(
         name: String,
         type: String,
         pricePerMile: Number,
+        rateMultiplier: Number,
+        totalUnits: Number,
+        fleetKey: String,
       },
       default: {},
     },
-
     pickupLocation: {
       type: String,
       required: true,
     },
-
     dropoffLocation: {
       type: String,
       required: true,
     },
-
     distance: {
       type: Number,
       required: true,
@@ -46,14 +49,28 @@ const bookingSchema = new mongoose.Schema(
 
     totalPrice: {
       type: Number,
-      required: true,
+      default: null,
     },
 
     paymentStatus: {
       type: String,
-      enum: ["awaiting_payment", "pending", "paid", "cancelled", "refunded"],
-      default: "pending",
-      index: true, 
+      enum: [
+        "unquoted",
+        "quoted",
+        "awaiting_payment",
+        "processing",
+        "paid",
+        "failed",
+        "refunded",
+        "cancelled",
+        "expired",
+      ],
+      default: "unquoted",
+      index: true,
+    },
+    pricingLocked: {
+      type: Boolean,
+      default: false,
     },
 
     /** 💰 Paid vs Free */
@@ -61,6 +78,11 @@ const bookingSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    fleetKey: {
+  type: String,
+  index: true,
+  required: true,
+},
 
     /** 🎁 Why booking is free */
     freeReason: {
@@ -78,7 +100,7 @@ const bookingSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "confirmed", "enroute", "completed", "cancelled"],
+      enum: ["pending", "confirmed", "enroute", "completed", "cancelled","expired",],
       default: "pending",
       index: true,
     },
@@ -137,7 +159,7 @@ bookingSchema.pre("save", function (next) {
  * Prevents concurrent pending/confirmed/enroute bookings for the same car
  */
 bookingSchema.index(
-  { car: 1, pickupDate: 1, dropoffDate: 1 },
+  { car: 1, pickupDate: 1, dropoffDate: 1, status: 1 },
   {
     partialFilterExpression: {
       status: { $in: ["pending", "confirmed", "enroute"] },

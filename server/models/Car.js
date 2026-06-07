@@ -11,6 +11,21 @@ const carSchema = new mongoose.Schema(
     fuel: { type: String, required: true }, // "Diesel", "Petrol", etc.
     speed: { type: String }, // optional (e.g. "120 mph")
     perMileRate: { type: Number, required: true, default: 5 },
+    rateMultiplier: {
+      type: Number,
+      default: 1.0,
+    },
+    totalUnits: {
+  type: Number,
+  default: 1,
+  min: 1,
+},
+ fleetKey: {
+    type: String,
+    index: true,
+    required: true,
+    // example: "escalade", "sprinter", "suv-premium"
+  },
 
     // ✅ Optional description field
     description: { type: String, default: "" },

@@ -8,19 +8,23 @@ import {
   estimateBooking,
   getDriverBookings,
   assignDriver,
+  confirmPayment,
+  finalizeBookingQuote,
 } from "../controllers/bookingController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 import { bookingValidationRules } from "../validators/bookingValidator.js";
 import { validateRequest } from "../middleware/validateRequest.js";
 
+
 const router = express.Router();
 
 // 📊 Public: Estimate booking cost
-router.get("/estimate", estimateBooking);
+router.post("/estimate", estimateBooking);
 // Assign driver (admin)
 router.put("/:id/assign-driver", protect, adminOnly, assignDriver);
+router.patch("/bookings/:id/pay", confirmPayment);
 
-
+router.post("/finalize-quote", protect, finalizeBookingQuote);
 // 📝 Create booking (customer only, with validation)
 router.post("/", protect, bookingValidationRules, validateRequest, createBooking);
 

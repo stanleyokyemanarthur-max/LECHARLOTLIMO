@@ -3,9 +3,10 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import Flatpickr from "react-flatpickr";
-import "flatpickr/dist/flatpickr.min.css";
-import "flatpickr/dist/themes/dark.css"; // Flatpickr dark theme
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";// Flatpickr dark theme
 import { useDispatch, useSelector } from "react-redux";
 import { setTripData } from "../slices/bookingSlice";
 import { GoogleMap, DirectionsRenderer, useJsApiLoader } from "@react-google-maps/api";
@@ -31,7 +32,16 @@ export default function ReservationPage() {
     dropoffDate: null,
     passengers: "",
     luggage: "",
+
     distance: null,
+
+    durationMinutes: null,
+    durationText: "",
+
+    trafficMinutes: null,
+    trafficDurationText: "",
+
+    trafficDelayPercent: 0,
   });
 
   const [directionsResult, setDirectionsResult] = useState(null);
@@ -41,7 +51,20 @@ export default function ReservationPage() {
   const pickupRef = useRef(null);
   const dropoffRef = useRef(null);
 
-  const minPickupDate = useMemo(() => new Date(Date.now() + 2 * 60 * 60 * 1000), []);
+  // const minPickupDate = useMemo(() => new Date(Date.now() + 2 * 60 * 60 * 1000), []);
+
+  const luxuryTheme = createTheme({
+    palette: {
+      mode: "dark",
+      primary: {
+        main: "#D4AF37",
+      },
+      background: {
+        default: "#0B0B0B",
+        paper: "#121212",
+      },
+    },
+  });
 
   // Google Autocomplete setup
   useEffect(() => {
@@ -73,7 +96,7 @@ export default function ReservationPage() {
         window.google.maps.event.clearInstanceListeners(dropoffAutocomplete);
       }
     };
-  }, []);
+  }, [isLoaded]);
 
   const handleInputChange = (e) =>
     setTripDataState((s) => ({ ...s, [e.target.name]: e.target.value }));
@@ -103,9 +126,32 @@ export default function ReservationPage() {
           (result, status) => {
             if (status === "OK" && result.routes?.length) {
               const leg = result.routes[0].legs[0];
-              const miles = leg.distance.value / 1609.344;
+
+              const distanceMiles =
+                leg.distance.value / 1609.344;
+
+              const durationMinutes =
+                Math.round(leg.duration.value / 60);
+
+              const durationText =
+                leg.duration.text;
+
               setDirectionsResult(result);
-              setTripDataState((s) => ({ ...s, distance: miles }));
+
+              setTripDataState((prev) => ({
+                ...prev,
+
+                distance: distanceMiles,
+
+                durationMinutes,
+                durationText,
+
+                // fallback until backend computes traffic
+                trafficMinutes: durationMinutes,
+                trafficDurationText: durationText,
+
+                trafficDelayPercent: 0,
+              }));
             } else {
               setDirectionsResult(null);
               setError("Could not draw route. Please check the locations.");
@@ -172,91 +218,129 @@ export default function ReservationPage() {
         className="max-w-6xl w-full bg-[#121212] shadow-[0_0_25px_rgba(212,175,55,0.15)] rounded-2xl p-10 grid md:grid-cols-2 gap-10"
       >
         {/* Left: Form */}
-        <form onSubmit={handlePreviewAndProceed} className="space-y-6 text-[#EDEDED]">
-          <h2 className="text-3xl font-[Playfair_Display] font-semibold text-[#D4AF37] tracking-wide mb-4">
-            Step 1 — Booking Information
-          </h2>
+        {/* form */}
+        <ThemeProvider theme={luxuryTheme}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <form onSubmit={handlePreviewAndProceed} className="space-y-6 text-[#EDEDED]">
+              <h2 className="text-3xl  font-[Playfair_Display] font-semibold text-[#D4AF37] tracking-wide mb-4">
+                Step 1 — Booking Information
+              </h2>
 
-          {[{ label: "Pickup Location", name: "pickupLocation", ref: pickupRef, placeholder: "e.g. Raleigh Convention Center" },
-          { label: "Drop-off Location", name: "dropoffLocation", ref: dropoffRef, placeholder: "e.g. Crown Complex, Fayetteville" }].map((f) => (
-            <div key={f.name}>
-              <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">{f.label}</label>
-              <input
-                ref={f.ref}
-                name={f.name}
-                value={tripData[f.name]}
-                onChange={(e) => setTripDataState((s) => ({ ...s, [f.name]: e.target.value }))}
-                placeholder={f.placeholder}
-                className="w-full mt-2 bg-transparent border border-[#2D2D2D] text-[#F5F5F5] p-3 rounded-lg focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition"
-                required
-              />
-            </div>
-          ))}
+              {[{ label: "Pickup Location", name: "pickupLocation", ref: pickupRef, placeholder: "e.g. Raleigh Convention Center" },
+              { label: "Drop-off Location", name: "dropoffLocation", ref: dropoffRef, placeholder: "e.g. Crown Complex, Fayetteville" }].map((f) => (
+                <div key={f.name}>
+                  <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">{f.label}</label>
+                  <input
+                    ref={f.ref}
+                    name={f.name}
+                    value={tripData[f.name]}
+                    onChange={(e) => setTripDataState((s) => ({ ...s, [f.name]: e.target.value }))}
+                    placeholder={f.placeholder}
+                    className="w-full mt-2 bg-transparent border border-[#2D2D2D] text-[#F5F5F5] p-3 rounded-lg focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition"
+                    required
+                  />
+                </div>
+              ))}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">Pickup Date & Time</label>
-              <Flatpickr
-                value={tripData.pickupDate}
-                onChange={(dates) => {
-                  const dt = dates && dates[0] ? dates[0] : null;
-                  setTripDataState((s) => ({ ...s, pickupDate: dt }));
-                  if (dt && sHasDropEarlier(dt, tripData.dropoffDate)) {
-                    setTripDataState((s) => ({ ...s, dropoffDate: null }));
-                  }
-                }}
-                options={{ enableTime: true, dateFormat: "Y-m-d H:i", minDate: minPickupDate, time_24hr: false }}
-                className="w-full mt-2 px-4 py-3 rounded-xl bg-black/40 border border-[#2D2D2D] text-white placeholder-gray-500 focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600"
-                placeholder="Select pickup date & time"
-              />
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  {/* <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">Pickup Date & Time</label> */}
+                  <DateTimePicker
+                    label="Pickup Date & Time"
+                    value={tripData.pickupDate ? dayjs(tripData.pickupDate) : null}
+                    minDateTime={dayjs().add(2, "hour")}
+                    onChange={(newValue) => {
+                      setTripDataState((s) => ({
+                        ...s,
+                        pickupDate: newValue ? newValue.toDate() : null,
+                      }));
+                    }}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        sx: {
+                          "& .MuiOutlinedInput-root": {
+                            color: "#fff",
+                            backgroundColor: "rgba(0,0,0,0.4)",
+                            borderRadius: "12px",
+                          },
+                          "& .MuiInputLabel-root": {
+                            color: "#C0C0C0",
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </div>
 
-            <div>
-              <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">Drop-off Date & Time</label>
-              <Flatpickr
-                value={tripData.dropoffDate}
-                onChange={(dates) => {
-                  const dt = dates && dates[0] ? dates[0] : null;
-                  setTripDataState((s) => ({ ...s, dropoffDate: dt }));
-                }}
-                options={{ enableTime: true, dateFormat: "Y-m-d H:i", minDate: tripData.pickupDate ? tripData.pickupDate : minPickupDate, time_24hr: false }}
-                className="w-full mt-2 px-4 py-3 rounded-xl bg-black/40 border border-[#2D2D2D] text-white placeholder-gray-500 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
-                placeholder="Select drop-off date & time"
-              />
-            </div>
-          </div>
-
-          {/* Passengers / Luggage */}
-          <div className="grid grid-cols-2 gap-4">
-            {[{ label: "Passengers", name: "passengers", placeholder: "3" },
-            { label: "Luggage", name: "luggage", placeholder: "2" }].map((f) => (
-              <div key={f.name}>
-                <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">{f.label}</label>
-                <input
-                  type="number"
-                  name={f.name}
-                  min={f.name === "passengers" ? 1 : 0}
-                  value={tripData[f.name]}
-                  onChange={handleInputChange}
-                  placeholder={f.placeholder}
-                  className="w-full mt-2 bg-transparent border border-[#2D2D2D] text-[#F5F5F5] p-3 rounded-lg focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
-                />
+                <div>
+                  {/* <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">Drop-off Date & Time</label> */}
+                  <DateTimePicker
+                    label="Drop-off Date & Time"
+                    value={tripData.dropoffDate ? dayjs(tripData.dropoffDate) : null}
+                    minDateTime={
+                      tripData.pickupDate
+                        ? dayjs(tripData.pickupDate)
+                        : dayjs().add(2, "hour")
+                    }
+                    onChange={(newValue) => {
+                      setTripDataState((s) => ({
+                        ...s,
+                        dropoffDate: newValue ? newValue.toDate() : null,
+                      }));
+                    }}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        sx: {
+                          "& .MuiOutlinedInput-root": {
+                            color: "#fff",
+                            backgroundColor: "rgba(0,0,0,0.4)",
+                            borderRadius: "12px",
+                          },
+                          "& .MuiInputLabel-root": {
+                            color: "#C0C0C0",
+                          },
+                        },
+                      },
+                    }}
+                  />
+                </div>
               </div>
-            ))}
-          </div>
 
-          {error && <p className="text-[#FF6B6B] text-sm">{error}</p>}
+              {/* Passengers / Luggage */}
+              <div className="grid grid-cols-2 gap-4">
+                {[{ label: "Passengers", name: "passengers", placeholder: "3" },
+                { label: "Luggage", name: "luggage", placeholder: "2" }].map((f) => (
+                  <div key={f.name}>
+                    <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">{f.label}</label>
+                    <input
+                      type="number"
+                      name={f.name}
+                      min={f.name === "passengers" ? 1 : 0}
+                      value={tripData[f.name]}
+                      onChange={handleInputChange}
+                      placeholder={f.placeholder}
+                      className="w-full mt-2 bg-transparent border border-[#2D2D2D] text-[#F5F5F5] p-3 rounded-lg focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
+                    />
+                  </div>
+                ))}
+              </div>
 
-          {/* Conditional Button */}
-          <button
-            type="submit"
-            disabled={loadingRoute || !isLoggedIn}
-            onClick={() => !isLoggedIn && navigate("/login")}
-            className="w-full btn btn-gold btn--hero text-black py-3 rounded-lg font-semibold hover:brightness-110 transition disabled:opacity-60 shadow-[0_0_10px_rgba(212,175,55,0.4)]"
-          >
-            {isLoggedIn ? (loadingRoute ? "Drawing route..." : "Submit Booking") : "Login to Book"}
-          </button>
-        </form>
+              {error && <p className="text-[#FF6B6B] text-sm">{error}</p>}
+
+              {/* Conditional Button */}
+              <button
+                type="submit"
+                disabled={loadingRoute || !isLoggedIn}
+                onClick={() => !isLoggedIn && navigate("/login")}
+                className="w-full btn btn-gold btn--hero text-black py-3 rounded-lg font-semibold hover:brightness-110 transition disabled:opacity-60 shadow-[0_0_10px_rgba(212,175,55,0.4)]"
+              >
+                {isLoggedIn ? (loadingRoute ? "Drawing route..." : "Submit Booking") : "Login to Book"}
+              </button>
+            </form>
+          </LocalizationProvider>
+        </ThemeProvider>
 
         {/* Google Map */}
         <div className="rounded-xl overflow-hidden border border-[#2A2A2A]">

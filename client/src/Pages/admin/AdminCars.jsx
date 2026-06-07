@@ -1,13 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 
+/**
+ * API instance (production-safe)
+ */
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+});
+
 export default function AdminCars() {
   const { userInfo } = useSelector((state) => state.auth);
+
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+
   const [showForm, setShowForm] = useState(false);
-  const [showDetails, setShowDetails] = useState(null); // 👈 for View Details modal
+  const [showDetails, setShowDetails] = useState(null);
   const [editingCar, setEditingCar] = useState(null);
 
   const [filters, setFilters] = useState(() => {
@@ -17,7 +27,7 @@ export default function AdminCars() {
       : { search: "", type: "All", status: "All" };
   });
 
-  const [form, setForm] = useState({
+  const initialForm = {
     name: "",
     type: "SUV",
     seats: "",
@@ -25,130 +35,213 @@ export default function AdminCars() {
     fuel: "",
     speed: "",
     perMileRate: "",
-    image: "",
+    rateMultiplier: 1,
+    totalUnits: 1,
+    fleetKey: "",
+    image: null,
     status: "available",
-  });
+  };
+
+  const [form, setForm] = useState(initialForm);
+
+  const authHeaders = useMemo(() => {
+    return {
+      Authorization: `Bearer ${userInfo?.token}`,
+    };
+  }, [userInfo]);
 
   useEffect(() => {
     localStorage.setItem("carFilters", JSON.stringify(filters));
   }, [filters]);
 
+  /**
+   * FETCH CARS
+   */
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/cars", {
-          headers: { Authorization: `Bearer ${userInfo?.token}` },
+        const { data } = await api.get("/api/cars", {
+          headers: authHeaders,
         });
-        setCars(res.data);
+        setCars(data);
       } catch (err) {
-        console.error("Error fetching cars:", err);
+        console.error("Fetch cars failed:", err);
       } finally {
         setLoading(false);
       }
     };
-    if (userInfo?.token) fetchCars();
-  }, [userInfo]);
 
+    if (userInfo?.token) fetchCars();
+  }, [userInfo, authHeaders]);
+
+
+  useEffect(() => {
+  if (editingCar) {
+    setForm({
+      ...initialForm,
+      ...editingCar,
+      image: null, // important (file can't be prefilled)
+    });
+    setShowForm(true);
+  }
+}, [editingCar]);
+  /**
+   * FORM HANDLER
+   */
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, files } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
   };
 
+  /**
+   * RESET FORM
+   */
+  const resetForm = () => {
+    setForm(initialForm);
+    setEditingCar(null);
+    setShowForm(false);
+  };
+
+  /**
+   * CREATE / UPDATE CAR
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setActionLoading(true);
+
     try {
+      const payload = new FormData();
+
+     Object.entries(form).forEach(([key, value]) => {
+  if (value === null || value === undefined) return;
+
+  if (key === "rateMultiplier" || key === "perMileRate") {
+    payload.append(key, Number(value));
+  } else if (key === "totalUnits" || key === "seats") {
+    payload.append(key, Number(value));
+  } else {
+    payload.append(key, value);
+  }
+});
+
+      let res;
+
       if (editingCar) {
-        const res = await axios.put(
-          `http://localhost:5000/api/cars/${editingCar._id}`,
-          form,
-          { headers: { Authorization: `Bearer ${userInfo?.token}` } }
+        res = await api.put(
+          `/api/cars/${editingCar._id}`,
+          payload,
+          { headers: authHeaders }
         );
+
         setCars((prev) =>
-          prev.map((c) => (c._id === editingCar._id ? res.data : c))
+          prev.map((c) =>
+            c._id === editingCar._id ? res.data : c
+          )
         );
       } else {
-        const res = await axios.post("http://localhost:5000/api/cars", form, {
-          headers: { Authorization: `Bearer ${userInfo?.token}` },
+        res = await api.post("/api/cars", payload, {
+          headers: authHeaders,
         });
+
         setCars((prev) => [...prev, res.data]);
       }
 
-      setShowForm(false);
-      setEditingCar(null);
-      setForm({
-        name: "",
-        type: "SUV",
-        seats: "",
-        transmission: "Automatic",
-        fuel: "",
-        speed: "",
-        perMileRate: "",
-        image: "",
-        status: "available",
-      });
+      resetForm();
     } catch (err) {
-      console.error("Error saving car:", err);
+      console.error("Save car failed:", err);
+      alert(err?.response?.data?.message || "Operation failed");
+    } finally {
+      setActionLoading(false);
     }
   };
 
+  /**
+   * DELETE CAR
+   */
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this car?")) return;
+    if (!window.confirm("Delete this car?")) return;
+
+    setActionLoading(true);
+
     try {
-      await axios.delete(`http://localhost:5000/api/cars/${id}`, {
-        headers: { Authorization: `Bearer ${userInfo?.token}` },
+      await api.delete(`/api/cars/${id}`, {
+        headers: authHeaders,
       });
+
       setCars((prev) => prev.filter((c) => c._id !== id));
     } catch (err) {
-      console.error("Error deleting car:", err);
+      console.error("Delete failed:", err);
+    } finally {
+      setActionLoading(false);
     }
   };
 
-  const filteredCars = cars.filter((c) => {
-    const matchSearch = c.name
-      .toLowerCase()
-      .includes(filters.search.toLowerCase());
-    const matchType =
-      filters.type === "All" || c.type === filters.type;
-    const matchStatus =
-      filters.status === "All" || c.status === filters.status;
-    return matchSearch && matchType && matchStatus;
-  });
+  /**
+   * FILTERING (optimized)
+   */
+  const filteredCars = useMemo(() => {
+    return cars.filter((c) => {
+      const matchSearch = c.name
+        .toLowerCase()
+        .includes(filters.search.toLowerCase());
 
-  if (loading)
+      const matchType =
+        filters.type === "All" || c.type === filters.type;
+
+      const matchStatus =
+        filters.status === "All" || c.status === filters.status;
+
+      return matchSearch && matchType && matchStatus;
+    });
+  }, [cars, filters]);
+
+  if (loading) {
     return (
       <div className="text-[#D4AF37] flex justify-center items-center min-h-screen">
-        Loading cars...
+        Loading fleet...
       </div>
     );
+  }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-[#D4AF37] mb-6">Manage Cars</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold text-[#D4AF37] mb-6">
+        Fleet Management
+      </h1>
 
-      {/* Filter Bar */}
+      {/* FILTERS */}
       <div className="flex flex-wrap gap-3 mb-4">
         <input
-          type="text"
-          placeholder="Search by name..."
           value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          className="p-2 rounded bg-gray-800 border border-gray-700 text-white"
+          onChange={(e) =>
+            setFilters({ ...filters, search: e.target.value })
+          }
+          placeholder="Search..."
+          className="p-2 bg-gray-800 text-white rounded"
         />
+
         <select
           value={filters.type}
-          onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-          className="p-2 rounded bg-gray-800 border border-gray-700 text-white"
+          onChange={(e) =>
+            setFilters({ ...filters, type: e.target.value })
+          }
         >
           <option>All</option>
           <option>SUV</option>
           <option>Luxury</option>
-          <option>Economy</option>
           <option>Sedan</option>
-          <option>Sports</option>
+          <option>Economy</option>
         </select>
+
         <select
           value={filters.status}
-          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-          className="p-2 rounded bg-gray-800 border border-gray-700 text-white"
+          onChange={(e) =>
+            setFilters({ ...filters, status: e.target.value })
+          }
         >
           <option>All</option>
           <option>available</option>
@@ -157,224 +250,100 @@ export default function AdminCars() {
 
         <button
           onClick={() => setShowForm(true)}
-          className="ml-auto bg-[#D4AF37] hover:bg-yellow-800 text-black font-semibold px-4 py-2 rounded"
+          className="ml-auto bg-[#D4AF37] px-4 py-2 rounded"
         >
           + Add Car
         </button>
       </div>
 
-      {/* Car Table */}
-      <table className="min-w-full border border-gray-700 text-sm">
-        <thead className="bg-[#D4AF37] text-black">
-          <tr>
-            <th className="px-4 py-2">Image</th>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Type</th>
-            <th className="px-4 py-2">Seats</th>
-            <th className="px-4 py-2">Transmission</th>
-            <th className="px-4 py-2">Fuel</th>
-            <th className="px-4 py-2">Speed</th>
-            <th className="px-4 py-2">Rate ($/mile)</th>
-            <th className="px-4 py-2">Status</th>
-            <th className="px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredCars.map((car) => (
-            <tr key={car._id} className="border-t border-gray-700 hover:bg-gray-800">
-              <td className="px-4 py-2">
-                <img
-                  src={car.image}
-                  alt={car.name}
-                  className="w-16 h-10 object-cover rounded"
-                />
-              </td>
-              <td className="px-4 py-2">{car.name}</td>
-              <td className="px-4 py-2">{car.type}</td>
-              <td className="px-4 py-2">{car.seats}</td>
-              <td className="px-4 py-2">{car.transmission}</td>
-              <td className="px-4 py-2">{car.fuel}</td>
-              <td className="px-4 py-2">{car.speed}</td>
-              <td className="px-4 py-2">${car.perMileRate}</td>
-              <td className="px-4 py-2">
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    car.status === "available"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {car.status}
-                </span>
-              </td>
-              <td className="px-4 py-2 space-x-2">
-                <button
-                  onClick={() => setShowDetails(car)}
-                  className="px-2 py-1 bg-[#D4AF37] text-white rounded"
-                >
-                  View
-                </button>
-                <button
-                  onClick={() => {
-                    setEditingCar(car);
-                    setForm(car);
-                    setShowForm(true);
-                  }}
-                  className="px-2 py-1 bg-blue-600 text-white rounded"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(car._id)}
-                  className="px-2 py-1 bg-red-600 text-white rounded"
-                >
-                  Delete
-                </button>
-              </td>
+      {/* TABLE */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm text-white">
+          <thead className="bg-[#D4AF37] text-black">
+            <tr>
+              <th>Car</th>
+              <th>Type</th>
+              <th>Seats</th>
+              <th>Fleet</th>
+              <th>Units</th>
+              <th>Rate</th>
+              <th>Multiplier</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
 
-      {/* Add/Edit Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-          <div className="bg-gray-900 p-6 rounded-lg w-full max-w-lg">
-            <h2 className="text-xl mb-4 text-[#D4AF37] font-semibold">
-              {editingCar ? "Edit Car" : "Add New Car"}
-            </h2>
+          <tbody>
+            {filteredCars.map((car) => (
+              <tr key={car._id} className="border-b border-gray-700">
 
-            <form onSubmit={handleSubmit} className="space-y-3">
-              {["name", "seats", "fuel", "speed", "perMileRate", "image"].map(
-                (field) => (
-                  <input
-                    key={field}
-                    name={field}
-                    value={form[field]}
-                    onChange={handleChange}
-                    placeholder={field.replace(/([A-Z])/g, " $1")}
-                    className="w-full p-2 bg-gray-800 border border-gray-700 text-white rounded"
-                    required={field !== "speed"}
+                <td className="flex items-center gap-2">
+                  <img
+                    src={car.image}
+                    className="w-10 h-8 rounded object-cover"
                   />
-                )
-              )}
+                  {car.name}
+                </td>
 
-              <div className="flex gap-2">
-                <select
-                  name="type"
-                  value={form.type}
-                  onChange={handleChange}
-                  className="w-1/2 p-2 bg-gray-800 border border-gray-700 text-white rounded"
-                >
-                  <option>SUV</option>
-                  <option>Luxury</option>
-                  <option>Economy</option>
-                  <option>Sedan</option>
-                  <option>Sports</option>
-                </select>
+                <td>{car.type}</td>
+                <td>{car.seats}</td>
 
-                <select
-                  name="transmission"
-                  value={form.transmission}
-                  onChange={handleChange}
-                  className="w-1/2 p-2 bg-gray-800 border border-gray-700 text-white rounded"
-                >
-                  <option>Automatic</option>
-                  <option>Manual</option>
-                </select>
-              </div>
+                <td className="text-yellow-400">
+                  {car.fleetKey || "—"}
+                </td>
 
-              <select
-                name="status"
-                value={form.status}
-                onChange={handleChange}
-                className="w-full p-2 bg-gray-800 border border-gray-700 text-white rounded"
-              >
-                <option>available</option>
-                <option>unavailable</option>
-              </select>
+                <td>{car.totalUnits || 1}</td>
 
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowForm(false);
-                    setEditingCar(null);
-                  }}
-                  className="px-4 py-2 bg-gray-600 rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#D4AF37] text-black font-semibold rounded"
-                >
-                  {editingCar ? "Update" : "Add"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+                <td>${car.perMileRate}</td>
 
-      {/* View Details Modal */}
-      {showDetails && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
-          onClick={() => setShowDetails(null)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-gray-900 text-white p-6 rounded-lg max-w-lg w-full"
+                <td>{car.rateMultiplier || 1}</td>
+
+                <td>{car.status}</td>
+
+                <td className="flex gap-2">
+                  <button onClick={() => setShowDetails(car)}>View</button>
+                  <button onClick={() => setEditingCar(car)}>Edit</button>
+                  <button onClick={() => handleDelete(car._id)}>Delete</button>
+                </td>
+
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* FORM MODAL */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-gray-900 p-6 rounded w-[400px]"
           >
-            <h2 className="text-xl font-bold mb-3 text-[#D4AF37]">
-              {showDetails.name}
+            <h2 className="text-[#D4AF37] mb-4">
+              {editingCar ? "Edit Car" : "Add Car"}
             </h2>
-            <img
-              src={showDetails.image}
-              alt={showDetails.name}
-              className="w-full h-48 object-cover rounded mb-4"
-            />
-            <div className="space-y-1 text-sm">
-              <p>
-                <strong>Type:</strong> {showDetails.type}
-              </p>
-              <p>
-                <strong>Seats:</strong> {showDetails.seats}
-              </p>
-              <p>
-                <strong>Transmission:</strong> {showDetails.transmission}
-              </p>
-              <p>
-                <strong>Fuel:</strong> {showDetails.fuel}
-              </p>
-              <p>
-                <strong>Speed:</strong> {showDetails.speed || "N/A"}
-              </p>
-              <p>
-                <strong>Rate:</strong> ${showDetails.perMileRate} /mile
-              </p>
-              <p>
-                <strong>Status:</strong>{" "}
-                <span
-                  className={`font-semibold ${
-                    showDetails.status === "available"
-                      ? "text-green-400"
-                      : "text-red-400"
-                  }`}
-                >
-                  {showDetails.status}
-                </span>
-              </p>
-            </div>
 
-            <button
-              onClick={() => setShowDetails(null)}
-              className="mt-5 px-4 py-2 bg-[#D4AF37] text-black rounded font-semibold w-full"
-            >
-              Close
-            </button>
-          </div>
+            {Object.keys(initialForm).map((key) => (
+              <input
+                key={key}
+                name={key}
+                type={key === "image" ? "file" : "text"}
+                onChange={handleChange}
+                placeholder={key}
+                className="w-full mb-2 p-2 bg-gray-800 text-white"
+              />
+            ))}
+
+            <div className="flex justify-end gap-2">
+              <button type="button" onClick={resetForm}>
+                Cancel
+              </button>
+
+              <button disabled={actionLoading}>
+                {actionLoading ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </form>
         </div>
       )}
     </div>

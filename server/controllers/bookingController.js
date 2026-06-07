@@ -7,7 +7,7 @@ import { getDistanceInMiles } from "../utils/getDistance.js";
 import { evaluateMilestonesForUser } from "../services/milestone.service.js";
 import mongoose from "mongoose";
 import { sendEmail } from "../lib/sendEmail.js"; // ✅ adjust path if needed
-
+import { calculateTripEstimate } from "../services/pricingEngine.js"; // ✅ new pricing engine
 /* 
 ==============================
  🧾 CREATE BOOKING (user only)
@@ -16,13 +16,6 @@ import { sendEmail } from "../lib/sendEmail.js"; // ✅ adjust path if needed
 
 export const createBooking = async (req, res) => {
   const session = await mongoose.startSession();
-
-  // shared variables (IMPORTANT FIX: scope safety)
-  let createdBooking;
-  let carData;
-  let distance;
-  let totalPrice;
-  let isPaid = true; // default to true, set to false if reward is applied
 
   try {
     const {
@@ -34,11 +27,19 @@ export const createBooking = async (req, res) => {
       rewardId,
     } = req.body;
 
-    /* =========================
-       VALIDATION
-    ========================== */
-    if (!car || !pickupLocation || !dropoffLocation || !pickupDate || !dropoffDate) {
-      return res.status(400).json({ error: "All booking fields are required." });
+    // =========================
+    // 1. VALIDATION (STRICT)
+    // =========================
+    if (
+      !car ||
+      !pickupLocation ||
+      !dropoffLocation ||
+      !pickupDate ||
+      !dropoffDate
+    ) {
+      return res.status(400).json({
+        error: "All booking fields are required.",
+      });
     }
 
     if (!mongoose.Types.ObjectId.isValid(car)) {
@@ -48,90 +49,120 @@ export const createBooking = async (req, res) => {
     const start = new Date(pickupDate);
     const end = new Date(dropoffDate);
 
-    if (isNaN(start.getTime()) || isNaN(end.getTime()) || start >= end) {
-      return res.status(400).json({ error: "Invalid booking dates." });
+    if (
+      !Number.isFinite(start.getTime()) ||
+      !Number.isFinite(end.getTime()) ||
+      start >= end
+    ) {
+      return res.status(400).json({
+        error: "Invalid booking dates.",
+      });
     }
 
+    // 🚨 OPTIONAL: prevent duplicate requests (idempotency guard)
+    const existingPending = await Booking.findOne({
+      user: req.user._id,
+      car,
+      pickupDate: start,
+      dropoffDate: end,
+      status: "pending",
+    });
+
+    if (existingPending) {
+      return res.status(409).json({
+        error: "Duplicate booking request detected.",
+        booking: existingPending,
+      });
+    }
+
+    let createdBooking = null;
+
     await session.withTransaction(async () => {
+      // =========================
+      // 2. FETCH CAR (SOURCE OF TRUTH)
+      // =========================
+      const carData = await Car.findById(car).session(session);
 
-      /* =========================
-         FETCH CAR
-      ========================== */
-      carData = await Car.findById(car).session(session);
-      if (!carData) throw new Error("CAR_NOT_FOUND");
+      if (!carData) {
+        throw new Error("CAR_NOT_FOUND");
+      }
 
-      /* =========================
-         OVERLAP CHECK
-      ========================== */
-      const overlap = await Booking.findOne({
+      // =========================
+      // 3. AVAILABILITY CHECK (SINGLE SOURCE OF TRUTH)
+      // =========================
+      const activeStatuses = ["pending", "confirmed", "enroute"];
+
+      const overlappingCount = await Booking.countDocuments({
         car,
-        status: { $in: ["pending", "confirmed", "enroute"] },
+        status: { $in: activeStatuses },
         pickupDate: { $lt: end },
         dropoffDate: { $gt: start },
       }).session(session);
 
-      if (overlap) throw new Error("CAR_UNAVAILABLE");
-
-      /* =========================
-         DISTANCE
-      ========================== */
-      distance = await getDistanceInMiles(pickupLocation, dropoffLocation);
-
-      if (typeof distance !== "number" || isNaN(distance) || distance <= 0) {
-        throw new Error("INVALID_DISTANCE");
+      if (overlappingCount >= carData.totalUnits) {
+        throw new Error("CAR_UNAVAILABLE");
       }
 
-      totalPrice = Math.max(distance * carData.perMileRate, 20);
+      // =========================
+      // 4. PRICE ENGINE (PURE)
+      // =========================
+      const estimate = await calculateTripEstimate({
+        pickup: pickupLocation,
+        dropoff: dropoffLocation,
+        carRatePerMile: carData.perMileRate,
+        car: carData,
+      });
 
-      /* =========================
-         REWARD
-      ========================== */
-      let reward = null;
-      
-      if (rewardId) {
-        reward = await Reward.findOne({
-          _id: rewardId,
-          user: req.user._id,
-          status: "AVAILABLE",
-          expiresAt: { $gt: new Date() },
-        }).session(session);
-
-        if (!reward) throw new Error("INVALID_REWARD");
-
-        isPaid = false;
-        totalPrice = 0;
+      if (!estimate || typeof estimate.distanceMiles !== "number") {
+        throw new Error("INVALID_ESTIMATE");
       }
 
-      /* =========================
-         DRIVER
-      ========================== */
-      const driver = await User.findOne({
-        role: "driver",
-        status: "active",
+      // =========================
+      // 5. FINAL DOUBLE-CHECK (IMPORTANT UNDER CONCURRENCY)
+      // =========================
+      const recheck = await Booking.countDocuments({
+        car,
+        status: { $in: activeStatuses },
+        pickupDate: { $lt: end },
+        dropoffDate: { $gt: start },
       }).session(session);
 
-      /* =========================
-         CREATE BOOKING
-      ========================== */
+      if (recheck >= carData.totalUnits) {
+        throw new Error("CAR_UNAVAILABLE");
+      }
+      // =========================
+      // 5. CREATE BOOKING (ATOMIC INSERT)
+      // =========================
       const [booking] = await Booking.create(
         [
           {
             user: req.user._id,
-            driver: driver?._id || null,
             car,
+
+            driver: null,
+
             carSnapshot: {
               name: carData.name,
               type: carData.type,
               pricePerMile: carData.perMileRate,
+              rateMultiplier: carData.rateMultiplier,
+              totalUnits: carData.totalUnits,
             },
+
             pickupLocation,
             dropoffLocation,
             pickupDate: start,
             dropoffDate: end,
-            distance,
-            totalPrice,
-            isPaid,
-            reward: reward?._id || null,
+
+            distance: estimate.distanceMiles,
+
+            totalPrice: null,
+            pricingLocked: false,
+            fleetKey: req.body.fleetKey,
+
+            isPaid: false,
+            reward: rewardId || null,
+
             status: "pending",
             paymentStatus: "awaiting_payment",
           },
@@ -140,38 +171,7 @@ export const createBooking = async (req, res) => {
       );
 
       createdBooking = booking;
-
-      /* =========================
-         LOCK REWARD
-      ========================== */
-      if (reward) {
-        const updatedReward = await Reward.findOneAndUpdate(
-          {
-            _id: reward._id,
-            status: "AVAILABLE",
-          },
-          {
-            $set: {
-              status: "LOCKED",
-              booking: booking._id,
-              lockedAt: new Date(),
-            },
-          },
-          { session, new: true }
-        );
-
-        if (!updatedReward) throw new Error("INVALID_REWARD");
-      }
     });
-
-    /* =========================
-       SAFETY CHECK (POST TX)
-    ========================== */
-    if (!createdBooking) {
-      return res.status(500).json({ error: "Booking creation failed" });
-    }
-
-
 
     return res.status(201).json({
       message: "Booking created successfully",
@@ -179,16 +179,14 @@ export const createBooking = async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("createBooking error:", err);
 
-    const map = {
+    const statusMap = {
       CAR_UNAVAILABLE: 409,
-      INVALID_REWARD: 400,
       CAR_NOT_FOUND: 404,
-      INVALID_DISTANCE: 400,
     };
 
-    return res.status(map[err.message] || 500).json({
+    return res.status(statusMap[err.message] || 500).json({
       error: err.message,
     });
 
@@ -197,7 +195,6 @@ export const createBooking = async (req, res) => {
   }
 };
 
-
 /* 
 ==============================================
  📊 ESTIMATE BOOKING COST (for frontend)
@@ -205,41 +202,41 @@ export const createBooking = async (req, res) => {
 */
 export const estimateBooking = async (req, res) => {
   try {
-    const { pickup, dropoff, carId } = req.query;
-    if (!pickup || !dropoff || !carId)
-      return res.status(400).json({ error: "pickup, dropoff, and carId are required" });
+    const { pickup, dropoff, carId, distance } = req.body;
 
-    const carData = await Car.findById(carId);
-    if (!carData) return res.status(404).json({ error: "Car not found" });
-
-    let distanceMiles = 0;
-    let durationText = "";
-
-    try {
-      const googleRes = await axios.get("https://maps.googleapis.com/maps/api/distancematrix/json", {
-        params: { origins: pickup, destinations: dropoff, key: process.env.GOOGLE_MAPS_API_KEY, units: "imperial" },
+    if (!pickup || !dropoff || !carId) {
+      return res.status(400).json({
+        error: "pickup, dropoff, and carId are required",
       });
-
-      const gData = googleRes.data;
-      if (gData.status === "OK" && gData.rows[0].elements[0].status === "OK") {
-        const distanceText = gData.rows[0].elements[0].distance.text;
-        distanceMiles = parseFloat(distanceText.replace(" mi", ""));
-        durationText = gData.rows[0].elements[0].duration.text;
-      } else {
-        distanceMiles = await getDistanceInMiles(pickup, dropoff);
-      }
-    } catch {
-      distanceMiles = await getDistanceInMiles(pickup, dropoff);
     }
 
-    const totalPrice = Math.max(distanceMiles * carData.perMileRate, 20);
+    const carData = await Car.findById(carId);
 
-    res.json({ distanceMiles, durationText, perMileRate: carData.perMileRate, totalPrice });
+    if (!carData) {
+      return res.status(404).json({ error: "Car not found" });
+    }
+
+    const estimate = await calculateTripEstimate({
+      pickup,
+      dropoff,
+      carRatePerMile: carData.perMileRate,
+      car: carData,
+      fixedDistance: distance, // use provided distance if available
+    });
+
+    return res.json({
+      ...estimate,
+      perMileRate: carData.perMileRate,
+    });
+
   } catch (err) {
     console.error("Estimate booking error:", err);
-    res.status(500).json({ error: "Failed to calculate booking estimate" });
+    return res.status(500).json({
+      error: "Failed to calculate booking estimate",
+    });
   }
 };
+
 
 /* 
 =============================
@@ -399,45 +396,68 @@ export const updateBookingStatus = async (req, res) => {
 
   try {
     const booking = await Booking.findById(req.params.id)
-      .populate("user")
+      .populate("user","email name")
       .populate("reward")
+      .populate("driver")
       .session(session);
 
-    if (!booking) return res.status(404).json({ error: "Booking not found" });
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
 
-    const requestedStatus = req.body.status || booking.status;
+    const requestedStatus = req.body.status;
 
-    // ✅ BACKEND GUARD: cannot confirm/enroute unpaid bookings (unless free/reward/admin-free)
-    const requiresPayment = booking.isPaid === true; // paid bookings
-    const isPaidInSystem = booking.paymentStatus === "paid";
-    const isFreeBooking = booking.isPaid === false;
+    const prevStatus = booking.status;
+    const newStatus = requestedStatus || prevStatus;
 
+    // =============================
+    // 💳 PAYMENT LOGIC (CLEAN + SAFE)
+    // =============================
+
+    const isPaid = booking.paymentStatus === "paid";
+
+    const hasNoPrice =
+      booking.totalPrice === 0 ||
+      booking.totalPrice == null;
+
+    const rewardValid =
+      booking.reward &&
+      booking.reward.status === "ACTIVE" &&
+      (!booking.reward.expiresAt || new Date(booking.reward.expiresAt) > new Date());
+
+    const rewardCoversFully =
+      rewardValid && booking.reward.discountType === "FULL_COVER";
+
+    const isFree = hasNoPrice || rewardCoversFully;
+
+    const hasPrice = typeof booking.totalPrice === "number" && booking.totalPrice > 0;
+
+    const paymentRequired = hasPrice && !isPaid && !isFree;
+
+    // =============================
+    // 🚨 BLOCK INVALID STATUS CHANGES
+    // =============================
     if (
-      ["confirmed", "enroute"].includes(requestedStatus) &&
-      requiresPayment &&
-      !isPaidInSystem &&
-      !isFreeBooking
+      ["confirmed", "enroute"].includes(newStatus) &&
+      paymentRequired
     ) {
       return res.status(400).json({
-        error: "Cannot confirm/enroute a booking before payment is completed.",
+        error: "Payment required before confirming or dispatching booking",
       });
     }
 
-    let prevStatus;
-    let newStatus;
-
     await session.withTransaction(async () => {
-      prevStatus = booking.status;
-      newStatus = requestedStatus;
-
       booking.status = newStatus;
 
-      // ✅ ensure flags object exists
-      if (!booking.notificationFlags) booking.notificationFlags = {};
+      if (!booking.notificationFlags) {
+        booking.notificationFlags = {};
+      }
 
       await booking.save({ session });
 
-      // 🎁 Reward handling
+      // =============================
+      // 🎁 REWARD HANDLING
+      // =============================
       if (booking.reward) {
         const reward = await Reward.findById(booking.reward).session(session);
 
@@ -445,6 +465,17 @@ export const updateBookingStatus = async (req, res) => {
           reward.status = "USED";
           reward.usedAt = new Date();
           await reward.save({ session });
+        }
+        if (newStatus === "confirmed" && booking.paymentStatus !== "paid") {
+          return res.status(400).json({
+            error: "Cannot confirm booking before payment is completed",
+          });
+        }
+
+        if (newStatus === "enroute" && booking.status !== "confirmed") {
+          return res.status(400).json({
+            error: "Booking must be confirmed before going enroute",
+          });
         }
 
         if (newStatus === "cancelled") {
@@ -456,99 +487,98 @@ export const updateBookingStatus = async (req, res) => {
         }
       }
 
-      // 📈 Milestones / spend update on completed paid booking
-      if (prevStatus !== "completed" && newStatus === "completed" && booking.isPaid) {
+      // =============================
+      // 📈 MILESTONES / SPEND UPDATE
+      // =============================
+      if (
+        prevStatus !== "completed" &&
+        newStatus === "completed" &&
+        booking.isPaid
+      ) {
         await User.updateOne(
-          { _id: booking.user._id },
-          { $inc: { totalCompletedBookings: 1, totalSpend: booking.totalPrice } },
+          { _id: booking.user?._id },
+          {
+            $inc: {
+              totalCompletedBookings: 1,
+              totalSpend: booking.totalPrice,
+            },
+          },
           { session }
         );
 
         const pendingPaid = await Booking.exists({
-          user: booking.user._id,
+          user: booking.user?._id,
           isPaid: true,
           status: { $in: ["pending", "confirmed", "enroute"] },
           _id: { $ne: booking._id },
         }).session(session);
 
-        if (!pendingPaid) await evaluateMilestonesForUser(booking.user, session);
+        if (!pendingPaid) {
+          await evaluateMilestonesForUser(booking.user, session);
+        }
       }
     });
 
-    // =========================
-    // ✉️ EMAIL NOTIFICATIONS (outside transaction)
-    // =========================
+    // =============================
+    // ✉️ EMAILS (OUTSIDE TX)
+    // =============================
     try {
       const userEmail = booking.user?.email;
 
-      // ✅ make sure flags exist on the doc in memory
-      if (!booking.notificationFlags) booking.notificationFlags = {};
+      if (!booking.notificationFlags) {
+        booking.notificationFlags = {};
+      }
 
-      // ✅ Booking confirmed email (SEND ONCE EVER)
       if (
         userEmail &&
         newStatus === "confirmed" &&
-        booking.notificationFlags.bookingConfirmedNotifiedUser !== true
+        !booking.notificationFlags.bookingConfirmedNotifiedUser
       ) {
         await sendEmail({
           to: userEmail,
           subject: "Booking confirmed — Le Charlot Limousine",
           html: `
             <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-              <h2 style="margin:0 0 8px;">Booking confirmed</h2>
-              <p style="margin:0 0 16px;">
-                Your booking <b>${booking._id}</b> has been confirmed.
-              </p>
-              <div style="padding:12px 14px;border:1px solid #eee;border-radius:10px;">
-                <p style="margin:0;"><b>Pickup:</b> ${booking.pickupLocation}</p>
-                <p style="margin:0;"><b>Drop-off:</b> ${booking.dropoffLocation}</p>
-                <p style="margin:0;"><b>Pickup time:</b> ${new Date(booking.pickupDate).toLocaleString()}</p>
-              </div>
-              <p style="margin:16px 0 0;">Le Charlot Limousine</p>
+              <h2>Booking confirmed</h2>
+              <p>Your booking <b>${booking._id}</b> is confirmed.</p>
+              <p><b>Pickup:</b> ${booking.pickupLocation}</p>
+              <p><b>Drop-off:</b> ${booking.dropoffLocation}</p>
             </div>
           `,
         });
 
         booking.notificationFlags.bookingConfirmedNotifiedUser = true;
-        await booking.save(); // ✅ persist flag
+        await booking.save();
       }
 
-      // ✅ Enroute email (SEND ONCE EVER)
       if (
         userEmail &&
         newStatus === "enroute" &&
-        booking.notificationFlags.enrouteNotifiedUser !== true
+        !booking.notificationFlags.enrouteNotifiedUser
       ) {
         await sendEmail({
           to: userEmail,
           subject: "Your chauffeur is en route — Le Charlot Limousine",
           html: `
             <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-              <h2 style="margin:0 0 8px;">Your chauffeur is en route</h2>
-              <p style="margin:0 0 16px;">
-                Your chauffeur is on the way for booking <b>${booking._id}</b>.
-              </p>
-              <p style="margin:0;"><b>Pickup:</b> ${booking.pickupLocation}</p>
-              <p style="margin:0;"><b>Pickup time:</b> ${new Date(booking.pickupDate).toLocaleString()}</p>
-              <p style="margin:16px 0 0;">Le Charlot Limousine</p>
+              <h2>Your chauffeur is en route</h2>
+              <p>Booking <b>${booking._id}</b></p>
+              <p><b>Pickup:</b> ${booking.pickupLocation}</p>
             </div>
           `,
         });
 
         booking.notificationFlags.enrouteNotifiedUser = true;
-        await booking.save(); // ✅ persist flag
+        await booking.save();
       }
     } catch (emailErr) {
-      console.error(
-        "❌ Email notification failed (non-blocking):",
-        emailErr?.response?.body || emailErr
-      );
+      console.error("Email error:", emailErr);
     }
 
-    res.json(booking);
+    return res.json(booking);
   } catch (err) {
     console.error("Update booking status error:", err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   } finally {
     session.endSession();
   }
@@ -574,5 +604,77 @@ export const cancelBooking = async (req, res) => {
     res.json({ message: "Booking cancelled", booking });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+export const confirmPayment = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    // 💡 ensure price is set BEFORE marking paid
+    if (!booking.totalPrice || booking.totalPrice <= 0) {
+      return res.status(400).json({
+        error: "Booking must be priced before payment can be confirmed",
+      });
+    }
+
+    booking.paymentStatus = "paid";
+    booking.isPaid = true;
+
+    await booking.save();
+
+    res.json({
+      message: "Payment confirmed",
+      booking,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const finalizeBookingQuote = async (req, res) => {
+  try {
+    const { bookingId } = req.body;
+
+    const booking = await Booking.findById(bookingId);
+
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    // 🚨 prevent double pricing
+    if (booking.totalPrice != null) {
+      return res.status(400).json({
+        error: "Booking is already priced",
+      });
+    }
+
+    const estimate = await calculateTripEstimate({
+      pickup: booking.pickupLocation,
+      dropoff: booking.dropoffLocation,
+      carRatePerMile: booking.carSnapshot.pricePerMile,
+    });
+
+    let finalPrice = estimate.estimatedPrice;
+
+    // (optional reward logic here if you have it)
+    // finalPrice -= discount;
+
+    booking.totalPrice = finalPrice;
+    booking.paymentStatus = "pending_payment";
+
+    await booking.save();
+
+    return res.json({
+      message: "Quote finalized",
+      booking,
+    });
+
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 };

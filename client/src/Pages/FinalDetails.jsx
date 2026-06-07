@@ -6,13 +6,12 @@ import axios from "axios";
 function FinalDetails() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { rideInfo: stateRideInfo, selectedCar: stateSelectedCar } = location.state || {};
+  const { rideInfo, selectedCar, estimate } = location.state || {};
 
   const user = useSelector((state) => state.auth.userInfo);
   const [loading, setLoading] = useState(false);
 
-  const rideInfo = stateRideInfo;
-  const selectedCar = stateSelectedCar;
+
 
   if (!rideInfo || !selectedCar) {
     return (
@@ -22,7 +21,7 @@ function FinalDetails() {
     );
   }
 
-  const estimatedTotal = selectedCar.price ?? ((rideInfo.distance || 0) * 5).toFixed(2);
+  const estimatedTotal = estimate?.estimatedPrice ?? 0;
 
   // 🔹 Save booking & redirect to Stripe checkout
   const handleBookingConfirm = async (guestInfo = null) => {
@@ -116,103 +115,114 @@ function FinalDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-[8%] pt-12 py-12">
+    <div className="min-h-screen bg-black mt-10 text-white px-[8%] pt-12 py-12">
       <h2 className="text-3xl font-semibold mb-6">Final Details</h2>
 
       <div className="grid lg:grid-cols-2 gap-10">
         {/* Ride Summary */}
-        <div className="bg-[#1a1a1a] p-6 rounded-2xl shadow-lg">
-          <h3 className="text-xl font-bold mb-3">Ride Information</h3>
-          <p><strong>Pickup:</strong> {rideInfo.pickupLocation}</p>
-          <p><strong>Drop-off:</strong> {rideInfo.dropoffLocation}</p>
-          <p>
-            <strong>Date:</strong>{" "}
-            {rideInfo.pickupDate ? new Date(rideInfo.pickupDate).toLocaleString() : "—"}
-          </p>
-          {rideInfo.dropoffDate && (
-            <p><strong>Return Date:</strong> {new Date(rideInfo.dropoffDate).toLocaleString()}</p>
-          )}
-          <p><strong>Passengers:</strong> {rideInfo.passengers || "—"}</p>
-          {rideInfo.luggage && <p><strong>Luggage:</strong> {rideInfo.luggage}</p>}
-          <p><strong>Distance:</strong> {rideInfo.distance?.toFixed(2) || 0} mi</p>
+         <div className="bg-[#0f0f0f] rounded-3xl overflow-hidden border border-[#2a2a2a] shadow-[0_0_60px_rgba(212,175,55,0.12)]">
 
-          <h3 className="text-xl font-bold mt-6 mb-3">Vehicle</h3>
-          <p>{selectedCar.name}</p>
-          {selectedCar.description && <p>{selectedCar.description}</p>}
-          <p className="mt-2 btn btn-gold font-semibold">
-            Estimated Total: ${estimatedTotal}
-          </p>
-        </div>
+          {/* CAR IMAGE HERO */}
+          <div className="relative h-[420px] w-full">
+            <img
+              src={selectedCar.image}
+              className="w-full h-full object-cover scale-105"
+            />
 
-        {/* Passenger Info */}
-        <div className="bg-[#1a1a1a] p-6 rounded-2xl shadow-lg">
-          {user ? (
-            <>
-              <h3 className="text-xl font-bold mb-4">Passenger Information</h3>
-              <div className="space-y-2 text-gray-300">
-                <p>
-                  <strong>Name:</strong>{" "}
-                  {user.firstName && user.lastName
-                    ? `${user.firstName} ${user.lastName}`
-                    : user.name || "N/A"}
-                </p>
-                <p><strong>Email:</strong> {user.email || "N/A"}</p>
-                <p><strong>Phone:</strong> {user.phone || "N/A"}</p>
+            {/* DARK GRADIENT OVERLAY */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+
+            {/* CAR INFO OVERLAY */}
+            <div className="absolute bottom-0 p-6 w-full">
+              <h2 className="text-3xl font-bold text-white">
+                {selectedCar.name}
+              </h2>
+
+              <p className="text-gray-300 text-sm mt-1">
+                {selectedCar.type} • {selectedCar.transmission} • {selectedCar.seats} Seats
+              </p>
+
+              <div className="flex gap-3 mt-3">
+                <span className="px-3 py-1 bg-[#D4AF37]/20 text-[#D4AF37] rounded-full text-xs">
+                  Luxury Chauffeur
+                </span>
+
+                <span className="px-3 py-1 bg-white/10 text-white rounded-full text-xs">
+                  Premium Comfort
+                </span>
               </div>
+            </div>
+          </div>
 
-              <button
-                onClick={() => handleBookingConfirm()}
-                disabled={loading}
-                className={`btn btn-gold  hover:btn btn-gold  text-black font-semibold py-3 px-6 rounded-full transition duration-300 w-full mt-6 ${loading ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-              >
-                {loading ? "Processing..." : "Confirm & Pay"}
-              </button>
-            </>
-          ) : (
-            <>
-              <h3 className="text-xl font-bold mb-4">Continue as Guest</h3>
-              <form onSubmit={handleGuestSubmit} className="space-y-4">
-                <input
-                  name="firstName"
-                  type="text"
-                  placeholder="First Name"
-                  required
-                  className="w-full p-3 rounded-md bg-[#222] border border-gray-700 focus:outline-none"
-                />
-                <input
-                  name="lastName"
-                  type="text"
-                  placeholder="Last Name"
-                  required
-                  className="w-full p-3 rounded-md bg-[#222] border border-gray-700 focus:outline-none"
-                />
-                <input
-                  name="phone"
-                  type="tel"
-                  placeholder="Phone Number"
-                  required
-                  className="w-full p-3 rounded-md bg-[#222] border border-gray-700 focus:outline-none"
-                />
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="Email Address"
-                  required
-                  className="w-full p-3 rounded-md bg-[#222] border border-gray-700 focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`btn btn-gold  hover:btn btn-gold  text-black font-semibold py-3 px-6 rounded-full transition duration-300 w-full ${loading ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                >
-                  {loading ? "Processing..." : "Confirm & Pay"}
-                </button>
-              </form>
-            </>
-          )}
+          {/* PRICING STRIP */}
+          <div className="p-6 flex items-end justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Estimated Total</p>
+              <p className="text-4xl font-bold text-[#D4AF37]">
+                ${Number(estimatedTotal).toFixed(2)}
+              </p>
+            </div>
+
+            {estimate && (
+              <div className="text-right text-xs text-gray-400 space-y-1">
+                <p>{estimate.distanceMiles} mi distance</p>
+                <p>Base: ${estimate.basePrice}</p>
+                <p>Traffic impact: {estimate.trafficDelayPercent}%</p>
+              </div>
+            )}
+          </div>
         </div>
+         {/* LEFT SIDE - HERO CAR */}
+        <div className="space-y-6">
+
+          {/* RIDE INFO */}
+          <div className="bg-[#141414] p-6 rounded-2xl border border-[#2a2a2a]">
+            <h3 className="text-lg font-semibold mb-4 text-[#D4AF37]">
+              Trip Summary
+            </h3>
+
+            <div className="space-y-2 text-sm text-gray-300">
+              <p><strong>Pickup:</strong> {rideInfo.pickupLocation}</p>
+              <p><strong>Drop-off:</strong> {rideInfo.dropoffLocation}</p>
+              <p><strong>Date:</strong> {new Date(rideInfo.pickupDate).toLocaleString()}</p>
+              <p><strong>Passengers:</strong> {rideInfo.passengers || 1}</p>
+              <p><strong>Luggage:</strong> {rideInfo.luggage || 0}</p>
+              <p><strong>Distance:</strong> {rideInfo.distance?.toFixed(2)} mi</p>
+            </div>
+          </div>
+
+          {/* PASSENGER INFO */}
+          <div className="bg-[#141414] p-6 rounded-2xl border border-[#2a2a2a]">
+            <h3 className="text-lg font-semibold mb-4 text-[#D4AF37]">
+              Passenger Details
+            </h3>
+
+            {user ? (
+              <div className="space-y-2 text-sm text-gray-300">
+                <p>{user.firstName} {user.lastName}</p>
+                <p>{user.email}</p>
+                <p>{user.phone}</p>
+              </div>
+            ) : (
+              <p className="text-gray-400 text-sm">
+                Guest checkout available below
+              </p>
+            )}
+          </div>
+
+          {/* CTA */}
+          <button
+            onClick={() => handleBookingConfirm()}
+            disabled={loading}
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#b58a2a] via-[#D4AF37] to-[#8a6a1f] text-black font-bold text-lg shadow-lg hover:scale-[1.02] transition"
+          >
+            {loading ? "Processing..." : "Confirm & Pay"}
+          </button>
+
+        </div>
+       
+       
+
       </div>
     </div>
   );

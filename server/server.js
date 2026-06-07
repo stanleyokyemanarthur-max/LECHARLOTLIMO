@@ -22,7 +22,7 @@ import adminMilestoneRoutes from "./routes/adminMilestone.routes.js";
 import { birthdayRewardJob } from "./jobs/birthdayRewards.js";
 import { expireRewardsJob } from "./jobs/expireRewards.js";
 import { rewardCleanupJob } from "./jobs/rewardCleanup.js";
-
+import "./jobs/index.js"; // to start the booking expiration job
 // Initialize dotenv
 dotenv.config();
 
@@ -68,7 +68,7 @@ const startServer = async () => {
     // 6️⃣ Standard API routes
     app.use(express.static("public"));
     app.use("/api/auth", authRoutes);
-    app.use("/api/cars", carRoutes);
+    app.use("/api/fleet", carRoutes);
     app.use("/api/admin", adminRoutes);
     app.use("/api/bookings", bookingRoutes);
     app.use("/api/users", userRoutes);

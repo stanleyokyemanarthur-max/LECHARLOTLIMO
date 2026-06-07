@@ -3,24 +3,30 @@ import Booking from "../models/Booking.js";
 import dayjs from "dayjs";
 
 // ✅ Allowed fields for updates
-const CAR_UPDATE_FIELDS = ["name", "type", "seats", "transmission", "fuel", "speed", "perMileRate"];
+const CAR_UPDATE_FIELDS = ["name", "type", "seats", "transmission", "fuel", "speed", "perMileRate", "rateMultiplier", "totalUnits", "description", "status"];
 
 export const createCar = async (req, res) => {
+  console.log("Incoming fleetKey:", req.body.fleetKey);
   try {
-    const { name, type, seats, transmission, fuel, speed, perMileRate } = req.body;
+    const { name, type, seats, transmission, fuel, speed, perMileRate, totalUnits } = req.body;
 
-    if (!name || !type || !perMileRate) {
-      return res.status(400).json({ message: "Name, type, and perMileRate are required" });
+    if (!name || !type || !perMileRate || !req.body.fleetKey) {
+      return res.status(400).json({ message: "Name, type, perMileRate, and fleetKey are required" });
     }
 
     const newCar = new Car({
       name,
       type,
-      seats,
+      seats:Number(seats) ,
       transmission,
       fuel,
       speed,
-      perMileRate,
+      perMileRate: Number(perMileRate),
+      rateMultiplier:Number(req.body.rateMultiplier??1),
+
+      totalUnits: Number(req.body.totalUnits??1),
+      fleetKey: req.body.fleetKey,   // 🔥 REQUIRED for fleet system
+
       image: req.file?.path,
     });
 
@@ -84,93 +90,97 @@ export const deleteCar = async (req, res) => {
   }
 };
 
-export const getAvailableCars = async (req, res) => {
+
+export const getFleetAvailability = async (req, res) => {
   try {
     const { from, to } = req.query;
 
-    const statusFilter = ["pending", "confirmed", "enroute"];
+    const start = new Date(from);
+    const end = new Date(to);
 
-    let start;
-    let end;
+    const activeStatuses = ["pending", "confirmed", "enroute"];
 
-    const hasFrom = !!from;
-    const hasTo = !!to;
+    const cars = await Car.find().lean();
 
-    // -----------------------------
-    // 1. Strict validation rules
-    // -----------------------------
-    if (hasFrom || hasTo) {
-      if (!hasFrom || !hasTo) {
-        return res.status(400).json({
-          message: "Both 'from' and 'to' must be provided together",
-        });
-      }
+    const bookings = await Booking.find({
+      status: { $in: activeStatuses },
+      pickupDate: { $lt: end },
+      dropoffDate: { $gt: start },
+    }).lean();
 
-      start = new Date(from);
-      end = new Date(to);
+    const bookingMap = new Map();
 
-      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-        return res.status(400).json({
-          message: "Invalid date format. Use ISO 8601 (UTC recommended).",
-        });
-      }
-
-      if (start >= end) {
-        return res.status(400).json({
-          message: "'from' must be earlier than 'to'",
-        });
-      }
+    for (const b of bookings) {
+      const id = String(b.car);
+      bookingMap.set(id, (bookingMap.get(id) || 0) + 1);
     }
 
-    // -----------------------------
-    // 2. Build booking query safely
-    // -----------------------------
-    const bookingQuery = {
-      status: { $in: statusFilter },
-    };
+    const result = cars.map((car) => {
+      const used = bookingMap.get(String(car._id)) || 0;
+      const availableUnits = Math.max(0, car.totalUnits - used);
 
-    if (start && end) {
-      bookingQuery.pickupDate = { $lt: end };
-      bookingQuery.dropoffDate = { $gt: start };
-    }
-
-    // -----------------------------
-    // 3. Find conflicting bookings
-    // -----------------------------
-    const bookedCars = await Booking.find(bookingQuery)
-      .select("car")
-      .lean();
-
-    // normalize + deduplicate safely
-    const bookedCarIds = [
-      ...new Set(
-        bookedCars
-          .map((b) => b.car)
-          .filter(Boolean)
-          .map((id) => id.toString())
-      ),
-    ];
-
-    // -----------------------------
-    // 4. Fetch available cars
-    // -----------------------------
-    const availableCars = await Car.find({
-      _id: { $nin: bookedCarIds },
-      status: "available",
-    })
-      .lean()
-      .sort({ createdAt: -1 });
-
-    return res.status(200).json(availableCars);
-  } catch (err) {
-    console.error("Get available cars error:", err);
-
-    return res.status(500).json({
-      message: "Failed to fetch available cars",
-      error:
-        process.env.NODE_ENV === "production"
-          ? "Internal server error"
-          : err.message,
+      return {
+        ...car,
+        usedUnits: used,
+        availableUnits,
+        isSoldOut: availableUnits === 0,
+      };
     });
+
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 };
+// export const getAvailableCars = async (req, res) => {
+//   try {
+//     const { from, to } = req.query;
+
+//     if (!from || !to) {
+//       return res.status(400).json({ message: "Missing date range" });
+//     }
+
+//     const start = new Date(from);
+//     const end = new Date(to);
+
+//     const activeStatuses = ["pending", "confirmed", "enroute"];
+
+//     // 1. get all cars
+//     const cars = await Car.find({ status: "available" }).lean();
+
+//     // 2. get overlapping bookings ONLY for time window
+//     const bookings = await Booking.find({
+//       status: { $in: activeStatuses },
+//       pickupDate: { $lt: end },
+//       dropoffDate: { $gt: start },
+//       car: { $ne: null },
+//     }).lean();
+
+//     // 3. count bookings per car
+//     const bookingMap = new Map();
+
+//     for (const b of bookings) {
+//       const id = String(b.car);
+//       bookingMap.set(id, (bookingMap.get(id) || 0) + 1);
+//     }
+
+//     // 4. compute availability correctly
+//     const result = cars.map((car) => {
+//       const booked = bookingMap.get(String(car._id)) || 0;
+
+//       const availableUnits = Math.max(0, car.totalUnits - booked);
+
+//       return {
+//         ...car,
+//         bookedUnits: booked,
+//         availableUnits,
+//         isSoldOut: availableUnits === 0,
+//       };
+//     });
+
+//     return res.json(result);
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ message: "Failed to fetch cars" });
+//   }
+// };
