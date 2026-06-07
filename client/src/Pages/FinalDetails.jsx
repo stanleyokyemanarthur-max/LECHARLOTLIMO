@@ -47,9 +47,11 @@ function FinalDetails() {
         carSnapshot: {
           name: selectedCar.name,
           type: selectedCar.type || "",
-          pricePerMile: selectedCar.perMileRate,
-          
-          
+
+          pricePerMile: Number(selectedCar.perMileRate) || 0,
+          rateMultiplier: Number(selectedCar.rateMultiplier) || 1,
+          totalUnits: Number(selectedCar.totalUnits) || 1,
+          fleetKey: selectedCar.fleetKey || null,
         },
         pickupLocation: rideInfo.pickupLocation,
         dropoffLocation: rideInfo.dropoffLocation,

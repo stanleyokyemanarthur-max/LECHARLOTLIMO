@@ -98,16 +98,23 @@ export const calculateTripEstimate = async ({
     : 1;
 
   const distance = Number(distanceMiles);
+
   const rate = Number(carRatePerMile);
 
-  if (distance < 0) {
-    throw new Error("Invalid distance calculated");
-  }
+  const safeRate =
+    Number.isFinite(rate) && rate > 0
+      ? rate
+      : null;
 
-  if (!Number.isFinite(distance) || !Number.isFinite(rate)) {
+  if (!Number.isFinite(distance) || safeRate === null) {
+    console.error("❌ BAD INPUTS:", {
+      distanceMiles,
+      carRatePerMile,
+      car,
+    });
+
     throw new Error("Invalid pricing inputs");
-  }
-
+  } 
   // BASE PRICE
   const basePrice = Math.max(
     distance * rate * safeMultiplier,
