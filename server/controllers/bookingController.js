@@ -179,7 +179,7 @@ export const createBooking = async (req, res) => {
 
             isPaid: false,
             reward: rewardId || null,
-            freeReason: financialState.freeReason,
+            freeReason: null,
 
 
             status: "pending",
