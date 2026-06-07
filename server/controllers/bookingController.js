@@ -685,7 +685,7 @@ export const finalizeBookingQuote = async (req, res) => {
     // finalPrice -= discount;
 
     booking.totalPrice = finalPrice;
-    booking.paymentStatus = "pending_payment";
+    booking.paymentStatus = "awaiting_payment";
 
     await booking.save();
 

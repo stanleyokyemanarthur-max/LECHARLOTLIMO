@@ -5,7 +5,7 @@ import Booking from "../models/Booking.js";
 import Reward from "../models/Reward.js";
 import User from "../models/User.js";
 import { evaluateMilestonesForUser } from "../services/milestone.service.js";
-
+import { calculateTripEstimate } from "../services/pricingEngine.js";
 // Load dotenv locally if not production
 if (process.env.NODE_ENV !== "production") {
   import('dotenv').then(dotenv => dotenv.config());
@@ -58,11 +58,21 @@ export const createCheckoutSession = async (req, res) => {
     });
 
     // 2. Always use ONE consistent amount field
-    const amount = booking.totalPrice;
+    let amount = booking.totalPrice;
 
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ message: "Invalid booking amount" });
-    }
+if (!amount || amount <= 0) {
+  const estimate = await calculateTripEstimate({
+    pickup: booking.pickupLocation,
+    dropoff: booking.dropoffLocation,
+    carRatePerMile: booking.carSnapshot.pricePerMile,
+    car: booking.carSnapshot,
+  });
+
+  amount = estimate.estimatedPrice;
+
+  booking.totalPrice = amount;
+  await booking.save();
+}
 
     // 3. Create Stripe session OUTSIDE transaction (critical fix)
     const stripeSession = await stripe.checkout.sessions.create({

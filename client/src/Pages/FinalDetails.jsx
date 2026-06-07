@@ -47,7 +47,9 @@ function FinalDetails() {
         carSnapshot: {
           name: selectedCar.name,
           type: selectedCar.type || "",
-          pricePerMile: selectedCar.price || 0,
+          pricePerMile: selectedCar.perMileRate,
+          
+          
         },
         pickupLocation: rideInfo.pickupLocation,
         dropoffLocation: rideInfo.dropoffLocation,
@@ -61,9 +63,11 @@ function FinalDetails() {
         passengers: rideInfo.passengers || 1,
         luggage: rideInfo.luggage || 0,
         distance: Number(rideInfo.distance || 0),
-        totalPrice: Number(estimatedTotal),
+        // totalPrice: Number(estimatedTotal),
         status: "pending",
       };
+      console.log(selectedCar);
+
 
       // Headers with auth token if logged in
       const headers = user?.token ? { Authorization: `Bearer ${user.token}` } : {};
@@ -78,12 +82,23 @@ function FinalDetails() {
       const booking = bookingRes.data.booking || bookingRes.data;
       console.log("Created booking:", booking);
 
+
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
+        {
+          bookingId: booking._id
+        },
+        { headers }
+      );
+
+
+
       // 2️⃣ Create Stripe checkout session
       const stripeRes = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
         {
           bookingId: booking._id,
-          amount: Number(estimatedTotal),
+          // amount: Number(estimatedTotal),
         },
         { headers }
       );
@@ -120,7 +135,7 @@ function FinalDetails() {
 
       <div className="grid lg:grid-cols-2 gap-10">
         {/* Ride Summary */}
-         <div className="bg-[#0f0f0f] rounded-3xl overflow-hidden border border-[#2a2a2a] shadow-[0_0_60px_rgba(212,175,55,0.12)]">
+        <div className="bg-[#0f0f0f] rounded-3xl overflow-hidden border border-[#2a2a2a] shadow-[0_0_60px_rgba(212,175,55,0.12)]">
 
           {/* CAR IMAGE HERO */}
           <div className="relative h-[420px] w-full">
@@ -172,7 +187,7 @@ function FinalDetails() {
             )}
           </div>
         </div>
-         {/* LEFT SIDE - HERO CAR */}
+        {/* LEFT SIDE - HERO CAR */}
         <div className="space-y-6">
 
           {/* RIDE INFO */}
@@ -220,8 +235,8 @@ function FinalDetails() {
           </button>
 
         </div>
-       
-       
+
+
 
       </div>
     </div>
