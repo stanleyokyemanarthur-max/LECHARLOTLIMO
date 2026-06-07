@@ -679,7 +679,15 @@ export const finalizeBookingQuote = async (req, res) => {
       carRatePerMile: booking.carSnapshot.pricePerMile,
     });
 
-    let finalPrice = estimate.estimatedPrice;
+   let finalPrice = Number(estimate?.estimatedPrice);
+
+if (!Number.isFinite(finalPrice)) {
+  console.error("Invalid estimate:", estimate);
+
+  return res.status(400).json({
+    error: "Invalid price calculation (NaN detected)",
+  });
+}
 
     // (optional reward logic here if you have it)
     // finalPrice -= discount;

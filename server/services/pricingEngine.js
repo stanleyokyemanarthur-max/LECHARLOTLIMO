@@ -35,8 +35,8 @@ export const calculateTripEstimate = async ({
         timeout: 5000,
       }
     );
-console.log("Google Distance Matrix Response:");
-console.log(JSON.stringify(response.data, null, 2));
+    console.log("Google Distance Matrix Response:");
+    console.log(JSON.stringify(response.data, null, 2));
     const element = response.data?.rows?.[0]?.elements?.[0];
     console.log(JSON.stringify(element, null, 2));
 
@@ -45,12 +45,12 @@ console.log(JSON.stringify(response.data, null, 2));
       // Distance
       // ======================
       if (fixedDistance) {
-  distanceMiles = Number(fixedDistance);
-} else {
-  const distanceText = element.distance?.text || "0 mi";
-  distanceMiles =
-    parseFloat(distanceText.replace(/[^0-9.]/g, "")) || 0;
-}
+        distanceMiles = Number(fixedDistance);
+      } else {
+        const distanceText = element.distance?.text || "0 mi";
+        distanceMiles =
+          parseFloat(distanceText.replace(/[^0-9.]/g, "")) || 0;
+      }
 
       // ======================
       // Duration (normal)
@@ -65,7 +65,7 @@ console.log(JSON.stringify(response.data, null, 2));
       // ======================
       trafficDurationText =
         element.duration_in_traffic?.text || durationText;
-        
+
 
       trafficMinutes = element.duration_in_traffic?.value
         ? Math.round(element.duration_in_traffic.value / 60)
@@ -88,47 +88,65 @@ console.log(JSON.stringify(response.data, null, 2));
   }
 
   // ======================
-  // PRICING ENGINE (BASE)
+  // PRICING ENGINE (BASE SAFE VERSION)
   // ======================
- const multiplier = car?.rateMultiplier || 1;
 
-const basePrice = Math.max(
-  distanceMiles * carRatePerMile * multiplier,
-  BASE_MIN_FARE
-);
+  const multiplier = Number(car?.rateMultiplier);
 
-  // ======================
-  // TRAFFIC ADJUSTMENT (simple but powerful)
-  // ======================
-const trafficMultiplier =
-  durationMinutes > 0 &&
-  trafficMinutes > durationMinutes
-    ? 1 +
-      ((trafficMinutes - durationMinutes) / durationMinutes) * 0.25
+  const safeMultiplier = Number.isFinite(multiplier) && multiplier > 0
+    ? multiplier
     : 1;
+
+  const distance = Number(distanceMiles);
+  const rate = Number(carRatePerMile);
+
+  if (distance < 0) {
+    throw new Error("Invalid distance calculated");
+  }
+
+  if (!Number.isFinite(distance) || !Number.isFinite(rate)) {
+    throw new Error("Invalid pricing inputs");
+  }
+
+  // BASE PRICE
+  const basePrice = Math.max(
+    distance * rate * safeMultiplier,
+    BASE_MIN_FARE
+  );
+
+  // TRAFFIC MULTIPLIER
+  const trafficMultiplier =
+    durationMinutes > 0 &&
+      trafficMinutes > durationMinutes
+      ? 1 +
+      ((trafficMinutes - durationMinutes) / durationMinutes) * 0.25
+      : 1;
+
+  // FINAL PRICE
   const estimatedPrice = Number(
-  (basePrice * trafficMultiplier).toFixed(2)
-);
+    (basePrice * trafficMultiplier).toFixed(2)
+  );
 
-
+  // TRAFFIC %
   const trafficDelayPercent =
-  durationMinutes > 0
-    ? Math.round(
-        ((trafficMinutes - durationMinutes) /
-          durationMinutes) * 100
+    durationMinutes > 0
+      ? Math.round(
+        ((trafficMinutes - durationMinutes) / durationMinutes) * 100
       )
-    : 0;
+      : 0;
+
+  // FINAL RETURN (ONLY ONCE)
   return {
-  distanceMiles: Number(distanceMiles.toFixed(2)),
+    distanceMiles: Number(distance.toFixed(2)),
 
-  durationText,
-  trafficDurationText,
-  trafficDelayPercent,
+    durationText,
+    trafficDurationText,
+    trafficDelayPercent,
 
-  durationMinutes,
-  trafficMinutes,
+    durationMinutes,
+    trafficMinutes,
 
-  basePrice: Number(basePrice.toFixed(2)),
-  estimatedPrice,
-};
+    basePrice: Number(basePrice.toFixed(2)),
+    estimatedPrice,
+  };
 };
