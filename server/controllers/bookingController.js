@@ -8,6 +8,7 @@ import { evaluateMilestonesForUser } from "../services/milestone.service.js";
 import mongoose from "mongoose";
 import { sendEmail } from "../lib/sendEmail.js"; // ✅ adjust path if needed
 import { calculateTripEstimate } from "../services/pricingEngine.js"; // ✅ new pricing engine
+import { resolveBookingFinancialState } from "../services/resolveBookingFinancialState.js"; // ✅ new financial state resolver
 /* 
 ==============================
  🧾 CREATE BOOKING (user only)
@@ -78,7 +79,7 @@ export const createBooking = async (req, res) => {
     const reward = rewardId
       ? await Reward.findById(rewardId)
       : null;
-      
+
     const financialState = resolveBookingFinancialState({
       reward,
       totalPrice: null,
