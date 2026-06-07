@@ -147,6 +147,7 @@ export const createBooking = async (req, res) => {
               pricePerMile: carData.perMileRate,
               rateMultiplier: carData.rateMultiplier,
               totalUnits: carData.totalUnits,
+              fleetKey: carData.fleetKey,
             },
 
             pickupLocation,
@@ -158,7 +159,7 @@ export const createBooking = async (req, res) => {
 
             totalPrice: null,
             pricingLocked: false,
-            fleetKey: req.body.fleetKey,
+            fleetKey: carData.fleetKey,
 
             isPaid: false,
             reward: rewardId || null,
