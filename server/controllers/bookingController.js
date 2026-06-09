@@ -157,14 +157,15 @@ export const createBooking = async (req, res) => {
 
             driver: null,
 
-            carSnapshot: {
-              name: carData.name,
-              type: carData.type,
-              pricePerMile: Number(carData.perMileRate), // 🔥 FIX
-              rateMultiplier: Number(carData.rateMultiplier) || 1,
-              totalUnits: carData.totalUnits,
-              fleetKey: carData.fleetKey,
-            },
+  carSnapshot: {
+  name: carData.name,
+  type: carData.type || "",
+
+  pricePerMile: Number(carData.perMileRate) || 0,
+  rateMultiplier: Number(carData.rateMultiplier) || 1,
+  totalUnits: Number(carData.totalUnits) || 1,
+  fleetKey: carData.fleetKey || null,
+},
 
             pickupLocation,
             dropoffLocation,
@@ -679,15 +680,15 @@ export const finalizeBookingQuote = async (req, res) => {
       carRatePerMile: booking.carSnapshot.pricePerMile,
     });
 
-    let finalPrice = Number(estimate?.estimatedPrice);
+   let finalPrice = Number(estimate?.estimatedPrice);
 
-    if (!Number.isFinite(finalPrice)) {
-      console.error("Invalid estimate:", estimate);
+if (!Number.isFinite(finalPrice)) {
+  console.error("Invalid estimate:", estimate);
 
-      return res.status(400).json({
-        error: "Invalid price calculation (NaN detected)",
-      });
-    }
+  return res.status(400).json({
+    error: "Invalid price calculation (NaN detected)",
+  });
+}
 
     // (optional reward logic here if you have it)
     // finalPrice -= discount;
