@@ -1,20 +1,19 @@
-import axios from "axios";
+
 import Booking from "../models/Booking.js";
 import Car from "../models/Car.js";
 import User from "../models/User.js";
 import Reward from "../models/Reward.js";
-import { getDistanceInMiles } from "../utils/getDistance.js";
+
 import { evaluateMilestonesForUser } from "../services/milestone.service.js";
 import mongoose from "mongoose";
 import { sendEmail } from "../lib/sendEmail.js"; // ✅ adjust path if needed
 import { calculateTripEstimate } from "../services/pricingEngine.js"; // ✅ new pricing engine
-import { resolveBookingFinancialState } from "../services/resolveBookingFinancialState.js"; // ✅ new financial state resolver
+
 /* 
 ==============================
  🧾 CREATE BOOKING (user only)
 ==============================
 */
-
 export const createBooking = async (req, res) => {
   const session = await mongoose.startSession();
 
@@ -28,19 +27,9 @@ export const createBooking = async (req, res) => {
       rewardId,
     } = req.body;
 
-    // =========================
-    // 1. VALIDATION (STRICT)
-    // =========================
-    if (
-      !car ||
-      !pickupLocation ||
-      !dropoffLocation ||
-      !pickupDate ||
-      !dropoffDate
-    ) {
-      return res.status(400).json({
-        error: "All booking fields are required.",
-      });
+    // 1. VALIDATION
+    if (!car || !pickupLocation || !dropoffLocation || !pickupDate || !dropoffDate) {
+      return res.status(400).json({ error: "All booking fields are required." });
     }
 
     if (!mongoose.Types.ObjectId.isValid(car)) {
@@ -50,17 +39,11 @@ export const createBooking = async (req, res) => {
     const start = new Date(pickupDate);
     const end = new Date(dropoffDate);
 
-    if (
-      !Number.isFinite(start.getTime()) ||
-      !Number.isFinite(end.getTime()) ||
-      start >= end
-    ) {
-      return res.status(400).json({
-        error: "Invalid booking dates.",
-      });
+    if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start >= end) {
+      return res.status(400).json({ error: "Invalid booking dates." });
     }
 
-    // 🚨 OPTIONAL: prevent duplicate requests (idempotency guard)
+    // 2. CHECK DUPLICATE
     const existingPending = await Booking.findOne({
       user: req.user._id,
       car,
@@ -76,96 +59,58 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    const reward = rewardId
-      ? await Reward.findById(rewardId)
-      : null;
+    // 3. FETCH CAR (outside transaction)
+    const carData = await Car.findById(car);
 
-    const financialState = resolveBookingFinancialState({
-      reward,
-      totalPrice: null,
+    if (!carData) return res.status(404).json({ error: "CAR_NOT_FOUND" });
+    if (!carData.fleetKey) return res.status(400).json({ error: "Missing fleetKey" });
+
+    // 4. PRICE ENGINE (OUTSIDE TX — IMPORTANT FIX)
+    const estimate = await calculateTripEstimate({
+      pickup: pickupLocation,
+      dropoff: dropoffLocation,
+      carRatePerMile: carData.perMileRate,
+      car: carData,
     });
 
-    let createdBooking = null;
+    if (!estimate?.distanceMiles) {
+      return res.status(400).json({ error: "INVALID_ESTIMATE" });
+    }
 
+    let createdBooking;
+
+    // 5. TRANSACTION START
     await session.withTransaction(async () => {
-      // =========================
-      // 2. FETCH CAR (SOURCE OF TRUTH)
-      // =========================
-      const carData = await Car.findById(car).session(session);
-
-      if (!carData) {
-        throw new Error("CAR_NOT_FOUND");
-      }
-      if (!carData.fleetKey) {
-        throw new Error("Car data is missing fleetKey");
-      }
-
-      // =========================
-      // 3. AVAILABILITY CHECK (SINGLE SOURCE OF TRUTH)
-      // =========================
       const activeStatuses = ["pending", "confirmed", "enroute"];
 
-      const overlappingCount = await Booking.countDocuments({
+      // IMPORTANT: re-check availability inside transaction
+      const overlap = await Booking.countDocuments({
         car,
         status: { $in: activeStatuses },
         pickupDate: { $lt: end },
         dropoffDate: { $gt: start },
       }).session(session);
 
-      if (overlappingCount >= carData.totalUnits) {
+      if (overlap >= carData.totalUnits) {
         throw new Error("CAR_UNAVAILABLE");
       }
-
-      // =========================
-      // 4. PRICE ENGINE (PURE)
-      // =========================
-      const estimate = await calculateTripEstimate({
-        pickup: pickupLocation,
-        dropoff: dropoffLocation,
-        carRatePerMile: carData.perMileRate,
-        car: carData,
-      });
-
-      if (!estimate || typeof estimate.distanceMiles !== "number") {
-        throw new Error("INVALID_ESTIMATE");
-      }
-
-      // =========================
-      // 5. FINAL DOUBLE-CHECK (IMPORTANT UNDER CONCURRENCY)
-      // =========================
-      const recheck = await Booking.countDocuments({
-        car,
-        status: { $in: activeStatuses },
-        pickupDate: { $lt: end },
-        dropoffDate: { $gt: start },
-      }).session(session);
-
-      if (recheck >= carData.totalUnits) {
-        throw new Error("CAR_UNAVAILABLE");
-      }
-      // =========================
-      // 5. CREATE BOOKING (ATOMIC INSERT)
-      // =========================
-
-
 
       const [booking] = await Booking.create(
         [
           {
             user: req.user._id,
             car,
-
+            fleetKey: carData.fleetKey,
             driver: null,
 
-  carSnapshot: {
-  name: carData.name,
-  type: carData.type || "",
-
-  pricePerMile: Number(carData.perMileRate) || 0,
-  rateMultiplier: Number(carData.rateMultiplier) || 1,
-  totalUnits: Number(carData.totalUnits) || 1,
-  fleetKey: carData.fleetKey || null,
-},
+            carSnapshot: {
+              name: carData.name,
+              type: carData.type || "",
+              pricePerMile: Number(carData.perMileRate) || 0,
+              rateMultiplier: Number(carData.rateMultiplier) || 1,
+              totalUnits: Number(carData.totalUnits) || 1,
+              fleetKey: carData.fleetKey || null,
+            },
 
             pickupLocation,
             dropoffLocation,
@@ -176,12 +121,10 @@ export const createBooking = async (req, res) => {
 
             totalPrice: null,
             pricingLocked: false,
-            fleetKey: carData.fleetKey,
 
             isPaid: false,
             reward: rewardId || null,
             freeReason: null,
-
 
             status: "pending",
             paymentStatus: "awaiting_payment",
@@ -193,23 +136,18 @@ export const createBooking = async (req, res) => {
       createdBooking = booking;
     });
 
-
     return res.status(201).json({
       message: "Booking created successfully",
       booking: createdBooking,
     });
 
   } catch (err) {
-    console.error("createBooking error:", err);
+    console.error(err);
 
-    const statusMap = {
-      CAR_UNAVAILABLE: 409,
-      CAR_NOT_FOUND: 404,
-    };
-
-    return res.status(statusMap[err.message] || 500).json({
-      error: err.message,
-    });
+    return res.status(
+      err.message === "CAR_UNAVAILABLE" ? 409 :
+        err.message === "CAR_NOT_FOUND" ? 404 : 500
+    ).json({ error: err.message });
 
   } finally {
     session.endSession();
@@ -425,45 +363,67 @@ export const updateBookingStatus = async (req, res) => {
     if (!booking) {
       return res.status(404).json({ error: "Booking not found" });
     }
-
     const requestedStatus = req.body.status;
 
     const prevStatus = booking.status;
     const newStatus = requestedStatus || prevStatus;
 
     // =============================
-    // 💳 PAYMENT LOGIC (CLEAN + SAFE)
+    // 💳 PAYMENT LOGIC
     // =============================
 
-    const isPaid = booking.paymentStatus === "paid";
-
-    const hasNoPrice =
-      booking.totalPrice === 0 ||
-      booking.totalPrice == null;
+    const isPaid =
+      booking.paymentStatus === "paid" ||
+      booking.isPaid === true;
 
     const rewardValid =
       booking.reward &&
       booking.reward.status === "ACTIVE" &&
-      (!booking.reward.expiresAt || new Date(booking.reward.expiresAt) > new Date());
+      (!booking.reward.expiresAt ||
+        new Date(booking.reward.expiresAt) > new Date());
 
     const rewardCoversFully =
-      rewardValid && booking.reward.discountType === "FULL_COVER";
+      rewardValid &&
+      booking.reward.discountType === "FULL_COVER";
 
-    const isFree = hasNoPrice || rewardCoversFully;
+    const isFree =
+      booking.totalPrice === 0 ||
+      rewardCoversFully;
 
-    const hasPrice = typeof booking.totalPrice === "number" && booking.totalPrice > 0;
-
-    const paymentRequired = hasPrice && !isPaid && !isFree;
+    const paymentRequired =
+      typeof booking.totalPrice === "number" &&
+      booking.totalPrice > 0 &&
+      !isPaid &&
+      !isFree;
 
     // =============================
-    // 🚨 BLOCK INVALID STATUS CHANGES
+    // 🚨 STATUS FLOW VALIDATION
     // =============================
+
+    // pending -> confirmed
+    if (newStatus === "confirmed" && paymentRequired) {
+      return res.status(400).json({
+        error: "Payment required before confirmation",
+      });
+    }
+
+    // confirmed -> enroute
     if (
-      ["confirmed", "enroute"].includes(newStatus) &&
-      paymentRequired
+      newStatus === "enroute" &&
+      prevStatus !== "confirmed"
     ) {
       return res.status(400).json({
-        error: "Payment required before confirming or dispatching booking",
+        error: "Booking must be confirmed before going enroute",
+      });
+    }
+
+    // enroute -> completed
+    if (
+      newStatus === "completed" &&
+      prevStatus !== "enroute"
+    ) {
+      return res.status(400).json({
+        error: "Booking must be enroute before completion",
       });
     }
 
@@ -480,41 +440,43 @@ export const updateBookingStatus = async (req, res) => {
       // 🎁 REWARD HANDLING
       // =============================
       if (booking.reward) {
-        const reward = await Reward.findById(booking.reward).session(session);
+        const reward = await Reward.findById(
+          booking.reward
+        ).session(session);
 
-        if (prevStatus !== "completed" && newStatus === "completed") {
+        if (
+          reward &&
+          prevStatus !== "completed" &&
+          newStatus === "completed"
+        ) {
           reward.status = "USED";
           reward.usedAt = new Date();
+
           await reward.save({ session });
         }
-        if (newStatus === "confirmed" && booking.paymentStatus !== "paid") {
-          return res.status(400).json({
-            error: "Cannot confirm booking before payment is completed",
-          });
-        }
 
-        if (newStatus === "enroute" && booking.status !== "confirmed") {
-          return res.status(400).json({
-            error: "Booking must be confirmed before going enroute",
-          });
-        }
-
-        if (newStatus === "cancelled") {
+        if (
+          reward &&
+          newStatus === "cancelled"
+        ) {
           reward.status = "AVAILABLE";
           reward.booking = null;
           reward.lockedAt = null;
           reward.isSlotFull = false;
+
           await reward.save({ session });
         }
       }
-
       // =============================
       // 📈 MILESTONES / SPEND UPDATE
       // =============================
       if (
         prevStatus !== "completed" &&
         newStatus === "completed" &&
-        booking.isPaid
+        (
+          booking.isPaid ||
+          booking.paymentStatus === "paid"
+        )
       ) {
         await User.updateOne(
           { _id: booking.user?._id },
@@ -637,11 +599,15 @@ export const confirmPayment = async (req, res) => {
     }
 
     // 💡 ensure price is set BEFORE marking paid
-    if (!booking.totalPrice || booking.totalPrice <= 0) {
+    if (
+      booking.totalPrice == null &&
+      booking.paymentStatus !== "free"
+    ) {
       return res.status(400).json({
         error: "Booking must be priced before payment can be confirmed",
       });
     }
+
 
     booking.paymentStatus = "paid";
     booking.isPaid = true;
@@ -657,6 +623,7 @@ export const confirmPayment = async (req, res) => {
   }
 };
 
+
 export const finalizeBookingQuote = async (req, res) => {
   try {
     const { bookingId } = req.body;
@@ -667,31 +634,34 @@ export const finalizeBookingQuote = async (req, res) => {
       return res.status(404).json({ error: "Booking not found" });
     }
 
-    // 🚨 prevent double pricing
     if (booking.totalPrice != null) {
+      return res.status(400).json({ error: "Booking is already priced" });
+    }
+
+    if (!booking.distance || !booking.carSnapshot?.pricePerMile) {
       return res.status(400).json({
-        error: "Booking is already priced",
+        error: "Missing pricing base data",
       });
     }
 
-    const estimate = await calculateTripEstimate({
-      pickup: booking.pickupLocation,
-      dropoff: booking.dropoffLocation,
-      carRatePerMile: booking.carSnapshot.pricePerMile,
+    console.log("BOOKING SNAPSHOT:", {
+      distance: booking.distance,
+      pricePerMile: booking.carSnapshot?.pricePerMile,
+      multiplier: booking.carSnapshot?.rateMultiplier,
     });
 
-   let finalPrice = Number(estimate?.estimatedPrice);
+    const raw =
+      booking.distance *
+      booking.carSnapshot.pricePerMile *
+      (booking.carSnapshot.rateMultiplier || 1);
 
-if (!Number.isFinite(finalPrice)) {
-  console.error("Invalid estimate:", estimate);
+    const finalPrice = Math.round(raw * 100) / 100;
 
-  return res.status(400).json({
-    error: "Invalid price calculation (NaN detected)",
-  });
-}
-
-    // (optional reward logic here if you have it)
-    // finalPrice -= discount;
+    if (!Number.isFinite(finalPrice)) {
+      return res.status(400).json({
+        error: "Invalid computed price",
+      });
+    }
 
     booking.totalPrice = finalPrice;
     booking.paymentStatus = "awaiting_payment";
@@ -706,4 +676,5 @@ if (!Number.isFinite(finalPrice)) {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
+
 };
