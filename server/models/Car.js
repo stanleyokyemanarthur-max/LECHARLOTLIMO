@@ -15,6 +15,7 @@ const carSchema = new mongoose.Schema(
       type: Number,
       default: 1.0,
     },
+    
     totalUnits: {
   type: Number,
   default: 1,

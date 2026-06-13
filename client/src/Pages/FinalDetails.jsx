@@ -29,7 +29,11 @@ function FinalDetails() {
       setLoading(true);
 
       // Validate required info
-      if (!rideInfo.pickupLocation || !rideInfo.dropoffLocation || !rideInfo.distance) {
+      if (
+        !rideInfo.pickupLocation ||
+        !rideInfo.dropoffLocation ||
+        rideInfo.distance == null
+      ) {
         alert("Incomplete ride information. Please go back and check your details.");
         return;
       }
@@ -65,10 +69,12 @@ function FinalDetails() {
         passengers: rideInfo.passengers || 1,
         luggage: rideInfo.luggage || 0,
         distance: Number(rideInfo.distance || 0),
-        // totalPrice: Number(estimatedTotal),
+        totalPrice: Number(estimatedTotal),
         status: "pending",
       };
       console.log(selectedCar);
+
+
 
 
       // Headers with auth token if logged in
@@ -82,20 +88,53 @@ function FinalDetails() {
       );
 
       const booking = bookingRes.data.booking || bookingRes.data;
-      console.log("Created booking:", booking);
+
+      console.log("BOOKING CREATED:", {
+        id: booking._id,
+        distance: booking.distance,
+        totalPrice: booking.totalPrice,
+        carSnapshot: booking.carSnapshot,
+      });
 
 
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
-        {
-          bookingId: booking._id
-        },
-        { headers }
-      );
+      if (
+        !Number.isFinite(Number(booking.distance)) ||
+        Number(booking.distance) <= 0 ||
+        !Number.isFinite(Number(booking.carSnapshot?.pricePerMile)) ||
+        Number(booking.carSnapshot?.pricePerMile) <= 0
+      ) {
+        console.error("BAD BOOKING DATA", booking);
+
+        alert(
+          `Pricing data missing.
+Distance: ${booking.distance}
+PricePerMile: ${booking.carSnapshot?.pricePerMile}`
+        );
+
+        return;
+      }
+
+      // const quoteRes = await axios.post(
+      //   `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
+      //   {
+      //     bookingId: booking._id,
+      //   },
+      //   { headers }
+      // );
+
+      // console.log("QUOTE RESULT:", quoteRes.data);
 
 
 
       // 2️⃣ Create Stripe checkout session
+      console.log("SENDING TO STRIPE:", {
+        bookingId: booking._id,
+        distance: booking.distance,
+        totalPrice: booking.totalPrice,
+        carSnapshot: booking.carSnapshot,
+      });
+
+
       const stripeRes = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
         {

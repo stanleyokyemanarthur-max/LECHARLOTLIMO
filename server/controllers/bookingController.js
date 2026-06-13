@@ -120,13 +120,13 @@ export const createBooking = async (req, res) => {
             driver: null,
 
             carSnapshot: {
-              name: carData.name,
-              type: carData.type || "",
-              pricePerMile: perMileRate, // ✅ guaranteed valid
-              rateMultiplier: Number(carData.rateMultiplier) || 1,
-              totalUnits: Number(carData.totalUnits) || 1,
-              fleetKey: carData.fleetKey || null,
-            },
+  name: carData.name,
+  type: carData.type,
+  pricePerMile: Number(carData.perMileRate),
+  rateMultiplier: Number(carData.rateMultiplier) || 1,
+  totalUnits: Number(carData.totalUnits) || 1,
+  fleetKey: carData.fleetKey,
+},
 
             pickupLocation,
             dropoffLocation,
@@ -135,8 +135,8 @@ export const createBooking = async (req, res) => {
 
             distance: estimate.distanceMiles,
 
-            totalPrice: null,
-            pricingLocked: false,
+            totalPrice: estimate.estimatedPrice,
+pricingLocked: true,
 
             isPaid: false,
             reward: rewardId || null,
@@ -156,7 +156,6 @@ export const createBooking = async (req, res) => {
       message: "Booking created successfully",
       booking: createdBooking,
     });
-
   } catch (err) {
     console.error(err);
 
@@ -654,11 +653,28 @@ export const finalizeBookingQuote = async (req, res) => {
       return res.status(400).json({ error: "Booking is already priced" });
     }
 
-    if (!booking.distance || !booking.carSnapshot?.pricePerMile) {
-      return res.status(400).json({
-        error: "Missing pricing base data",
-      });
-    }
+   const distance = Number(booking.distance);
+const pricePerMile = Number(
+  booking.carSnapshot?.pricePerMile
+);
+
+if (
+  !Number.isFinite(distance) ||
+  distance <= 0 ||
+  !Number.isFinite(pricePerMile) ||
+  pricePerMile <= 0
+) {
+  console.error("INVALID PRICING DATA", {
+    distance: booking.distance,
+    carSnapshot: booking.carSnapshot,
+  });
+
+  return res.status(400).json({
+    error: "Missing pricing base data",
+    distance: booking.distance,
+    carSnapshot: booking.carSnapshot,
+  });
+}
     console.log("BOOKING DEBUG:", {
       distance: booking.distance,
       carSnapshot: booking.carSnapshot,
