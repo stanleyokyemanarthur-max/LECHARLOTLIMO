@@ -110,44 +110,50 @@ export const createBooking = async (req, res) => {
           error: "INVALID_DISTANCE_ESTIMATE",
         });
       }
+const pricePerMile = Number(carData.perMileRate);
+const rateMultiplier = Number(carData.rateMultiplier || 1);
 
-      const [booking] = await Booking.create(
-        [
-          {
-            user: req.user._id,
-            car,
-            fleetKey: carData.fleetKey,
-            driver: null,
+if (!Number.isFinite(pricePerMile) || pricePerMile <= 0) {
+  throw new Error("INVALID_CAR_PRICE");
+}
 
-            carSnapshot: {
-  name: carData.name,
-  type: carData.type,
-  pricePerMile: Number(carData.perMileRate),
-  rateMultiplier: Number(carData.rateMultiplier) || 1,
-  totalUnits: Number(carData.totalUnits) || 1,
-  fleetKey: carData.fleetKey,
-},
 
-            pickupLocation,
-            dropoffLocation,
-            pickupDate: start,
-            dropoffDate: end,
+    const [booking] = await Booking.create(
+  [
+    {
+      user: req.user._id,
+      car,
+      fleetKey: carData.fleetKey,
+      driver: null,
 
-            distance: estimate.distanceMiles,
+      carSnapshot: {
+        name: carData.name,
+        type: carData.type,
+        pricePerMile: Number(carData.perMileRate),
+        rateMultiplier: Number(carData.rateMultiplier || 1),
+        totalUnits: Number(carData.totalUnits || 1),
+        fleetKey: carData.fleetKey,
+      },
 
-            totalPrice: estimate.estimatedPrice,
-pricingLocked: true,
+      pickupLocation,
+      dropoffLocation,
+      pickupDate: start,
+      dropoffDate: end,
 
-            isPaid: false,
-            reward: rewardId || null,
-            freeReason: null,
+      distance: estimate.distanceMiles,
 
-            status: "pending",
-            paymentStatus: "awaiting_payment",
-          },
-        ],
-        { session }
-      );
+      totalPrice: null, // ✅ IMPORTANT
+      pricingLocked: false,
+
+      isPaid: false,
+      reward: rewardId || null,
+
+      status: "pending",
+      paymentStatus: "awaiting_quote",
+    },
+  ],
+  { session }
+);
 
       createdBooking = booking;
     });
@@ -644,62 +650,26 @@ export const finalizeBookingQuote = async (req, res) => {
     const { bookingId } = req.body;
 
     const booking = await Booking.findById(bookingId);
+    if (!booking) return res.status(404).json({ error: "Booking not found" });
 
-    if (!booking) {
-      return res.status(404).json({ error: "Booking not found" });
+    if (booking.paymentStatus === "paid") {
+      return res.status(400).json({ error: "Cannot price paid booking" });
     }
 
-    if (booking.totalPrice != null) {
-      return res.status(400).json({ error: "Booking is already priced" });
+    const distance = Number(booking.distance);
+    const pricePerMile = Number(booking.carSnapshot?.pricePerMile);
+    const multiplier = Number(booking.carSnapshot?.rateMultiplier || 1);
+
+    if (!Number.isFinite(distance) || distance <= 0 ||
+        !Number.isFinite(pricePerMile) || pricePerMile <= 0) {
+      return res.status(400).json({ error: "Invalid pricing data" });
     }
 
-   const distance = Number(booking.distance);
-const pricePerMile = Number(
-  booking.carSnapshot?.pricePerMile
-);
-
-if (
-  !Number.isFinite(distance) ||
-  distance <= 0 ||
-  !Number.isFinite(pricePerMile) ||
-  pricePerMile <= 0
-) {
-  console.error("INVALID PRICING DATA", {
-    distance: booking.distance,
-    carSnapshot: booking.carSnapshot,
-  });
-
-  return res.status(400).json({
-    error: "Missing pricing base data",
-    distance: booking.distance,
-    carSnapshot: booking.carSnapshot,
-  });
-}
-    console.log("BOOKING DEBUG:", {
-      distance: booking.distance,
-      carSnapshot: booking.carSnapshot,
-    });
-
-    console.log("BOOKING SNAPSHOT:", {
-      distance: booking.distance,
-      pricePerMile: booking.carSnapshot?.pricePerMile,
-      multiplier: booking.carSnapshot?.rateMultiplier,
-    });
-
-    const raw =
-      booking.distance *
-      booking.carSnapshot.pricePerMile *
-      (booking.carSnapshot.rateMultiplier || 1);
-
-    const finalPrice = Math.round(raw * 100) / 100;
-
-    if (!Number.isFinite(finalPrice)) {
-      return res.status(400).json({
-        error: "Invalid computed price",
-      });
-    }
+    const finalPrice =
+      Math.round(distance * pricePerMile * multiplier * 100) / 100;
 
     booking.totalPrice = finalPrice;
+    booking.pricingLocked = true;
     booking.paymentStatus = "awaiting_payment";
 
     await booking.save();
@@ -712,5 +682,4 @@ if (
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-
 };

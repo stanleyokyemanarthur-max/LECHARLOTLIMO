@@ -14,43 +14,30 @@ const bookingSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
-    rateMultiplier: {
-      type: Number,
-      default: 1.0,
-    },
+
     car: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Car",
       required: true,
     },
+
+    // 🔒 LOCKED PRICE SNAPSHOT (CRITICAL)
     carSnapshot: {
-      type: {
-        name: String,
-        type: String,
-        pricePerMile: Number,
-        rateMultiplier: Number,
-        totalUnits: Number,
-        fleetKey: String,
-      },
-      default: {},
-    },
-    pickupLocation: {
+      name: String,
       type: String,
-      required: true,
-    },
-    dropoffLocation: {
-      type: String,
-      required: true,
-    },
-    distance: {
-      type: Number,
-      required: true,
+      pricePerMile: { type: Number, required: true },
+      rateMultiplier: { type: Number, default: 1 },
+      totalUnits: { type: Number, default: 1 },
+      fleetKey: { type: String, required: true },
     },
 
-    totalPrice: {
-      type: Number,
-      default: null,
-    },
+    pickupLocation: { type: String, required: true },
+    dropoffLocation: { type: String, required: true },
+
+    distance: { type: Number, required: true },
+
+    totalPrice: { type: Number, default: null },
+    pricingLocked: { type: Boolean, default: false },
 
     paymentStatus: {
       type: String,
@@ -68,30 +55,17 @@ const bookingSchema = new mongoose.Schema(
       default: "unquoted",
       index: true,
     },
-    pricingLocked: {
-      type: Boolean,
-      default: false,
-    },
 
-    /** 💰 Paid vs Free */
-    isPaid: {
-      type: Boolean,
-      default: true,
-    },
-    fleetKey: {
-  type: String,
-  index: true,
-  required: true,
-},
+    isPaid: { type: Boolean, default: false },
 
-    /** 🎁 Why booking is free */
+    fleetKey: { type: String, required: true, index: true },
+
     freeReason: {
       type: String,
       enum: ["reward", "admin", null],
       default: null,
     },
 
-    /** 🔗 Reward used */
     reward: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Reward",
@@ -100,32 +74,17 @@ const bookingSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "confirmed", "enroute", "completed", "cancelled","expired",],
+      enum: ["pending", "confirmed", "enroute", "completed", "cancelled", "expired"],
       default: "pending",
       index: true,
     },
 
-    pickupDate: {
-      type: Date,
-      required: true,
-      index: true,
-    },
+    pickupDate: { type: Date, required: true, index: true },
+    dropoffDate: { type: Date, required: true },
 
-    dropoffDate: {
-      type: Date,
-      required: true,
-    },
+    stripeSessionId: { type: String, default: null, index: true },
 
-    stripeSessionId: {
-      type: String,
-      default: null,
-      index: true,
-    },
-
-    // ✅ prevents duplicate emails on Stripe retries / admin re-clicks
     notificationFlags: {
-      paymentReceivedNotifiedUser: { type: Boolean, default: false },
-      paymentReceivedNotifiedAdmin: { type: Boolean, default: false },
       bookingConfirmedNotifiedUser: { type: Boolean, default: false },
       enrouteNotifiedUser: { type: Boolean, default: false },
     },
@@ -133,47 +92,4 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-/** ✅ Guard against invalid free bookings */
-bookingSchema.pre("save", function (next) {
-  const isFree =
-    this.totalPrice === 0 ||
-    this.paymentStatus === "paid" && this.totalPrice == null;
-
-  // If NOT free → no restriction
-  if (!isFree) return next();
-
-  // If free → must have reason
-  if (!this.freeReason) {
-    return next(
-      new Error("Free bookings must have freeReason='reward' or 'admin'")
-    );
-  }
-
-  // If reward-based free booking must have reward
-  if (this.freeReason === "reward" && !this.reward) {
-    return next(
-      new Error("Reward-based free booking must include reward reference")
-    );
-  }
-
-  // admin free is always allowed
-  if (this.freeReason === "admin") return next();
-
-  return next(
-    new Error("Invalid freeReason value")
-  );
-});
-/**
- * 🔒 CRITICAL: Overlap-Protection Index (ANTI-DOUBLE-BOOKING)
- * Prevents concurrent pending/confirmed/enroute bookings for the same car
- */
-bookingSchema.index(
-  { car: 1, pickupDate: 1, dropoffDate: 1, status: 1 },
-  {
-    partialFilterExpression: {
-      status: { $in: ["pending", "confirmed", "enroute"] },
-    },
-  }
-);
-
-export default mongoose.models.Booking || mongoose.model("Booking", bookingSchema);
+export default mongoose.model("Booking", bookingSchema);

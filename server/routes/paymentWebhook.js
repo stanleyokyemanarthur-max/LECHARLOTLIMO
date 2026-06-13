@@ -82,21 +82,31 @@ router.post("/", async (req, res) => {
       }
 
       if (booking.status === "expired") {
-  console.warn(
-    `⚠️ Payment received for expired booking ${booking._id}`
-  );
+        console.warn(
+          `⚠️ Payment received for expired booking ${booking._id}`
+        );
 
-  return res.json({ received: true });
-}
+        return res.json({ received: true });
+      }
 
       // ========================
       // 1. UPDATE DB FIRST (ATOMIC STATE)
       // ========================
       booking.paymentStatus = "paid";
       booking.status = "confirmed";
+      booking.isPaid = true;
 
+      if (!booking.totalPrice || booking.totalPrice <= 0) {
+        console.error("❌ Invalid booking price at webhook:", booking._id);
+
+        return res.status(400).json({
+          error: "Booking has invalid pricing. Cannot confirm payment.",
+        });
+      }
+
+      // update reward FIRST (safe)
       if (booking.reward?._id) {
-        const updatedReward = await Reward.findOneAndUpdate(
+        await Reward.findOneAndUpdate(
           {
             _id: booking.reward._id,
             status: { $ne: "USED" },
@@ -107,17 +117,12 @@ router.post("/", async (req, res) => {
             lockedAt: null,
             booking: booking._id,
             isSlotFull: false,
-          },
-          { new: true }
+          }
         );
-
-        if (!updatedReward) {
-          console.warn("⚠️ Reward already used or missing");
-        }
       }
 
+      // THEN save booking
       await booking.save();
-
       // ========================
       // 2. SIDE EFFECTS (SAFE AFTER SAVE)
       // ========================

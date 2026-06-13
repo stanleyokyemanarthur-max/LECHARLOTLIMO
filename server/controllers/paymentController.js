@@ -24,57 +24,50 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
  * 💳 Create Stripe Checkout Session
  */
 export const createCheckoutSession = async (req, res) => {
-  const session = await mongoose.startSession();
+  const mongoSession = await mongoose.startSession();
 
   try {
     const { bookingId } = req.body;
 
     if (!bookingId) {
-      return res.status(400).json({ message: "BookingId required" });
+      return res.status(400).json({ error: "BookingId required" });
     }
 
     let booking;
 
-    // 1. Fetch booking safely inside session
-    await session.withTransaction(async () => {
-      booking = await Booking.findById(bookingId).session(session);
+    // 1. Fetch booking safely
+    await mongoSession.withTransaction(async () => {
+      booking = await Booking.findById(bookingId)
+        .populate("car")
+        .session(mongoSession);
 
-      if (!booking) {
-        throw new Error("Booking not found");
-      }
+      if (!booking) throw new Error("Booking not found");
 
-      // Prevent duplicate payment sessions (idempotency guard)
       if (booking.paymentStatus === "paid") {
         throw new Error("Booking already paid");
       }
 
-      // If session already exists, we reuse it (prevents duplicates)
-      if (booking.stripeSessionId) {
-        return;
-      }
+      // prevent duplicate sessions
+      if (booking.stripeSessionId) return;
 
       booking.paymentStatus = "awaiting_payment";
-      await booking.save({ session });
+      await booking.save({ session: mongoSession });
     });
 
-    // 2. Always use ONE consistent amount field
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    // 2. FINAL SAFETY: MUST already be priced
     let amount = booking.totalPrice;
 
-if (!amount || amount <= 0) {
-  const estimate = await calculateTripEstimate({
-    pickup: booking.pickupLocation,
-    dropoff: booking.dropoffLocation,
-    carRatePerMile: booking.carSnapshot.pricePerMile,
-    car: booking.carSnapshot,
-  });
+    if (!amount || amount <= 0) {
+      return res.status(400).json({
+        error: "Booking is not priced. Run finalizeQuote first.",
+      });
+    }
 
-  amount = estimate.estimatedPrice;
-
-  booking.totalPrice = amount;
-  await booking.save();
-}
-
-    // 3. Create Stripe session OUTSIDE transaction (critical fix)
+    // 3. Stripe session (NO DB inside here)
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
@@ -84,7 +77,7 @@ if (!amount || amount <= 0) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: `Car Booking - ${booking.carSnapshot?.name || "Luxury Ride"}`,
+              name: `Booking - ${booking.carSnapshot?.name || "Luxury Ride"}`,
               description: `${booking.pickupLocation} → ${booking.dropoffLocation}`,
             },
             unit_amount: Math.round(amount * 100),
@@ -101,7 +94,7 @@ if (!amount || amount <= 0) {
       },
     });
 
-    // 4. Save Stripe session ID AFTER creation
+    // 4. Save session ID (separate safe write)
     booking.stripeSessionId = stripeSession.id;
     await booking.save();
 
@@ -111,14 +104,13 @@ if (!amount || amount <= 0) {
     });
 
   } catch (err) {
-    console.error("❌ createCheckoutSession error:", err);
-
+    console.error("❌ Stripe session error:", err);
     return res.status(500).json({
-      message: err.message || "Failed to create Stripe session",
+      error: err.message || "Failed to create Stripe session",
     });
 
   } finally {
-    session.endSession();
+    mongoSession.endSession();
   }
 };
 

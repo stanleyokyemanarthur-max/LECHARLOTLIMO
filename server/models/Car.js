@@ -3,35 +3,36 @@ import mongoose from "mongoose";
 
 const carSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true }, // e.g. "Mercedes-Benz Sprinter"
-    type: { type: String, required: true }, // e.g. "Luxury Van" or "SUV"
+    name: { type: String, required: true },
+    type: { type: String, required: true },
 
     seats: { type: Number, required: true },
-    transmission: { type: String, required: true }, // "Automatic" or "Manual"
-    fuel: { type: String, required: true }, // "Diesel", "Petrol", etc.
-    speed: { type: String }, // optional (e.g. "120 mph")
+    transmission: { type: String, required: true },
+    fuel: { type: String, required: true },
+    speed: { type: String },
+
+    // 🔥 KEEP ORIGINAL FIELD (source of truth)
     perMileRate: { type: Number, required: true, default: 5 },
+
     rateMultiplier: {
       type: Number,
       default: 1.0,
     },
-    
-    totalUnits: {
-  type: Number,
-  default: 1,
-  min: 1,
-},
- fleetKey: {
-    type: String,
-    index: true,
-    required: true,
-    // example: "escalade", "sprinter", "suv-premium"
-  },
 
-    // ✅ Optional description field
+    totalUnits: {
+      type: Number,
+      default: 1,
+      min: 1,
+    },
+
+    fleetKey: {
+      type: String,
+      index: true,
+      required: true,
+    },
+
     description: { type: String, default: "" },
 
-    // ✅ Cloudinary URL
     image: { type: String, required: true },
 
     status: {
@@ -42,5 +43,24 @@ const carSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+
+
+// 🔥 IMPORTANT: normalize output for frontend/backend consistency
+carSchema.set("toJSON", {
+  virtuals: true,
+  transform: function (doc, ret) {
+    ret.pricePerMile = ret.perMileRate; // 👈 critical fix
+    return ret;
+  },
+});
+
+carSchema.set("toObject", {
+  virtuals: true,
+  transform: function (doc, ret) {
+    ret.pricePerMile = ret.perMileRate;
+    return ret;
+  },
+});
 
 export default mongoose.model("Car", carSchema);
