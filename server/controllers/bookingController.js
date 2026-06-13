@@ -94,6 +94,22 @@ export const createBooking = async (req, res) => {
       if (overlap >= carData.totalUnits) {
         throw new Error("CAR_UNAVAILABLE");
       }
+      const perMileRate = Number(carData.perMileRate);
+
+      if (!Number.isFinite(perMileRate) || perMileRate <= 0) {
+        return res.status(400).json({
+          error: "INVALID_CAR_PRICING",
+          message: "Car must have a valid perMileRate > 0",
+        });
+      }
+
+      const distance = Number(estimate?.distanceMiles);
+
+      if (!Number.isFinite(distance) || distance <= 0) {
+        return res.status(400).json({
+          error: "INVALID_DISTANCE_ESTIMATE",
+        });
+      }
 
       const [booking] = await Booking.create(
         [
@@ -106,7 +122,7 @@ export const createBooking = async (req, res) => {
             carSnapshot: {
               name: carData.name,
               type: carData.type || "",
-              pricePerMile: Number(carData.perMileRate) || 0,
+              pricePerMile: perMileRate, // ✅ guaranteed valid
               rateMultiplier: Number(carData.rateMultiplier) || 1,
               totalUnits: Number(carData.totalUnits) || 1,
               fleetKey: carData.fleetKey || null,
@@ -643,6 +659,10 @@ export const finalizeBookingQuote = async (req, res) => {
         error: "Missing pricing base data",
       });
     }
+    console.log("BOOKING DEBUG:", {
+      distance: booking.distance,
+      carSnapshot: booking.carSnapshot,
+    });
 
     console.log("BOOKING SNAPSHOT:", {
       distance: booking.distance,
