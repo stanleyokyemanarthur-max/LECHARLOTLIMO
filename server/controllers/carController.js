@@ -92,7 +92,19 @@ export const deleteCar = async (req, res) => {
 
 
 export const getFleetAvailability = async (req, res) => {
+    console.log("=== AVAILABILITY HIT ===");
+  console.log(req.query);
+
   try {
+    console.log("STEP 1");
+
+    // first await
+
+    console.log("STEP 2");
+
+    // second await
+
+    console.log("STEP 3");
     const { from, to } = req.query;
 
     if (!from || !to) {
@@ -108,11 +120,11 @@ export const getFleetAvailability = async (req, res) => {
     const cars = await Car.find().lean();
 
     // 2. Get overlapping bookings
-    const bookings = await Booking.find({
-      status: { $in: activeStatuses },
-      pickupDate: { $lt: end },
-      dropoffDate: { $gt: start },
-    }).lean();
+   const bookings = await Booking.find({
+  status: { $in: activeStatuses },
+  pickupDate: { $exists: true, $ne: null, $lt: end },
+  dropoffDate: { $exists: true, $ne: null, $gt: start },
+}).lean();
 
     // 3. Build fleet usage map (KEY FIX)
     const fleetMap = new Map();

@@ -27,8 +27,7 @@ export const createBooking = async (req, res) => {
       rewardId,
     } = req.body;
 
-    // 1. VALIDATION
-    if (!car || !pickupLocation || !dropoffLocation || !pickupDate || !dropoffDate) {
+    if (!car || !pickupLocation || !dropoffLocation || !pickupDate) {
       return res.status(400).json({ error: "All booking fields are required." });
     }
 
@@ -37,19 +36,14 @@ export const createBooking = async (req, res) => {
     }
 
     const start = new Date(pickupDate);
-    const end = new Date(dropoffDate);
+    const end = dropoffDate ? new Date(dropoffDate) : null;
 
-    if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start >= end) {
-      return res.status(400).json({ error: "Invalid booking dates." });
-    }
-
-    // 2. CHECK DUPLICATE
+    // ✅ FIXED duplicate check
     const existingPending = await Booking.findOne({
       user: req.user._id,
       car,
-      pickupDate: start,
-      dropoffDate: end,
       status: "pending",
+      pickupDate: start,
     });
 
     if (existingPending) {
@@ -59,13 +53,13 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // 3. FETCH CAR (outside transaction)
     const carData = await Car.findById(car);
-
     if (!carData) return res.status(404).json({ error: "CAR_NOT_FOUND" });
-    if (!carData.fleetKey) return res.status(400).json({ error: "Missing fleetKey" });
 
-    // 4. PRICE ENGINE (OUTSIDE TX — IMPORTANT FIX)
+    if (!carData.fleetKey) {
+      return res.status(400).json({ error: "Missing fleetKey" });
+    }
+
     const estimate = await calculateTripEstimate({
       pickup: pickupLocation,
       dropoff: dropoffLocation,
@@ -79,81 +73,69 @@ export const createBooking = async (req, res) => {
 
     let createdBooking;
 
-    // 5. TRANSACTION START
     await session.withTransaction(async () => {
       const activeStatuses = ["pending", "confirmed", "enroute"];
 
-      // IMPORTANT: re-check availability inside transaction
+      // ✅ FIXED overlap query
       const overlap = await Booking.countDocuments({
         car,
         status: { $in: activeStatuses },
-        pickupDate: { $lt: end },
+        pickupDate: { $lt: end || start },
         dropoffDate: { $gt: start },
       }).session(session);
 
       if (overlap >= carData.totalUnits) {
         throw new Error("CAR_UNAVAILABLE");
       }
-      const perMileRate = Number(carData.perMileRate);
 
-      if (!Number.isFinite(perMileRate) || perMileRate <= 0) {
-        return res.status(400).json({
-          error: "INVALID_CAR_PRICING",
-          message: "Car must have a valid perMileRate > 0",
-        });
+      const rate = Number(carData.perMileRate);
+      const multiplier = Number(carData.rateMultiplier || 1);
+      const distance = Number(estimate.distanceMiles);
+
+      if (!Number.isFinite(rate) || rate <= 0) {
+        throw new Error("INVALID_CAR_PRICING");
       }
-
-      const distance = Number(estimate?.distanceMiles);
 
       if (!Number.isFinite(distance) || distance <= 0) {
-        return res.status(400).json({
-          error: "INVALID_DISTANCE_ESTIMATE",
-        });
+        throw new Error("INVALID_DISTANCE");
       }
-const pricePerMile = Number(carData.perMileRate);
-const rateMultiplier = Number(carData.rateMultiplier || 1);
 
-if (!Number.isFinite(pricePerMile) || pricePerMile <= 0) {
-  throw new Error("INVALID_CAR_PRICE");
-}
+      const [booking] = await Booking.create(
+        [
+          {
+            user: req.user._id,
+            car,
+            fleetKey: carData.fleetKey,
+            driver: null,
 
+            carSnapshot: {
+              name: carData.name,
+              type: carData.type,
+              pricePerMile: rate,
+              rateMultiplier: multiplier,
+              totalUnits: carData.totalUnits,
+              fleetKey: carData.fleetKey,
+            },
 
-    const [booking] = await Booking.create(
-  [
-    {
-      user: req.user._id,
-      car,
-      fleetKey: carData.fleetKey,
-      driver: null,
+            pickupLocation,
+            dropoffLocation,
+            pickupDate: start,
+            dropoffDate: end,
 
-      carSnapshot: {
-        name: carData.name,
-        type: carData.type,
-        pricePerMile: Number(carData.perMileRate),
-        rateMultiplier: Number(carData.rateMultiplier || 1),
-        totalUnits: Number(carData.totalUnits || 1),
-        fleetKey: carData.fleetKey,
-      },
+            distance: estimate.distanceMiles,
 
-      pickupLocation,
-      dropoffLocation,
-      pickupDate: start,
-      dropoffDate: end,
+            totalPrice: null,
+            pricingLocked: false,
 
-      distance: estimate.distanceMiles,
+            isPaid: false,
+            reward: rewardId || null,
 
-      totalPrice: null, // ✅ IMPORTANT
-      pricingLocked: false,
-
-      isPaid: false,
-      reward: rewardId || null,
-
-      status: "pending",
-      paymentStatus: "awaiting_quote",
-    },
-  ],
-  { session }
-);
+            status: "pending",
+            paymentStatus: "awaiting_quote",
+          },
+        ],
+        { session }
+      );
 
       createdBooking = booking;
     });
@@ -162,12 +144,16 @@ if (!Number.isFinite(pricePerMile) || pricePerMile <= 0) {
       message: "Booking created successfully",
       booking: createdBooking,
     });
+
   } catch (err) {
     console.error(err);
 
     return res.status(
-      err.message === "CAR_UNAVAILABLE" ? 409 :
-        err.message === "CAR_NOT_FOUND" ? 404 : 500
+      err.message === "CAR_UNAVAILABLE"
+        ? 409
+        : err.message === "CAR_NOT_FOUND"
+        ? 404
+        : 500
     ).json({ error: err.message });
 
   } finally {
@@ -175,11 +161,6 @@ if (!Number.isFinite(pricePerMile) || pricePerMile <= 0) {
   }
 };
 
-/* 
-==============================================
- 📊 ESTIMATE BOOKING COST (for frontend)
-==============================================
-*/
 export const estimateBooking = async (req, res) => {
   try {
     const { pickup, dropoff, carId, distance } = req.body;
@@ -218,11 +199,6 @@ export const estimateBooking = async (req, res) => {
 };
 
 
-/* 
-=============================
- 🚗 DRIVER: MY BOOKINGS ONLY (FIXED)
-=============================
-*/
 export const getDriverBookings = async (req, res) => {
   try {
     // ✅ Security: driver sees only assigned bookings
@@ -233,11 +209,6 @@ export const getDriverBookings = async (req, res) => {
   }
 };
 
-/* 
-=============================
- 👤 USER BOOKINGS
-=============================
-*/
 export const getUserBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ user: req.user._id }).populate("car");
@@ -247,11 +218,6 @@ export const getUserBookings = async (req, res) => {
   }
 };
 
-/* 
-=============================
- 🛠️ ADMIN: ALL BOOKINGS
-=============================
-*/
 export const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find().populate("user car").populate("driver", "name email");
@@ -308,7 +274,6 @@ export const getAllBookings = async (req, res) => {
 //   }
 // };
 
-// ✅ ADMIN: assign a driver to a booking
 
 export const assignDriver = async (req, res) => {
   const session = await mongoose.startSession();
@@ -366,11 +331,7 @@ export const assignDriver = async (req, res) => {
   }
 };
 
-/* 
-=============================
- 🔄 UPDATE BOOKING STATUS (ADMIN)
-=============================
-*/
+
 export const updateBookingStatus = async (req, res) => {
   const session = await mongoose.startSession();
 
@@ -588,12 +549,6 @@ export const updateBookingStatus = async (req, res) => {
   }
 };
 
-
-/* 
-=============================
- ❌ CANCEL BOOKING (USER)
-=============================
-*/
 export const cancelBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -661,7 +616,7 @@ export const finalizeBookingQuote = async (req, res) => {
     const multiplier = Number(booking.carSnapshot?.rateMultiplier || 1);
 
     if (!Number.isFinite(distance) || distance <= 0 ||
-        !Number.isFinite(pricePerMile) || pricePerMile <= 0) {
+      !Number.isFinite(pricePerMile) || pricePerMile <= 0) {
       return res.status(400).json({ error: "Invalid pricing data" });
     }
 

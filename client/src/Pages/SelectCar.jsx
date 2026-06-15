@@ -32,6 +32,7 @@ export default function SelectCar() {
   useEffect(() => {
     if (!tripData) navigate("/reserve");
   }, [tripData, navigate]);
+  console.log("TRIP DATA:", tripData);
 
   // reset UI on trip change
   useEffect(() => {
@@ -47,6 +48,10 @@ export default function SelectCar() {
     const fetchCars = async () => {
       try {
         setLoading(true);
+        console.log("AVAILABILITY REQUEST", {
+          from: tripData.pickupDate,
+          to: tripData.dropoffDate,
+        });
 
         const res = await axios.get(
           "http://localhost:5000/api/fleet/availability",
@@ -57,6 +62,8 @@ export default function SelectCar() {
             },
           }
         );
+        console.log("AVAILABILITY RESPONSE", res.data);
+        console.log("FETCH CARS EFFECT RUNNING");
 
         setCars(res.data);
       } catch (err) {
@@ -105,6 +112,7 @@ export default function SelectCar() {
       setLoadingCarId(null);
     }
   };
+
 
   const proceedToBooking = (car, estimate) => {
     dispatch(setSelectedCar(car));

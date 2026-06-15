@@ -19,16 +19,16 @@ const bookingSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Car",
       required: true,
+      index: true,
     },
 
-    // 🔒 LOCKED PRICE SNAPSHOT (CRITICAL)
     carSnapshot: {
       name: String,
       type: String,
       pricePerMile: { type: Number, required: true },
       rateMultiplier: { type: Number, default: 1 },
       totalUnits: { type: Number, default: 1 },
-      fleetKey: { type: String, required: true },
+      fleetKey: { type: String, required: true, index: true },
     },
 
     pickupLocation: { type: String, required: true },
@@ -58,7 +58,11 @@ const bookingSchema = new mongoose.Schema(
 
     isPaid: { type: Boolean, default: false },
 
-    fleetKey: { type: String, required: true, index: true },
+    fleetKey: {
+      type: String,
+      required: true,
+      index: true,
+    },
 
     freeReason: {
       type: String,
@@ -79,10 +83,23 @@ const bookingSchema = new mongoose.Schema(
       index: true,
     },
 
-    pickupDate: { type: Date, required: true, index: true },
-    dropoffDate: { type: Date, required: true },
+    pickupDate: {
+      type: Date,
+      required: true,
+      index: true,
+    },
 
-    stripeSessionId: { type: String, default: null, index: true },
+    dropoffDate: {
+      type: Date,
+      required: true, // 🔥 FIX: do NOT allow null (important for availability queries)
+      index: true,
+    },
+
+    stripeSessionId: {
+      type: String,
+      default: null,
+      index: true,
+    },
 
     notificationFlags: {
       bookingConfirmedNotifiedUser: { type: Boolean, default: false },
@@ -91,5 +108,16 @@ const bookingSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+/**
+ * 🔥 CRITICAL PERFORMANCE INDEX (THIS FIXES YOUR HANGING ISSUE)
+ * Helps availability queries:
+ * status + pickupDate + dropoffDate
+ */
+bookingSchema.index({
+  status: 1,
+  pickupDate: 1,
+  dropoffDate: 1,
+});
 
 export default mongoose.model("Booking", bookingSchema);

@@ -1,4 +1,4 @@
-import axios from "axios";
+ import axios from "axios";
 import { getDistanceInMiles } from "../utils/getDistance.js";
 
 const BASE_MIN_FARE = 20;
@@ -11,7 +11,7 @@ export const calculateTripEstimate = async ({
   dropoff,
   carRatePerMile,
   car,
-  fixedDistance, // optional pre-calculated distance (for better performance)
+  fixedDistance,
 }) => {
   let distanceMiles = 0;
   let durationText = "";
@@ -29,57 +29,37 @@ export const calculateTripEstimate = async ({
           key: process.env.GOOGLE_MAPS_API_KEY,
           units: "imperial",
           mode: "driving",
-          departure_time: "now", // 🚨 required for traffic data
+          departure_time: "now",
           traffic_model: "best_guess",
         },
         timeout: 5000,
       }
     );
-    console.log("Google Distance Matrix Response:");
-    console.log(JSON.stringify(response.data, null, 2));
+
     const element = response.data?.rows?.[0]?.elements?.[0];
-    console.log(JSON.stringify(element, null, 2));
 
     if (element?.status === "OK") {
-      // ======================
-      // Distance
-      // ======================
-      if (fixedDistance) {
-        distanceMiles = Number(fixedDistance);
-      } else {
-        const distanceText = element.distance?.text || "0 mi";
-        distanceMiles =
-          parseFloat(distanceText.replace(/[^0-9.]/g, "")) || 0;
-      }
+      distanceMiles = fixedDistance
+        ? Number(fixedDistance)
+        : parseFloat((element.distance?.text || "0").replace(/[^0-9.]/g, "")) || 0;
 
-      // ======================
-      // Duration (normal)
-      // ======================
-      durationText = element.duration?.text || "";
       durationMinutes = element.duration?.value
         ? Math.round(element.duration.value / 60)
         : 0;
 
-      // ======================
-      // Duration (traffic)
-      // ======================
-      trafficDurationText =
-        element.duration_in_traffic?.text || durationText;
-
-
       trafficMinutes = element.duration_in_traffic?.value
         ? Math.round(element.duration_in_traffic.value / 60)
         : durationMinutes;
+
+      durationText = element.duration?.text || "";
+      trafficDurationText = element.duration_in_traffic?.text || durationText;
     } else {
       throw new Error("GOOGLE_DISTANCE_FAILED");
     }
+
   } catch (err) {
-    // ======================
-    // FALLBACK (no Google reliance)
-    // ======================
     distanceMiles = await getDistanceInMiles(pickup, dropoff);
 
-    // rough fallback assumption: 35 mph average
     durationMinutes = Math.round((distanceMiles / 35) * 60);
     trafficMinutes = durationMinutes;
 
@@ -87,72 +67,34 @@ export const calculateTripEstimate = async ({
     trafficDurationText = `${trafficMinutes} mins`;
   }
 
-  // ======================
-  // PRICING ENGINE (BASE SAFE VERSION)
-  // ======================
-
-  const multiplier = Number(car?.rateMultiplier);
-
-  const safeMultiplier = Number.isFinite(multiplier) && multiplier > 0
-    ? multiplier
-    : 1;
-
-  const distance = Number(distanceMiles);
-
+  const multiplier = Number(car?.rateMultiplier || 1);
   const rate = Number(carRatePerMile);
 
-  const safeRate =
-    Number.isFinite(rate) && rate > 0
-      ? rate
-      : null;
-
-  if (!Number.isFinite(distance) || safeRate === null) {
-    console.error("❌ BAD INPUTS:", {
-      distanceMiles,
-      carRatePerMile,
-      car,
-    });
-
+  if (!Number.isFinite(distanceMiles) || !Number.isFinite(rate) || rate <= 0) {
     throw new Error("Invalid pricing inputs");
-  } 
-  // BASE PRICE
-  const basePrice = Math.max(
-    distance * rate * safeMultiplier,
-    BASE_MIN_FARE
-  );
+  }
 
-  // TRAFFIC MULTIPLIER
+  const basePrice = Math.max(distanceMiles * rate * multiplier, 20);
+
   const trafficMultiplier =
-    durationMinutes > 0 &&
-      trafficMinutes > durationMinutes
-      ? 1 +
-      ((trafficMinutes - durationMinutes) / durationMinutes) * 0.25
+    trafficMinutes > durationMinutes
+      ? 1 + ((trafficMinutes - durationMinutes) / durationMinutes) * 0.25
       : 1;
 
-  // FINAL PRICE
-  const estimatedPrice = Number(
-    (basePrice * trafficMultiplier).toFixed(2)
-  );
+  const estimatedPrice = Number((basePrice * trafficMultiplier).toFixed(2));
 
-  // TRAFFIC %
   const trafficDelayPercent =
     durationMinutes > 0
-      ? Math.round(
-        ((trafficMinutes - durationMinutes) / durationMinutes) * 100
-      )
+      ? Math.round(((trafficMinutes - durationMinutes) / durationMinutes) * 100)
       : 0;
 
-  // FINAL RETURN (ONLY ONCE)
   return {
-    distanceMiles: Number(distance.toFixed(2)),
-
+    distanceMiles: Number(distanceMiles.toFixed(2)),
     durationText,
     trafficDurationText,
-    trafficDelayPercent,
-
     durationMinutes,
     trafficMinutes,
-
+    trafficDelayPercent,
     basePrice: Number(basePrice.toFixed(2)),
     estimatedPrice,
   };

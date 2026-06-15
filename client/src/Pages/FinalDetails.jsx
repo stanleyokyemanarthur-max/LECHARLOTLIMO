@@ -24,85 +24,98 @@ function FinalDetails() {
   const estimatedTotal = estimate?.estimatedPrice ?? 0;
 
   // 🔹 Save booking & redirect to Stripe checkout
- const handleBookingConfirm = async (guestInfo = null) => {
-  try {
-    setLoading(true);
+  const handleBookingConfirm = async (guestInfo = null) => {
+    try {
+      setLoading(true);
 
-    if (!rideInfo.pickupLocation || !rideInfo.dropoffLocation || rideInfo.distance == null) {
-      alert("Incomplete ride information.");
-      return;
+      if (!rideInfo.pickupLocation || !rideInfo.dropoffLocation || rideInfo.distance == null) {
+        alert("Incomplete ride information.");
+        return;
+      }
+
+      if (!selectedCar?._id) {
+        alert("No car selected.");
+        return;
+      }
+
+      // 1. Create booking (NO price sent)
+      const bookingPayload = {
+        user: user?._id || undefined,
+        guest: guestInfo || undefined,
+        car: selectedCar._id,
+        carSnapshot: {
+          name: selectedCar.name,
+          type: selectedCar.type || "",
+          pricePerMile: Number(selectedCar.perMileRate) || 0,
+          rateMultiplier: Number(selectedCar.rateMultiplier) || 1,
+          totalUnits: Number(selectedCar.totalUnits) || 1,
+          fleetKey: selectedCar.fleetKey || null,
+        },
+        pickupLocation: rideInfo.pickupLocation,
+        dropoffLocation: rideInfo.dropoffLocation,
+        pickupDate: rideInfo.pickupDate
+          ? new Date(rideInfo.pickupDate).toISOString()
+          : null,
+        dropoffDate: rideInfo.dropoffDate
+          ? new Date(rideInfo.dropoffDate).toISOString()
+          : null,
+        passengers: rideInfo.passengers || 1,
+        luggage: rideInfo.luggage || 0,
+        distance: Number(rideInfo.distance || 0),
+        status: "pending",
+      };
+
+      const headers = user?.token
+        ? { Authorization: `Bearer ${user.token}` }
+        : {};
+
+      const bookingRes = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/bookings`,
+        bookingPayload,
+        { headers }
+      );
+
+      console.log("✅ BOOKING CREATED");
+      console.log(bookingRes.data);
+
+      const booking = bookingRes.data.booking;
+
+      // 2. FORCE backend pricing finalization (IMPORTANT)
+      const quoteRes = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
+        { bookingId: booking._id },
+        { headers }
+      );
+
+      console.log("✅ QUOTE FINALIZED");
+      console.log(quoteRes.data);
+
+      // 3. Create Stripe session (backend uses DB price)
+      const stripeRes = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
+        { bookingId: booking._id },
+        { headers }
+      );
+
+      window.location.href = stripeRes.data.url;
+    } catch (err) {
+      console.error("STATUS:", err.response?.status);
+
+      console.error("RESPONSE DATA:");
+      console.log(err.response?.data);
+
+      console.error("FULL ERROR:");
+      console.log(err);
+
+      alert(
+        JSON.stringify(err.response?.data, null, 2) ||
+        err.message ||
+        "Booking failed"
+      );
+    } finally {
+      setLoading(false);
     }
-
-    if (!selectedCar?._id) {
-      alert("No car selected.");
-      return;
-    }
-
-    // 1. Create booking (NO price sent)
-    const bookingPayload = {
-      user: user?._id || undefined,
-      guest: guestInfo || undefined,
-      car: selectedCar._id,
-      carSnapshot: {
-        name: selectedCar.name,
-        type: selectedCar.type || "",
-        pricePerMile: Number(selectedCar.perMileRate) || 0,
-        rateMultiplier: Number(selectedCar.rateMultiplier) || 1,
-        totalUnits: Number(selectedCar.totalUnits) || 1,
-        fleetKey: selectedCar.fleetKey || null,
-      },
-      pickupLocation: rideInfo.pickupLocation,
-      dropoffLocation: rideInfo.dropoffLocation,
-      pickupDate: rideInfo.pickupDate
-        ? new Date(rideInfo.pickupDate).toISOString()
-        : null,
-      dropoffDate: rideInfo.dropoffDate
-        ? new Date(rideInfo.dropoffDate).toISOString()
-        : null,
-      passengers: rideInfo.passengers || 1,
-      luggage: rideInfo.luggage || 0,
-      distance: Number(rideInfo.distance || 0),
-      status: "pending",
-    };
-
-    const headers = user?.token
-      ? { Authorization: `Bearer ${user.token}` }
-      : {};
-
-    const bookingRes = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/bookings`,
-      bookingPayload,
-      { headers }
-    );
-
-    const booking = bookingRes.data.booking;
-
-    // 2. FORCE backend pricing finalization (IMPORTANT)
-    await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
-      { bookingId: booking._id },
-      { headers }
-    );
-
-    // 3. Create Stripe session (backend uses DB price)
-    const stripeRes = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
-      { bookingId: booking._id },
-      { headers }
-    );
-
-    window.location.href = stripeRes.data.url;
-  } catch (err) {
-    console.error(err);
-    alert(
-      err?.response?.data?.error ||
-      err?.message ||
-      "Booking failed"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleGuestSubmit = (e) => {
     e.preventDefault();

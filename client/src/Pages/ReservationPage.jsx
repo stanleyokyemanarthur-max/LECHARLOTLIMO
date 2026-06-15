@@ -29,7 +29,6 @@ export default function ReservationPage() {
     pickupLocation: "",
     dropoffLocation: "",
     pickupDate: null,
-    dropoffDate: null,
     passengers: "",
     luggage: "",
 
@@ -50,6 +49,27 @@ export default function ReservationPage() {
 
   const pickupRef = useRef(null);
   const dropoffRef = useRef(null);
+
+  const computedDropoff = useMemo(() => {
+    if (!tripData.pickupDate) return null;
+
+    const tripMinutes =
+      tripData.trafficMinutes ||
+      tripData.durationMinutes;
+
+    if (!tripMinutes) return null;
+
+    const BUFFER_MINUTES = 15;
+
+    return new Date(
+      new Date(tripData.pickupDate).getTime() +
+      (tripMinutes + BUFFER_MINUTES) * 60000
+    );
+  }, [
+    tripData.pickupDate,
+    tripData.trafficMinutes,
+    tripData.durationMinutes,
+  ]);
 
   // const minPickupDate = useMemo(() => new Date(Date.now() + 2 * 60 * 60 * 1000), []);
 
@@ -72,7 +92,11 @@ export default function ReservationPage() {
     const options = { types: ["geocode"], componentRestrictions: { country: "us" } };
 
     const pickupAutocomplete = new window.google.maps.places.Autocomplete(pickupRef.current, options);
-    const dropoffAutocomplete = new window.google.maps.places.Autocomplete(dropoffRef.current, options);
+    const dropoffAutocomplete =
+      new window.google.maps.places.Autocomplete(
+        dropoffRef.current,
+        options
+      );
 
     pickupAutocomplete.addListener("place_changed", () => {
       const place = pickupAutocomplete.getPlace();
@@ -138,20 +162,21 @@ export default function ReservationPage() {
 
               setDirectionsResult(result);
 
-              setTripDataState((prev) => ({
-                ...prev,
+              setTripDataState((prev) => {
+                return {
+                  ...prev,
 
-                distance: distanceMiles,
+                  distance: distanceMiles,
 
-                durationMinutes,
-                durationText,
+                  durationMinutes,
+                  durationText,
 
-                // fallback until backend computes traffic
-                trafficMinutes: durationMinutes,
-                trafficDurationText: durationText,
+                  trafficMinutes: durationMinutes,
+                  trafficDurationText: durationText,
 
-                trafficDelayPercent: 0,
-              }));
+                  trafficDelayPercent: 0,
+                };
+              });
             } else {
               setDirectionsResult(null);
               setError("Could not draw route. Please check the locations.");
@@ -195,10 +220,10 @@ export default function ReservationPage() {
     const payload = {
       ...tripData,
       pickupDate: tripData.pickupDate ? tripData.pickupDate.toISOString() : null,
-      dropoffDate: tripData.dropoffDate ? tripData.dropoffDate.toISOString() : null,
+      dropoffDate: computedDropoff ? computedDropoff.toISOString() : null,
       distance: tripData.distance ? Number(tripData.distance.toFixed(2)) : null,
     };
-
+console.log("PAYLOAD BEFORE DISPATCH", payload);
     dispatch(setTripData(payload));
     navigate("/select-car");
   };
@@ -272,9 +297,24 @@ export default function ReservationPage() {
                     }}
                   />
                 </div>
+                {computedDropoff && (
+                  <div className="mt-3 p-3 rounded-lg border border-[#D4AF37] bg-black/20">
+                    <p className="text-[#D4AF37] text-sm font-semibold">
+                      Estimated Arrival Time
+                    </p>
 
-                <div>
-                  {/* <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">Drop-off Date & Time</label> */}
+                    <p className="text-white">
+                      {dayjs(computedDropoff).format("MMMM D, YYYY h:mm A")}
+                    </p>
+
+                    <p className="text-gray-400 text-sm mt-1">
+                      Duration: {tripData.durationText}
+                    </p>
+                  </div>
+                )}
+
+                {/* <div>
+              
                   <DateTimePicker
                     label="Drop-off Date & Time"
                     value={tripData.dropoffDate ? dayjs(tripData.dropoffDate) : null}
@@ -305,7 +345,7 @@ export default function ReservationPage() {
                       },
                     }}
                   />
-                </div>
+                </div> */}
               </div>
 
               {/* Passengers / Luggage */}
