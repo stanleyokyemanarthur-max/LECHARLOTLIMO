@@ -131,7 +131,7 @@ export const createBooking = async (req, res) => {
             reward: rewardId || null,
 
             status: "pending",
-            paymentStatus: "awaiting_quote",
+            paymentStatus: "awaiting_payment",
           },
         ],
         { session }
