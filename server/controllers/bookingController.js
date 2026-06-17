@@ -100,7 +100,11 @@ export const createBooking = async (req, res) => {
         throw new Error("INVALID_DISTANCE");
       }
 
+      console.log("BOOKING MODEL CHECK");
+console.log(JSON.stringify(Booking.schema.obj.carSnapshot, null, 2));
+
       const [booking] = await Booking.create(
+        
         [
           {
             user: req.user._id,
@@ -135,8 +139,10 @@ export const createBooking = async (req, res) => {
           },
         ],
         { session }
+        
       );
-
+console.log("=== CREATE BOOKING REACHED ===");
+console.log("carSnapshot schema:", Booking.schema.obj.carSnapshot);
       createdBooking = booking;
     });
 
