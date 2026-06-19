@@ -101,10 +101,25 @@ export const createBooking = async (req, res) => {
       }
 
       console.log("BOOKING MODEL CHECK");
-console.log(JSON.stringify(Booking.schema.obj.carSnapshot, null, 2));
+      console.log(JSON.stringify(Booking.schema.obj.carSnapshot, null, 2));
+
+      console.log("====== COMPILED SCHEMA ======");
+      console.log(
+        "carSnapshot instance:",
+        Booking.schema.path("carSnapshot")?.instance
+      );
+
+      console.log(
+        "carSnapshot.name instance:",
+        Booking.schema.path("carSnapshot.name")?.instance
+      );
+
+      console.log(
+        Booking.schema.paths
+      );
 
       const [booking] = await Booking.create(
-        
+
         [
           {
             user: req.user._id,
@@ -139,10 +154,10 @@ console.log(JSON.stringify(Booking.schema.obj.carSnapshot, null, 2));
           },
         ],
         { session }
-        
+
       );
-console.log("=== CREATE BOOKING REACHED ===");
-console.log("carSnapshot schema:", Booking.schema.obj.carSnapshot);
+      console.log("=== CREATE BOOKING REACHED ===");
+      console.log("carSnapshot schema:", Booking.schema.obj.carSnapshot);
       createdBooking = booking;
     });
 
@@ -158,8 +173,8 @@ console.log("carSnapshot schema:", Booking.schema.obj.carSnapshot);
       err.message === "CAR_UNAVAILABLE"
         ? 409
         : err.message === "CAR_NOT_FOUND"
-        ? 404
-        : 500
+          ? 404
+          : 500
     ).json({ error: err.message });
 
   } finally {
