@@ -77,7 +77,7 @@ router.post("/", async (req, res) => {
       if (!booking) return res.json({ received: true });
 
       // 🔒 SECOND IDEMPOTENCY LAYER (DB SAFE)
-      if (booking.paymentStatus === "paid" && booking.status === "confirmed") {
+      if (booking.paymentStatus === "paid") {
         return res.json({ received: true });
       }
 
@@ -93,7 +93,7 @@ router.post("/", async (req, res) => {
       // 1. UPDATE DB FIRST (ATOMIC STATE)
       // ========================
       booking.paymentStatus = "paid";
-      booking.status = "confirmed";
+      booking.status = "pending";
       booking.isPaid = true;
 
       if (!booking.totalPrice || booking.totalPrice <= 0) {
@@ -139,15 +139,115 @@ router.post("/", async (req, res) => {
           await sendEmail({
             to: adminEmails,
             subject: `PAID booking (${bookingRef})`,
-            html: `<p>New paid booking received.</p>`,
+            html: emailShell(`
+      <h2 style="color:#f2d27a;margin-top:0;">
+        New Paid Booking
+      </h2>
+
+      <p>
+        A customer has completed payment. This reservation is awaiting admin confirmation.
+      </p>
+
+      <table style="width:100%;color:#f5f1e6;border-collapse:collapse;">
+        <tr>
+          <td><strong>Booking:</strong></td>
+          <td>${bookingRef}</td>
+        </tr>
+
+        <tr>
+          <td><strong>Customer:</strong></td>
+          <td>
+            ${booking.user?.firstName || ""} ${booking.user?.lastName || ""}
+          </td>
+        </tr>
+
+        <tr>
+          <td><strong>Pickup:</strong></td>
+          <td>${booking.pickupLocation}</td>
+        </tr>
+
+        <tr>
+          <td><strong>Dropoff:</strong></td>
+          <td>${booking.dropoffLocation}</td>
+        </tr>
+
+        <tr>
+          <td><strong>Pickup Time:</strong></td>
+          <td>${new Date(booking.pickupDate).toLocaleString()}</td>
+        </tr>
+
+        <tr>
+          <td><strong>Total:</strong></td>
+          <td>$${booking.totalPrice.toFixed(2)}</td>
+        </tr>
+      </table>
+
+      <p style="margin-top:25px;color:#d4af37;">
+        Action Required: Confirm this booking from the Admin Dashboard.
+      </p>
+    `)
           });
         }
 
         if (booking.user?.email) {
           await sendEmail({
             to: booking.user.email,
-            subject: "Payment received",
-            html: `<p>Your booking is confirmed.</p>`,
+            subject: "Payment Received",
+            html: emailShell(`
+      <h2 style="color:#f2d27a;margin-top:0;">
+        Payment Successfully Received
+      </h2>
+
+      <p>
+        Dear ${booking.user.firstName},
+      </p>
+
+      <p>
+        Thank you for choosing Le Charlot Limousine.
+        We have successfully received your payment.
+      </p>
+
+      <p>
+        Your reservation is currently
+        <strong style="color:#f2d27a;">
+          awaiting confirmation
+        </strong>
+        from our operations team.
+      </p>
+
+      <div style="
+        background:#1b1812;
+        border:1px solid rgba(255,215,120,0.15);
+        border-radius:10px;
+        padding:20px;
+        margin-top:20px;
+      ">
+
+        <p><strong>Booking ID:</strong> ${bookingRef}</p>
+
+        <p><strong>Pickup:</strong> ${booking.pickupLocation}</p>
+
+        <p><strong>Dropoff:</strong> ${booking.dropoffLocation}</p>
+
+        <p><strong>Date:</strong>
+          ${new Date(booking.pickupDate).toLocaleString()}
+        </p>
+
+        <p><strong>Total:</strong>
+          $${booking.totalPrice.toFixed(2)}
+        </p>
+
+      </div>
+
+      <p style="margin-top:25px;">
+        We will notify you once your reservation has been approved and assigned.
+      </p>
+
+      <p style="margin-top:30px;">
+        <strong>Le Charlot Limousine</strong><br>
+        Where Every Journey Is Treated First-Class.
+      </p>
+    `)
           });
         }
       } catch (emailErr) {
