@@ -24,7 +24,7 @@ const bookingSchema = new mongoose.Schema(
 
     carSnapshot: {
       name: String,
-      type: String,
+      category: String,
       pricePerMile: { type: Number, required: true },
       rateMultiplier: { type: Number, default: 1 },
       totalUnits: { type: Number, default: 1 },

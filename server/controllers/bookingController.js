@@ -129,7 +129,7 @@ export const createBooking = async (req, res) => {
 
             carSnapshot: {
               name: carData.name,
-              type: carData.type,
+              category: carData.type,
               pricePerMile: rate,
               rateMultiplier: multiplier,
               totalUnits: carData.totalUnits,

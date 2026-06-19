@@ -204,7 +204,7 @@ export default function AdminBookings() {
                   <tr key={b._id} className="border-t border-gray-700 hover:bg-gray-800/60">
                     <td className="px-4 py-3 text-gray-100">
                       {b.car?.name || b.carSnapshot?.name || "—"}
-                      <div className="text-xs text-gray-400">{b.carSnapshot?.type || ""}</div>
+                      <div className="text-xs text-gray-400">{b.carSnapshot?.category || ""}</div>
                     </td>
 
                     <td className="px-4 py-3 text-gray-100">
