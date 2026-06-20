@@ -48,10 +48,14 @@ export default function SelectCar() {
     const fetchCars = async () => {
       try {
         setLoading(true);
-        console.log("AVAILABILITY REQUEST", {
-          from: tripData.pickupDate,
-          to: tripData.dropoffDate,
-        });
+        console.log("FROM", tripData?.pickupDate);
+        console.log("TO", tripData?.dropoffDate);
+        console.log("AVAILABILITY REQUEST",
+          {
+            from: tripData.pickupDate,
+            to: tripData.dropoffDate,
+
+          });
 
         const res = await axios.get(
           "http://localhost:5000/api/fleet/availability",

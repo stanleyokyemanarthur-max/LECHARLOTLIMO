@@ -522,15 +522,50 @@ export const updateBookingStatus = async (req, res) => {
       ) {
         await sendEmail({
           to: userEmail,
-          subject: "Booking confirmed — Le Charlot Limousine",
-          html: `
-            <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-              <h2>Booking confirmed</h2>
-              <p>Your booking <b>${booking._id}</b> is confirmed.</p>
-              <p><b>Pickup:</b> ${booking.pickupLocation}</p>
-              <p><b>Drop-off:</b> ${booking.dropoffLocation}</p>
-            </div>
-          `,
+          subject: "Booking Confirmed — Le Charlot Limousine",
+          html: emailShell(`
+    <h2 style="color:#f2d27a;margin-top:0;">
+      Booking Confirmed
+    </h2>
+
+    <p>
+      Dear ${booking.user?.name || "Valued Client"},
+    </p>
+
+    <p>
+      We are delighted to confirm your reservation with
+      <strong>Le Charlot Limousine</strong>.
+    </p>
+
+    <div style="
+      background:#1b1812;
+      border:1px solid rgba(255,215,120,0.15);
+      border-radius:10px;
+      padding:20px;
+      margin-top:20px;
+    ">
+
+      <p><strong>Booking ID:</strong> ${booking._id}</p>
+
+      <p><strong>Pickup:</strong> ${booking.pickupLocation}</p>
+
+      <p><strong>Drop-off:</strong> ${booking.dropoffLocation}</p>
+
+      <p><strong>Date:</strong>
+        ${new Date(booking.pickupDate).toLocaleString()}
+      </p>
+
+    </div>
+
+    <p style="margin-top:25px;">
+      Your chauffeur assignment and trip preparations are underway.
+    </p>
+
+    <p style="margin-top:30px;">
+      <strong>Le Charlot Limousine</strong><br>
+      Where Every Journey Is Treated First-Class.
+    </p>
+  `),
         });
 
         booking.notificationFlags.bookingConfirmedNotifiedUser = true;
@@ -544,19 +579,146 @@ export const updateBookingStatus = async (req, res) => {
       ) {
         await sendEmail({
           to: userEmail,
-          subject: "Your chauffeur is en route — Le Charlot Limousine",
-          html: `
-            <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-              <h2>Your chauffeur is en route</h2>
-              <p>Booking <b>${booking._id}</b></p>
-              <p><b>Pickup:</b> ${booking.pickupLocation}</p>
-            </div>
-          `,
+          subject: "Your Chauffeur Is En Route — Le Charlot Limousine",
+          html: emailShell(`
+    <h2 style="color:#f2d27a;margin-top:0;">
+      Your Chauffeur Is On The Way
+    </h2>
+
+    <p>
+      Dear ${booking.user?.name || "Valued Client"},
+    </p>
+
+    <p>
+      Your chauffeur is currently en route and preparing for your pickup.
+    </p>
+
+    <div style="
+      background:#1b1812;
+      border:1px solid rgba(255,215,120,0.15);
+      border-radius:10px;
+      padding:20px;
+      margin-top:20px;
+    ">
+
+      <p><strong>Booking ID:</strong> ${booking._id}</p>
+
+      <p><strong>Pickup Location:</strong> ${booking.pickupLocation}</p>
+
+      <p><strong>Destination:</strong> ${booking.dropoffLocation}</p>
+
+      <p><strong>Pickup Time:</strong>
+        ${new Date(booking.pickupDate).toLocaleString()}
+      </p>
+
+    </div>
+
+    <p style="
+      margin-top:20px;
+      color:#d4af37;
+      font-size:18px;
+      text-align:center;
+    ">
+      We look forward to providing you with a first-class experience.
+    </p>
+
+    <p style="margin-top:30px;">
+      <strong>Le Charlot Limousine</strong><br>
+      Luxury Chauffeur Service • Accra
+    </p>
+  `),
         });
+
 
         booking.notificationFlags.enrouteNotifiedUser = true;
         await booking.save();
       }
+
+      if (
+  userEmail &&
+  newStatus === "completed" &&
+  !booking.notificationFlags.completedNotifiedUser
+) {
+  await sendEmail({
+    to: userEmail,
+    subject: "Thank You for Riding with Le Charlot Limousine",
+    html: emailShell(`
+      <h2 style="color:#f2d27a;margin-top:0;">
+        Trip Completed
+      </h2>
+
+      <p>
+        Dear ${booking.user?.name || "Valued Client"},
+      </p>
+
+      <p>
+        Thank you for choosing
+        <strong>Le Charlot Limousine</strong>.
+        We hope your journey was comfortable, elegant, and worthy of a
+        first-class experience.
+      </p>
+
+      <div style="
+        background:#1b1812;
+        border:1px solid rgba(255,215,120,0.15);
+        border-radius:10px;
+        padding:20px;
+        margin-top:20px;
+      ">
+        <p><strong>Booking ID:</strong> ${booking._id}</p>
+        <p><strong>Pickup:</strong> ${booking.pickupLocation}</p>
+        <p><strong>Destination:</strong> ${booking.dropoffLocation}</p>
+        <p><strong>Date:</strong>
+          ${new Date(booking.pickupDate).toLocaleString()}
+        </p>
+        <p><strong>Total:</strong>
+          ${booking.totalPrice?.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+          })}
+        </p>
+      </div>
+
+      <p style="margin-top:25px;">
+        Your trust means a great deal to us, and we would be honored to
+        serve you again.
+      </p>
+
+      <!-- Review Button -->
+      <div style="text-align:center;margin-top:35px;">
+        <a href="https://g.page/r/YOUR_GOOGLE_REVIEW_LINK"
+           style="
+             background:#d4af37;
+             color:#111;
+             padding:14px 30px;
+             text-decoration:none;
+             border-radius:8px;
+             font-weight:bold;
+             display:inline-block;
+           ">
+          Leave a Review
+        </a>
+      </div>
+
+      <p style="
+        color:#a89b7a;
+        text-align:center;
+        margin-top:12px;
+        font-size:14px;
+      ">
+        We'd love to hear about your experience.
+      </p>
+
+      <p style="margin-top:35px;">
+        <strong>Le Charlot Limousine</strong><br>
+        Where Every Journey Is Treated First-Class.
+      </p>
+    `),
+  });
+
+  booking.notificationFlags.completedNotifiedUser = true;
+  await booking.save();
+}
     } catch (emailErr) {
       console.error("Email error:", emailErr);
     }
@@ -569,7 +731,6 @@ export const updateBookingStatus = async (req, res) => {
     session.endSession();
   }
 };
-
 export const cancelBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -659,3 +820,5 @@ export const finalizeBookingQuote = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
+

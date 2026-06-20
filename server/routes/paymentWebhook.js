@@ -97,11 +97,12 @@ router.post("/", async (req, res) => {
       booking.isPaid = true;
 
       if (!booking.totalPrice || booking.totalPrice <= 0) {
-        console.error("❌ Invalid booking price at webhook:", booking._id);
+        console.error(
+          "❌ Invalid booking price:",
+          booking._id
+        );
 
-        return res.status(400).json({
-          error: "Booking has invalid pricing. Cannot confirm payment.",
-        });
+        return res.json({ received: true });
       }
 
       // update reward FIRST (safe)
@@ -156,9 +157,9 @@ router.post("/", async (req, res) => {
 
         <tr>
           <td><strong>Customer:</strong></td>
-          <td>
-            ${booking.user?.firstName || ""} ${booking.user?.lastName || ""}
-          </td>
+         <td>
+  ${booking.user?.name || "Unknown Customer"}
+</td>
         </tr>
 
         <tr>
@@ -198,9 +199,9 @@ router.post("/", async (req, res) => {
         Payment Successfully Received
       </h2>
 
-      <p>
-        Dear ${booking.user.firstName},
-      </p>
+     <p>
+  Dear ${booking.user?.name || "Valued Client"},
+</p>
 
       <p>
         Thank you for choosing Le Charlot Limousine.

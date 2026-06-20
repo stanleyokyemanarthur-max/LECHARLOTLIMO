@@ -147,8 +147,8 @@ function MyBookings() {
   }
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white font-sans px-[10%] py-14">
-      <h1 className="text-4xl font-bold mb-10 font-bricolage text-center">
+    <div className="min-h-screen mt-20 bg-[#121212] text-white font-sans px-[10%] py-14">
+      <h1 className="text-4xl font-bold pb-10 font-bricolage text-center">
         My Bookings
       </h1>
 
