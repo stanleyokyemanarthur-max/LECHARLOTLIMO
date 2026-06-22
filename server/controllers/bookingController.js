@@ -143,8 +143,8 @@ export const createBooking = async (req, res) => {
 
             distance: estimate.distanceMiles,
 
-         totalPrice: estimate.estimatedPrice,
-pricingLocked: true,
+            totalPrice: estimate.estimatedPrice,
+            pricingLocked: true,
 
             isPaid: false,
             reward: rewardId || null,
@@ -589,14 +589,14 @@ export const updateBookingStatus = async (req, res) => {
       }
 
       if (
-  userEmail &&
-  newStatus === "completed" &&
-  !booking.notificationFlags.completedNotifiedUser
-) {
-  await sendEmail({
-    to: userEmail,
-    subject: "Thank You for Riding with Le Charlot Limousine",
-    html: emailShell(`
+        userEmail &&
+        newStatus === "completed" &&
+        !booking.notificationFlags.completedNotifiedUser
+      ) {
+        await sendEmail({
+          to: userEmail,
+          subject: "Thank You for Riding with Le Charlot Limousine",
+          html: emailShell(`
       <h2 style="color:#f2d27a;margin-top:0;">
         Trip Completed
       </h2>
@@ -668,11 +668,11 @@ export const updateBookingStatus = async (req, res) => {
         Where Every Journey Is Treated First-Class.
       </p>
     `),
-  });
+        });
 
-  booking.notificationFlags.completedNotifiedUser = true;
-  await booking.save();
-}
+        booking.notificationFlags.completedNotifiedUser = true;
+        await booking.save();
+      }
     } catch (emailErr) {
       console.error("Email error:", emailErr);
     }
@@ -736,43 +736,44 @@ export const confirmPayment = async (req, res) => {
 };
 
 
-// export const finalizeBookingQuote = async (req, res) => {
-//   try {
-//     const { bookingId } = req.body;
+export const finalizeBookingQuote = async (req, res) => {
 
-//     const booking = await Booking.findById(bookingId);
-//     if (!booking) return res.status(404).json({ error: "Booking not found" });
+  try {
+    const { bookingId } = req.body;
 
-//     if (booking.paymentStatus === "paid") {
-//       return res.status(400).json({ error: "Cannot price paid booking" });
-//     }
+    const booking = await Booking.findById(bookingId).populate("car");
 
-//     const distance = Number(booking.distance);
-//     const pricePerMile = Number(booking.carSnapshot?.pricePerMile);
-//     const multiplier = Number(booking.carSnapshot?.rateMultiplier || 1);
+    if (!booking)
+      return res.status(404).json({ error: "Booking not found" });
 
-//     if (!Number.isFinite(distance) || distance <= 0 ||
-//       !Number.isFinite(pricePerMile) || pricePerMile <= 0) {
-//       return res.status(400).json({ error: "Invalid pricing data" });
-//     }
+    if (booking.paymentStatus === "paid")
+      return res.status(400).json({ error: "Cannot price paid booking" });
 
-//     const finalPrice =
-//       Math.round(distance * pricePerMile * multiplier * 100) / 100;
+    const estimate = await calculateTripEstimate({
+      pickup: booking.pickupLocation,
+      dropoff: booking.dropoffLocation,
+      carRatePerMile: booking.carSnapshot.pricePerMile,
+      car: booking.car,
+      fixedDistance: booking.distance,
+    });
+    console.log("FRONTEND DISTANCE:", booking.distance);
+    console.log("FINAL PRICE:", estimate.estimatedPrice);
 
-//     booking.totalPrice = finalPrice;
-//     booking.pricingLocked = true;
-//     booking.paymentStatus = "awaiting_payment";
+    booking.totalPrice = estimate.estimatedPrice;
+    booking.pricingLocked = true;
+    booking.paymentStatus = "awaiting_payment";
 
-//     await booking.save();
+    await booking.save();
 
-//     return res.json({
-//       message: "Quote finalized",
-//       booking,
-//     });
-
-//   } catch (err) {
-//     return res.status(500).json({ error: err.message });
-//   }
-// };
+    return res.json({
+      message: "Quote finalized",
+      booking,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message,
+    });
+  }
+};
 
 

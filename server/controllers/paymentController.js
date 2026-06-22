@@ -24,6 +24,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
  * 💳 Create Stripe Checkout Session
  */
 export const createCheckoutSession = async (req, res) => {
+
   const mongoSession = await mongoose.startSession();
 
   try {
@@ -57,15 +58,23 @@ export const createCheckoutSession = async (req, res) => {
     if (!booking) {
       return res.status(404).json({ error: "Booking not found" });
     }
+    console.log("BOOKING TOTAL:", booking.totalPrice);
+    console.log("BOOKING DISTANCE:", booking.distance);
+    console.log("SNAPSHOT RATE:", booking.carSnapshot.pricePerMile);
+    console.log("SNAPSHOT MULTIPLIER:", booking.carSnapshot.rateMultiplier);
 
-    // 2. FINAL SAFETY: MUST already be priced
-    let amount = booking.totalPrice;
+    // 🔥 Recalculate using the same pricing engine used by estimateBooking
 
-    if (!amount || amount <= 0) {
-      return res.status(400).json({
-        error: "Booking is not priced. Run finalizeQuote first.",
-      });
+
+    const amount = booking.totalPrice;
+
+    if (!amount) {
+      throw new Error("Booking price not locked");
     }
+
+    console.log("LOCKED PRICE:", amount);
+
+    console.log("STRIPE AMOUNT:", booking.totalPrice);
 
     // 3. Stripe session (NO DB inside here)
     const stripeSession = await stripe.checkout.sessions.create({
