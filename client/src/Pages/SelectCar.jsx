@@ -81,6 +81,8 @@ export default function SelectCar() {
     fetchCars();
   }, [tripData]);
 
+  
+
   // get estimate per car
   const handleSelect = async (car) => {
     try {

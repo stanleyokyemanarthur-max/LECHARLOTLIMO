@@ -248,52 +248,6 @@ export const getAllBookings = async (req, res) => {
   }
 };
 
-/* 
-=============================
- 🚘 GET AVAILABLE CARS
-=============================
-*/
-// export const getAvailableCars = async (req, res) => {
-//   try {
-//     const { pickupDate, dropoffDate } = req.query;
-
-//     if (!pickupDate || !dropoffDate) {
-//       return res.status(400).json({
-//         error: "pickupDate and dropoffDate are required",
-//       });
-//     }
-
-
-//     const overlappingBookings = await Booking.find({
-//       status: { $in: ["pending", "confirmed", "enroute"] },
-
-//       pickupDate: {
-//         $lt: new Date(dropoffDate),
-//       },
-
-//       dropoffDate: {
-//         $gt: new Date(pickupDate),
-//       },
-//     }).select("car");
-
-
-//     const bookedCarIds = overlappingBookings.map((b) =>
-//       b.car.toString()
-//     );
-
-
-//     const availableCars = await Car.find({
-//       _id: { $nin: bookedCarIds },
-//     });
-
-//     res.json(availableCars);
-//   } catch (err) {
-//     console.error("Get available cars error:", err);
-//     res.status(500).json({
-//       error: "Failed to fetch available cars",
-//     });
-//   }
-// };
 
 
 export const assignDriver = async (req, res) => {

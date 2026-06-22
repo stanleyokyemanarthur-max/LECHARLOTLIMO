@@ -92,8 +92,10 @@ export const deleteCar = async (req, res) => {
 
 
 export const getFleetAvailability = async (req, res) => {
-    console.log("=== AVAILABILITY HIT ===");
+  console.log("=== AVAILABILITY HIT ===");
   console.log(req.query);
+
+
 
   try {
     console.log("STEP 1");
@@ -120,11 +122,30 @@ export const getFleetAvailability = async (req, res) => {
     const cars = await Car.find().lean();
 
     // 2. Get overlapping bookings
-   const bookings = await Booking.find({
-  status: { $in: activeStatuses },
-  pickupDate: { $exists: true, $ne: null, $lt: end },
-  dropoffDate: { $exists: true, $ne: null, $gt: start },
-}).lean();
+    const bookings = await Booking.find({
+      status: { $in: activeStatuses },
+      pickupDate: { $exists: true, $ne: null, $lt: end },
+      dropoffDate: { $exists: true, $ne: null, $gt: start },
+    }).lean();
+
+    const allBookings = await Booking.find().lean();
+
+console.log("ALL BOOKINGS:", allBookings.length);
+
+allBookings.forEach(b => {
+  console.log(
+    b._id.toString(),
+    b.status,
+    b.paymentStatus,
+    b.pickupDate,
+    b.dropoffDate,
+    b.fleetKey
+  );
+});
+
+
+
+
 
     // 3. Build fleet usage map (KEY FIX)
     const fleetMap = new Map();
@@ -132,17 +153,46 @@ export const getFleetAvailability = async (req, res) => {
     for (const b of bookings) {
       const key = b.fleetKey || b.carSnapshot?.fleetKey;
 
+      console.log(
+        "COUNTING",
+        b._id,
+        "KEY:",
+        key
+      );
+
       if (!key) continue;
 
       fleetMap.set(key, (fleetMap.get(key) || 0) + 1);
     }
 
+    console.log("FLEET MAP");
+    console.log([...fleetMap.entries()]);
+
     // 4. Compute availability per fleetKey
     const result = cars.map((car) => {
+      console.log(
+        "CAR:",
+        car.name,
+        "fleetKey:",
+        car.fleetKey,
+        "map value:",
+        fleetMap.get(car.fleetKey)
+      );
       const used = fleetMap.get(car.fleetKey) || 0;
 
       const availableUnits = Math.max(0, car.totalUnits - used);
 
+
+
+
+
+      console.log(
+        car.name,
+        "total:", car.totalUnits,
+        "used:", used,
+        "available:", availableUnits,
+        "soldout:", availableUnits === 0
+      );
       return {
         ...car,
         usedUnits: used,
