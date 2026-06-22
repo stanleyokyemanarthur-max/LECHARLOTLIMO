@@ -143,8 +143,8 @@ export const createBooking = async (req, res) => {
 
             distance: estimate.distanceMiles,
 
-            totalPrice: null,
-            pricingLocked: false,
+         totalPrice: estimate.estimatedPrice,
+pricingLocked: true,
 
             isPaid: false,
             reward: rewardId || null,
@@ -736,43 +736,43 @@ export const confirmPayment = async (req, res) => {
 };
 
 
-export const finalizeBookingQuote = async (req, res) => {
-  try {
-    const { bookingId } = req.body;
+// export const finalizeBookingQuote = async (req, res) => {
+//   try {
+//     const { bookingId } = req.body;
 
-    const booking = await Booking.findById(bookingId);
-    if (!booking) return res.status(404).json({ error: "Booking not found" });
+//     const booking = await Booking.findById(bookingId);
+//     if (!booking) return res.status(404).json({ error: "Booking not found" });
 
-    if (booking.paymentStatus === "paid") {
-      return res.status(400).json({ error: "Cannot price paid booking" });
-    }
+//     if (booking.paymentStatus === "paid") {
+//       return res.status(400).json({ error: "Cannot price paid booking" });
+//     }
 
-    const distance = Number(booking.distance);
-    const pricePerMile = Number(booking.carSnapshot?.pricePerMile);
-    const multiplier = Number(booking.carSnapshot?.rateMultiplier || 1);
+//     const distance = Number(booking.distance);
+//     const pricePerMile = Number(booking.carSnapshot?.pricePerMile);
+//     const multiplier = Number(booking.carSnapshot?.rateMultiplier || 1);
 
-    if (!Number.isFinite(distance) || distance <= 0 ||
-      !Number.isFinite(pricePerMile) || pricePerMile <= 0) {
-      return res.status(400).json({ error: "Invalid pricing data" });
-    }
+//     if (!Number.isFinite(distance) || distance <= 0 ||
+//       !Number.isFinite(pricePerMile) || pricePerMile <= 0) {
+//       return res.status(400).json({ error: "Invalid pricing data" });
+//     }
 
-    const finalPrice =
-      Math.round(distance * pricePerMile * multiplier * 100) / 100;
+//     const finalPrice =
+//       Math.round(distance * pricePerMile * multiplier * 100) / 100;
 
-    booking.totalPrice = finalPrice;
-    booking.pricingLocked = true;
-    booking.paymentStatus = "awaiting_payment";
+//     booking.totalPrice = finalPrice;
+//     booking.pricingLocked = true;
+//     booking.paymentStatus = "awaiting_payment";
 
-    await booking.save();
+//     await booking.save();
 
-    return res.json({
-      message: "Quote finalized",
-      booking,
-    });
+//     return res.json({
+//       message: "Quote finalized",
+//       booking,
+//     });
 
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
-};
+//   } catch (err) {
+//     return res.status(500).json({ error: err.message });
+//   }
+// };
 
 

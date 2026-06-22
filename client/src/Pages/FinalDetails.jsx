@@ -81,16 +81,16 @@ function FinalDetails() {
       const booking = bookingRes.data.booking;
 
       // 2. FORCE backend pricing finalization (IMPORTANT)
-      const quoteRes = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
-        { bookingId: booking._id },
-        { headers }
-      );
+      // const quoteRes = await axios.post(
+      //   `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
+      //   { bookingId: booking._id },
+      //   { headers }
+      // );
 
-      console.log("✅ QUOTE FINALIZED");
-      console.log(quoteRes.data);
+      // console.log("✅ QUOTE FINALIZED");
+      // console.log(quoteRes.data);
 
-      // 3. Create Stripe session (backend uses DB price)
+      // Create Stripe session
       const stripeRes = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
         { bookingId: booking._id },
@@ -98,6 +98,7 @@ function FinalDetails() {
       );
 
       window.location.href = stripeRes.data.url;
+
     } catch (err) {
       console.error("STATUS:", err.response?.status);
 
