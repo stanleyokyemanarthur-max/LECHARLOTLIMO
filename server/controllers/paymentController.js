@@ -42,6 +42,12 @@ export const createCheckoutSession = async (req, res) => {
         .populate("car")
         .session(mongoSession);
 
+      console.log("========== PAYMENT ==========");
+      console.log("BOOKING DISTANCE:", booking.distance);
+      console.log("BOOKING TOTAL:", booking.totalPrice);
+      console.log("SNAPSHOT RATE:", booking.carSnapshot.pricePerMile);
+      console.log("MULTIPLIER:", booking.carSnapshot.rateMultiplier);
+
       if (!booking) throw new Error("Booking not found");
 
       if (booking.paymentStatus === "paid") {
@@ -67,6 +73,8 @@ export const createCheckoutSession = async (req, res) => {
 
 
     const amount = booking.totalPrice;
+
+    console.log("AMOUNT SENT TO STRIPE:", booking.totalPrice);
 
     if (!amount) {
       throw new Error("Booking price not locked");

@@ -756,13 +756,18 @@ export const finalizeBookingQuote = async (req, res) => {
       car: booking.car,
       fixedDistance: booking.distance,
     });
+
     console.log("FRONTEND DISTANCE:", booking.distance);
     console.log("FINAL PRICE:", estimate.estimatedPrice);
 
     booking.totalPrice = estimate.estimatedPrice;
     booking.pricingLocked = true;
     booking.paymentStatus = "awaiting_payment";
-
+    console.log("========== CREATE BOOKING ==========");
+    console.log("DISTANCE:", estimate.distanceMiles);
+    console.log("BASE PRICE:", estimate.basePrice);
+    console.log("FINAL PRICE:", estimate.estimatedPrice);
+    console.log("SAVED TOTAL PRICE:", booking.totalPrice);
     await booking.save();
 
     return res.json({
