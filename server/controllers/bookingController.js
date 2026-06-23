@@ -737,48 +737,31 @@ export const confirmPayment = async (req, res) => {
 
 
 export const finalizeBookingQuote = async (req, res) => {
-
   try {
     const { bookingId } = req.body;
 
-    const booking = await Booking.findById(bookingId).populate("car");
+    const booking = await Booking.findById(bookingId);
 
     if (!booking)
       return res.status(404).json({ error: "Booking not found" });
 
     if (booking.paymentStatus === "paid")
-      return res.status(400).json({ error: "Cannot price paid booking" });
+      return res.status(400).json({ error: "Cannot modify paid booking" });
 
-    const estimate = await calculateTripEstimate({
-      pickup: booking.pickupLocation,
-      dropoff: booking.dropoffLocation,
-      carRatePerMile: booking.carSnapshot.pricePerMile,
-      car: booking.car,
-      fixedDistance: booking.distance,
-    });
-
-    console.log("FRONTEND DISTANCE:", booking.distance);
-    console.log("FINAL PRICE:", estimate.estimatedPrice);
-
-    booking.totalPrice = estimate.estimatedPrice;
     booking.pricingLocked = true;
     booking.paymentStatus = "awaiting_payment";
-    console.log("========== CREATE BOOKING ==========");
-    console.log("DISTANCE:", estimate.distanceMiles);
-    console.log("BASE PRICE:", estimate.basePrice);
-    console.log("FINAL PRICE:", estimate.estimatedPrice);
-    console.log("SAVED TOTAL PRICE:", booking.totalPrice);
+
     await booking.save();
 
     return res.json({
       message: "Quote finalized",
       booking,
     });
+
   } catch (err) {
     return res.status(500).json({
       error: err.message,
     });
   }
 };
-
 
