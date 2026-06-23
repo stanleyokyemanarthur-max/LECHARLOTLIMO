@@ -45,6 +45,8 @@ import AdminMilestonesPage from "./Pages/admin/AdminMilestonesPage.jsx";
 import ForgotPassword from "./Pages/ForgotPassword";
 import ResetPassword from "./Pages/ResetPassword";
 import ScrollToTop from "./Components/ScrollTop.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 function App() {
@@ -65,6 +67,11 @@ function App() {
     <ScrollToTop/>
     <Router>
       <Nav />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+      />
+
       <Routes>
         {/* Public routes */}
 

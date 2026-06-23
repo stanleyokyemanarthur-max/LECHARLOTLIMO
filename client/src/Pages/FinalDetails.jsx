@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 function FinalDetails() {
   const navigate = useNavigate();
@@ -99,23 +100,26 @@ function FinalDetails() {
 
       window.location.href = stripeRes.data.url;
 
-    } catch (err) {
-      console.error("STATUS:", err.response?.status);
+    }catch (err) {
+  console.error("STATUS:", err.response?.status);
+  console.log(err.response?.data);
 
-      console.error("RESPONSE DATA:");
-      console.log(err.response?.data);
+  const errorMessage = err.response?.data?.error;
 
-      console.error("FULL ERROR:");
-      console.log(err);
-
-      alert(
-        JSON.stringify(err.response?.data, null, 2) ||
-        err.message ||
-        "Booking failed"
-      );
-    } finally {
-      setLoading(false);
-    }
+  if (errorMessage === "CAR_UNAVAILABLE") {
+    toast.error(
+      "Sorry, all vehicles of this model are currently reserved for the selected time."
+    );
+  } else if (errorMessage === "Duplicate booking request detected.") {
+    toast.warning("You already have a pending booking for this vehicle.");
+  } else {
+    toast.error(
+      errorMessage || "Something went wrong while creating your booking."
+    );
+  }
+} finally {
+  setLoading(false);
+}
   };
 
   const handleGuestSubmit = (e) => {
