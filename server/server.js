@@ -41,16 +41,32 @@ const startServer = async () => {
     // 3️⃣ Initialize Express
     const app = express();
 
-    app.use(
-      cors({
-        origin: [
-          "https://lecharlotlimo.vercel.app",
-          "http://localhost:5173",
-        ],
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true,
-      })
-    );
+   const allowedOrigins = [
+  "https://www.lecharlotlimousine.com",
+  "https://lecharlotlimo.vercel.app",
+  "http://localhost:5173",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // allow requests with no origin (like Postman or server-to-server)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// handle preflight explicitly
+app.options("*", cors());
 
     app.set("trust proxy", 1);
 
