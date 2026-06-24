@@ -17,7 +17,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get("https://lecharlotlimo.onrender.com/api/admin/stats", {
+        const res = await axios.get("https://lecharlotlimo-aucd.onrender.com/api/admin/stats", {
           headers: { Authorization: `Bearer ${userInfo?.token}` },
         });
         setStats(res.data);

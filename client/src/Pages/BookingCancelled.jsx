@@ -10,7 +10,7 @@ function BookingCancelled() {
 
   useEffect(() => {
     if (sessionId) {
-      fetch(`https://lecharlotlimo.onrender.com/api/payments/cancel?session_id=${sessionId}`).catch(() =>
+      fetch(`https://lecharlotlimo-aucd.onrender.com/api/payments/cancel?session_id=${sessionId}`).catch(() =>
         console.warn("Failed to update booking status")
       );
     }

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "https://lecharlotlimo-aucd.onrender.com";
 
 function MyBookings() {
   const [bookings, setBookings] = useState([]);

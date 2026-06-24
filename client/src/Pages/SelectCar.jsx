@@ -58,7 +58,7 @@ export default function SelectCar() {
           });
 
         const res = await axios.get(
-          "http://localhost:5000/api/fleet/availability",
+          "https://lecharlotlimo-aucd.onrender.com/api/fleet/availability",
           {
             params: {
               from: new Date(tripData.pickupDate).toISOString(),
@@ -90,7 +90,7 @@ export default function SelectCar() {
       setLoadingCarId(car._id);
 
       const res = await axios.post(
-        "http://localhost:5000/api/bookings/estimate",
+        "https://lecharlotlimo-aucd.onrender.com/api/bookings/estimate",
         {
           pickup: tripData.pickupLocation,
           dropoff: tripData.dropoffLocation,

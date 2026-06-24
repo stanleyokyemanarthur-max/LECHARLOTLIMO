@@ -9,7 +9,7 @@ const CarCategories = ({ selectedCarType }) => {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const res = await fetch("https://lecharlotlimo.onrender.com/api/cars"); // 👈 change to your backend URL
+        const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/cars"); // 👈 change to your backend URL
         const data = await res.json();
         setCars(data);
       } catch (error) {

@@ -11,7 +11,7 @@ export default function LostAuthenticator() {
     setMessage("");
 
     try {
-      const res = await fetch("https://lecharlotlimo.onrender.com/api/auth/request-totp-reset", {
+      const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/auth/request-totp-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

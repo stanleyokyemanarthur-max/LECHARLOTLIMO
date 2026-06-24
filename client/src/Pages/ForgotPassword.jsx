@@ -14,7 +14,7 @@ export default function ForgotPassword() {
 
     try {
       const res = await fetch(
-        "https://lecharlotlimo.onrender.com/api/auth/request-password-reset",
+        "https://lecharlotlimo-aucd.onrender.com/api/auth/request-password-reset",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

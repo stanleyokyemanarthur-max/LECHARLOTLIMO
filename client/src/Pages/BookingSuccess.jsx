@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight, Home, XCircle } from "lucide-react";
 
-const API_BASE = "https://lecharlotlimo.onrender.com";
+const API_BASE = "https://lecharlotlimo-aucd.onrender.com";
 
 function BookingSuccess() {
   const navigate = useNavigate();

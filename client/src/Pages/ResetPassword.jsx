@@ -34,7 +34,7 @@ export default function ResetPassword() {
 
     try {
       const res = await fetch(
-        "https://lecharlotlimo.onrender.com/api/auth/reset-password",
+        "https://lecharlotlimo-aucd.onrender.com/api/auth/reset-password",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
  * API instance (production-safe)
  */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+  baseURL: import.meta.env.VITE_API_URL || "https://lecharlotlimo-aucd.onrender.com",
 });
 
 export default function AdminCars() {

@@ -36,7 +36,7 @@ function Contact() {
 
     try {
       const res = await axios.post(
-        "https://lecharlotlimo.onrender.com/api/contact",
+        "https://lecharlotlimo-aucd.onrender.com/api/contact",
         trimmedForm
       );
 

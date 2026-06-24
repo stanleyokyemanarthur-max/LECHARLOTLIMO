@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 
-const API_BASE = "https://lecharlotlimo.onrender.com";
+const API_BASE = "https://lecharlotlimo-aucd.onrender.com";
 
 export default function AdminBookings() {
   const [bookings, setBookings] = useState([]);
