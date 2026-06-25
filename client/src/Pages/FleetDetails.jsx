@@ -180,6 +180,10 @@ export default function FleetDetails() {
           <AutoSlideGallery images={fleet.gallery} />
         </div>
       </div>
+        {/* Book Now Button */}
+        <button onClick={() => navigate("/reserve")} className="btn btn-gold text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
+          Go To Bookings
+        </button>
 
       {/* Vehicle Details */}
       <div className="max-w-5xl mx-auto p-8 md:p-12">
@@ -219,10 +223,7 @@ export default function FleetDetails() {
           </div>
         </div>
 
-        {/* Book Now Button */}
-        <button onClick={() => navigate("/reserve")} className="btn btn-gold text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
-          Go To Bookings
-        </button>
+      
 
         {/* FAQ Section */}
         <FAQAccordion faqs={faqs} />
