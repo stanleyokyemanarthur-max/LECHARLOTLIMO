@@ -41,9 +41,6 @@ const startServer = async () => {
     // 3️⃣ Initialize Express
     const app = express();
 
-    app.set("trust proxy", 1);
-
-    // MUST be first middleware
     app.use(
       cors({
         origin: [
@@ -51,14 +48,12 @@ const startServer = async () => {
           "https://lecharlotlimo.vercel.app",
           "http://localhost:5173",
         ],
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
-        allowedHeaders: ["Content-Type", "Authorization"],
       })
     );
 
-    // MUST handle preflight immediately
-    app.options("*", cors());
+    app.set("trust proxy", 1);
 
     const PORT = process.env.PORT || 5000;
 
@@ -70,7 +65,7 @@ const startServer = async () => {
     );
     // 5️⃣ Regular middleware
     app.use(express.json());
-
+    
     // 6️⃣ Standard API routes
     app.use(express.static("public"));
     app.use("/api/auth", authRoutes);
