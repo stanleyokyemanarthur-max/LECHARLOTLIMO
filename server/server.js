@@ -58,9 +58,9 @@ const startServer = async () => {
     const PORT = process.env.PORT || 5000;
 
     // 4️⃣ Webhook route must come BEFORE express.json()
-   app.post(
+app.post(
   "/api/payments/webhook",
-  express.raw({ type: "*/*" }),
+  express.raw({ type: "application/json" }),
   stripeWebhook
 );
     // 5️⃣ Regular middleware
