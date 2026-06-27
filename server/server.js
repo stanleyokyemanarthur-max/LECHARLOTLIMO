@@ -13,6 +13,7 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import paymentWebhook from "./routes/paymentWebhook.js";
 import adminBroadcastRoutes from "./routes/adminBroadcastRoutes.js";
 import rewardRoutes from "./routes/rewardRoutes.js";
 import adminRewardsRoutes from "./routes/adminRewardsRoute.js";
@@ -21,7 +22,6 @@ import adminMilestoneRoutes from "./routes/adminMilestone.routes.js";
 import { birthdayRewardJob } from "./jobs/birthdayRewards.js";
 import { expireRewardsJob } from "./jobs/expireRewards.js";
 import { rewardCleanupJob } from "./jobs/rewardCleanup.js";
-import { stripeWebhook } from "./controllers/paymentController.js";
 import "./jobs/index.js"; // to start the booking expiration job
 // Initialize dotenv
 dotenv.config();
@@ -58,11 +58,11 @@ const startServer = async () => {
     const PORT = process.env.PORT || 5000;
 
     // 4️⃣ Webhook route must come BEFORE express.json()
-app.post(
-  "/api/payments/webhook",
-  express.raw({ type: "application/json" }),
-  stripeWebhook
-);
+    app.use(
+      "/api/payments/webhook",
+      bodyParser.raw({ type: "application/json" }),
+      paymentWebhook
+    );
     // 5️⃣ Regular middleware
     app.use(express.json());
     
