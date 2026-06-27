@@ -43,13 +43,15 @@ export const createBooking = async (req, res) => {
       user: req.user._id,
       car,
       status: "pending",
+      paymentStatus: "awaiting_payment",
       pickupDate: start,
     });
 
     if (existingPending) {
       return res.status(409).json({
-        error: "Duplicate booking request detected.",
+        resumePayment: true,
         booking: existingPending,
+        message: "You already have a booking awaiting payment.",
       });
     }
 

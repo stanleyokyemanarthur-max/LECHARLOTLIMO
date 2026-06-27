@@ -69,9 +69,39 @@ function MyBookings() {
       setCancelingId(null);
     }
   };
+  const completePayment = async (bookingId) => {
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/payments/create-checkout-session`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            bookingId,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Unable to start payment.");
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
 
   const statusPill = (status) => {
     switch (status) {
+      case "awaiting_payment":
+        return "text-yellow-300 bg-yellow-400/10 border border-yellow-500/30";
       case "pending":
         return "text-yellow-400 bg-yellow-400/10";
       case "confirmed":
@@ -113,7 +143,11 @@ function MyBookings() {
 
     // paid booking flow
     if (pay === "paid" && b.status === "pending") return "Paid ✅ awaiting confirmation";
-    if (pay !== "paid" && b.status === "pending") return "Awaiting payment";
+    if (
+      pay === "awaiting_payment" &&
+      b.status === "pending"
+    )
+      return "Awaiting payment";
     return null;
   };
 
@@ -232,6 +266,16 @@ function MyBookings() {
                 </div>
 
                 {/* Cancel Button (only when safe) */}
+                {/* Complete Payment */}
+                {booking.status === "pending" &&
+                  booking.paymentStatus === "awaiting_payment" && (
+                    <button
+                      onClick={() => completePayment(booking._id)}
+                      className="w-full mb-3 py-2 rounded-xl bg-[#D4AF37] text-black font-bold hover:opacity-90 transition"
+                    >
+                      Complete Payment
+                    </button>
+                  )}
                 {canCancel(booking) && (
                   <button
                     onClick={() => cancelBooking(booking._id)}

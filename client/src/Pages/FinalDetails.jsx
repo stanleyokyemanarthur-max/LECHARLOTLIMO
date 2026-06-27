@@ -99,23 +99,61 @@ function FinalDetails() {
       );
 
       window.location.href = stripeRes.data.url;
+} catch (err) {
+  console.error(err.response?.data);
 
-    }catch (err) {
-  console.error("STATUS:", err.response?.status);
-  console.log(err.response?.data);
+  // -----------------------------
+  // Resume existing payment
+  // -----------------------------
+  if (err.response?.data?.resumePayment) {
+    try {
+      const booking = err.response.data.booking;
 
-  const errorMessage = err.response?.data?.error;
+      toast.info("Resuming your existing payment...");
+
+      const headers = user?.token
+        ? {
+            Authorization: `Bearer ${user.token}`,
+          }
+        : {};
+
+      // Lock quote again (safe)
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
+        {
+          bookingId: booking._id,
+        },
+        { headers }
+      );
+
+      // Create or reuse Stripe session
+      const stripeRes = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
+        {
+          bookingId: booking._id,
+        },
+        { headers }
+      );
+
+      window.location.href = stripeRes.data.url;
+      return;
+    } catch (paymentErr) {
+      console.error(paymentErr);
+      toast.error("Unable to resume payment.");
+      return;
+    }
+  }
+
+  const errorMessage =
+    err.response?.data?.error ||
+    err.response?.data?.message;
 
   if (errorMessage === "CAR_UNAVAILABLE") {
     toast.error(
-      "Sorry, all vehicles of this model are currently reserved for the selected time."
+      "Sorry, all vehicles of this model are reserved for the selected time."
     );
-  } else if (errorMessage === "Duplicate booking request detected.") {
-    toast.warning("You already have a pending booking for this vehicle.");
   } else {
-    toast.error(
-      errorMessage || "Something went wrong while creating your booking."
-    );
+    toast.error(errorMessage || "Booking failed.");
   }
 } finally {
   setLoading(false);
