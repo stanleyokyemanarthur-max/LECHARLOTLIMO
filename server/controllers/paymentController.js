@@ -140,24 +140,16 @@ export const stripeWebhook = async (req, res) => {
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    console.error("❌ Signature failed:", err.message);
+    return res.status(400).send("Webhook Error");
   }
 
-  // ======================================
-  // 🔒 IDEMPOTENCY GUARD (IMPORTANT)
-  // ======================================
-  const eventId = event.id;
-
-  // OPTIONAL: if you add a StripeEvent model, check here
-  // if (await StripeEvent.findOne({ eventId })) return res.json({ received: true });
-
   try {
-    // ======================================
-    // 💳 PAYMENT SUCCESS
-    // ======================================
+    // =========================
+    // PAYMENT SUCCESS
+    // =========================
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
-
       const bookingId = session.metadata?.bookingId;
 
       if (!bookingId) return res.json({ received: true });
@@ -166,7 +158,7 @@ export const stripeWebhook = async (req, res) => {
 
       if (!booking) return res.json({ received: true });
 
-      // 🔒 prevent double processing
+      // prevent double processing
       if (booking.paymentStatus === "paid") {
         return res.json({ received: true });
       }
@@ -178,12 +170,11 @@ export const stripeWebhook = async (req, res) => {
       await booking.save();
     }
 
-    // ======================================
-    // ❌ PAYMENT FAILED / EXPIRED
-    // ======================================
+    // =========================
+    // PAYMENT EXPIRED
+    // =========================
     if (event.type === "checkout.session.expired") {
       const session = event.data.object;
-
       const bookingId = session.metadata?.bookingId;
 
       if (!bookingId) return res.json({ received: true });
@@ -200,6 +191,7 @@ export const stripeWebhook = async (req, res) => {
     }
 
     return res.json({ received: true });
+
   } catch (err) {
     console.error("❌ webhook error:", err);
     return res.status(500).json({ error: err.message });
