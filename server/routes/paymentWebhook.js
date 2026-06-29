@@ -44,6 +44,11 @@ const processedEvents = new Set();
 
 router.post("/", async (req, res) => {
   const sig = req.headers["stripe-signature"];
+
+  console.log("SIG HEADER:", sig);
+  console.log("RAW BODY TYPE:", typeof req.body);
+  console.log("IS BUFFER:", Buffer.isBuffer(req.body));
+
   let event;
 
   try {

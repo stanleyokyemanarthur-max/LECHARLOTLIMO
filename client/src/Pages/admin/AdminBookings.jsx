@@ -211,6 +211,10 @@ export default function AdminBookings() {
                       {b.user?.name || "—"}
                       <div className="text-xs text-gray-400">{b.user?.email || ""}</div>
                     </td>
+                    <td className="px-4 py-3 text-gray-100">
+                      {b.user?.phone || "—"}
+                      <div className="text-xs text-gray-400">{b.user?.email || ""}</div>
+                    </td>
 
                     <td className="px-4 py-3 text-gray-200">{b.pickupLocation}</td>
                     <td className="px-4 py-3 text-gray-200">{b.dropoffLocation}</td>

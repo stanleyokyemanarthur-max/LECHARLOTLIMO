@@ -8,7 +8,7 @@ import { evaluateMilestonesForUser } from "../services/milestone.service.js";
 import mongoose from "mongoose";
 import { sendEmail } from "../lib/sendEmail.js"; // ✅ adjust path if needed
 import { calculateTripEstimate } from "../services/pricingEngine.js"; // ✅ new pricing engine
-
+import { emailShell } from "../lib/emailShell.js";
 /* 
 ==============================
  🧾 CREATE BOOKING (user only)
@@ -243,7 +243,12 @@ export const getUserBookings = async (req, res) => {
 
 export const getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find().populate("user car").populate("driver", "name email");
+    const bookings = await Booking.find()
+  .populate("user", "name email phone")
+  .populate("car")
+  .populate("driver", "name email")
+  .sort({ createdAt: -1 })
+  .limit(100);
     res.json(bookings);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -313,80 +318,67 @@ export const updateBookingStatus = async (req, res) => {
   const session = await mongoose.startSession();
 
   try {
-    const booking = await Booking.findById(req.params.id)
-      .populate("user", "email name")
-      .populate("reward")
-      .populate("driver")
-      .session(session);
-
-    if (!booking) {
-      return res.status(404).json({ error: "Booking not found" });
-    }
-    const requestedStatus = req.body.status;
-
-    const prevStatus = booking.status;
-    const newStatus = requestedStatus || prevStatus;
-
-    // =============================
-    // 💳 PAYMENT LOGIC
-    // =============================
-
-    const isPaid =
-      booking.paymentStatus === "paid" ||
-      booking.isPaid === true;
-
-    const rewardValid =
-      booking.reward &&
-      booking.reward.status === "ACTIVE" &&
-      (!booking.reward.expiresAt ||
-        new Date(booking.reward.expiresAt) > new Date());
-
-    const rewardCoversFully =
-      rewardValid &&
-      booking.reward.discountType === "FULL_COVER";
-
-    const isFree =
-      booking.totalPrice === 0 ||
-      rewardCoversFully;
-
-    const paymentRequired =
-      typeof booking.totalPrice === "number" &&
-      booking.totalPrice > 0 &&
-      !isPaid &&
-      !isFree;
-
-    // =============================
-    // 🚨 STATUS FLOW VALIDATION
-    // =============================
-
-    // pending -> confirmed
-    if (newStatus === "confirmed" && paymentRequired) {
-      return res.status(400).json({
-        error: "Payment required before confirmation",
-      });
-    }
-
-    // confirmed -> enroute
-    if (
-      newStatus === "enroute" &&
-      prevStatus !== "confirmed"
-    ) {
-      return res.status(400).json({
-        error: "Booking must be confirmed before going enroute",
-      });
-    }
-
-    // enroute -> completed
-    if (
-      newStatus === "completed" &&
-      prevStatus !== "enroute"
-    ) {
-      return res.status(400).json({
-        error: "Booking must be enroute before completion",
-      });
-    }
+    let booking;
 
     await session.withTransaction(async () => {
+      booking = await Booking.findById(req.params.id)
+        .populate("user", "email name")
+        .populate("reward")
+        .populate("driver")
+        .session(session);
+
+      if (!booking) {
+        throw new Error("BOOKING_NOT_FOUND");
+      }
+
+      const requestedStatus = req.body.status;
+      const prevStatus = booking.status;
+      const newStatus = requestedStatus || prevStatus;
+
+      // =============================
+      // 💳 PAYMENT LOGIC
+      // =============================
+      const isPaid =
+        booking.paymentStatus === "paid" || booking.isPaid === true;
+
+      const rewardValid =
+        booking.reward &&
+        booking.reward.status === "ACTIVE" &&
+        (!booking.reward.expiresAt ||
+          new Date(booking.reward.expiresAt) > new Date());
+
+      const rewardCoversFully =
+        rewardValid &&
+        booking.reward.discountType === "FULL_COVER";
+
+      const isFree =
+        booking.totalPrice === 0 || rewardCoversFully;
+
+      const paymentRequired =
+        typeof booking.totalPrice === "number" &&
+        booking.totalPrice > 0 &&
+        !isPaid &&
+        !isFree;
+
+      // =============================
+      // 🚨 STATUS FLOW VALIDATION
+      // =============================
+
+      if (newStatus === "confirmed" && paymentRequired) {
+        throw new Error("PAYMENT_REQUIRED");
+      }
+
+      if (newStatus === "enroute" && prevStatus !== "confirmed") {
+        throw new Error("MUST_BE_CONFIRMED_FIRST");
+      }
+
+      if (newStatus === "completed" && prevStatus !== "enroute") {
+        throw new Error("MUST_BE_ENROUTE_FIRST");
+      }
+
+      // =============================
+      // 🔄 UPDATE STATUS
+      // =============================
       booking.status = newStatus;
 
       if (!booking.notificationFlags) {
@@ -399,9 +391,7 @@ export const updateBookingStatus = async (req, res) => {
       // 🎁 REWARD HANDLING
       // =============================
       if (booking.reward) {
-        const reward = await Reward.findById(
-          booking.reward
-        ).session(session);
+        const reward = await Reward.findById(booking.reward).session(session);
 
         if (
           reward &&
@@ -410,32 +400,25 @@ export const updateBookingStatus = async (req, res) => {
         ) {
           reward.status = "USED";
           reward.usedAt = new Date();
-
           await reward.save({ session });
         }
 
-        if (
-          reward &&
-          newStatus === "cancelled"
-        ) {
+        if (reward && newStatus === "cancelled") {
           reward.status = "AVAILABLE";
           reward.booking = null;
           reward.lockedAt = null;
           reward.isSlotFull = false;
-
           await reward.save({ session });
         }
       }
+
       // =============================
-      // 📈 MILESTONES / SPEND UPDATE
+      // 📈 MILESTONE UPDATE
       // =============================
       if (
         prevStatus !== "completed" &&
         newStatus === "completed" &&
-        (
-          booking.isPaid ||
-          booking.paymentStatus === "paid"
-        )
+        (booking.isPaid || booking.paymentStatus === "paid")
       ) {
         await User.updateOne(
           { _id: booking.user?._id },
@@ -464,217 +447,60 @@ export const updateBookingStatus = async (req, res) => {
     // =============================
     // ✉️ EMAILS (OUTSIDE TX)
     // =============================
-    try {
-      const userEmail = booking.user?.email;
+    const userEmail = booking?.user?.email;
 
+    try {
       if (!booking.notificationFlags) {
         booking.notificationFlags = {};
       }
 
+      // CONFIRMED EMAIL
       if (
         userEmail &&
-        newStatus === "confirmed" &&
+        booking.status === "confirmed" &&
         !booking.notificationFlags.bookingConfirmedNotifiedUser
       ) {
         await sendEmail({
           to: userEmail,
           subject: "Booking Confirmed — Le Charlot Limousine",
-          html: emailShell(`
-    <h2 style="color:#f2d27a;margin-top:0;">
-      Booking Confirmed
-    </h2>
-
-    <p>
-      Dear ${booking.user?.name || "Valued Client"},
-    </p>
-
-    <p>
-      We are delighted to confirm your reservation with
-      <strong>Le Charlot Limousine</strong>.
-    </p>
-
-    <div style="
-      background:#1b1812;
-      border:1px solid rgba(255,215,120,0.15);
-      border-radius:10px;
-      padding:20px;
-      margin-top:20px;
-    ">
-
-      <p><strong>Booking ID:</strong> ${booking._id}</p>
-
-      <p><strong>Pickup:</strong> ${booking.pickupLocation}</p>
-
-      <p><strong>Drop-off:</strong> ${booking.dropoffLocation}</p>
-
-      <p><strong>Date:</strong>
-        ${new Date(booking.pickupDate).toLocaleString()}
-      </p>
-
-    </div>
-
-    <p style="margin-top:25px;">
-      Your chauffeur assignment and trip preparations are underway.
-    </p>
-
-    <p style="margin-top:30px;">
-      <strong>Le Charlot Limousine</strong><br>
-      Where Every Journey Is Treated First-Class.
-    </p>
-  `),
+          html: emailShell(`<p>Booking confirmed...</p>`),
         });
 
         booking.notificationFlags.bookingConfirmedNotifiedUser = true;
-        await booking.save();
       }
 
+      // ENROUTE EMAIL
       if (
         userEmail &&
-        newStatus === "enroute" &&
+        booking.status === "enroute" &&
         !booking.notificationFlags.enrouteNotifiedUser
       ) {
         await sendEmail({
           to: userEmail,
-          subject: "Your Chauffeur Is En Route — Le Charlot Limousine",
-          html: emailShell(`
-    <h2 style="color:#f2d27a;margin-top:0;">
-      Your Chauffeur Is On The Way
-    </h2>
-
-    <p>
-      Dear ${booking.user?.name || "Valued Client"},
-    </p>
-
-    <p>
-      Your chauffeur is currently en route and preparing for your pickup.
-    </p>
-
-    <div style="
-      background:#1b1812;
-      border:1px solid rgba(255,215,120,0.15);
-      border-radius:10px;
-      padding:20px;
-      margin-top:20px;
-    ">
-
-      <p><strong>Booking ID:</strong> ${booking._id}</p>
-
-      <p><strong>Pickup Location:</strong> ${booking.pickupLocation}</p>
-
-      <p><strong>Destination:</strong> ${booking.dropoffLocation}</p>
-
-      <p><strong>Pickup Time:</strong>
-        ${new Date(booking.pickupDate).toLocaleString()}
-      </p>
-
-    </div>
-
-    <p style="
-      margin-top:20px;
-      color:#d4af37;
-      font-size:18px;
-      text-align:center;
-    ">
-      We look forward to providing you with a first-class experience.
-    </p>
-
-    <p style="margin-top:30px;">
-      <strong>Le Charlot Limousine</strong><br>
-      Luxury Chauffeur Service • Accra
-    </p>
-  `),
+          subject: "Your Chauffeur Is En Route",
+          html: emailShell(`<p>Your chauffeur is on the way...</p>`),
         });
 
-
         booking.notificationFlags.enrouteNotifiedUser = true;
-        await booking.save();
       }
 
+      // COMPLETED EMAIL
       if (
         userEmail &&
-        newStatus === "completed" &&
+        booking.status === "completed" &&
         !booking.notificationFlags.completedNotifiedUser
       ) {
         await sendEmail({
           to: userEmail,
-          subject: "Thank You for Riding with Le Charlot Limousine",
-          html: emailShell(`
-      <h2 style="color:#f2d27a;margin-top:0;">
-        Trip Completed
-      </h2>
-
-      <p>
-        Dear ${booking.user?.name || "Valued Client"},
-      </p>
-
-      <p>
-        Thank you for choosing
-        <strong>Le Charlot Limousine</strong>.
-        We hope your journey was comfortable, elegant, and worthy of a
-        first-class experience.
-      </p>
-
-      <div style="
-        background:#1b1812;
-        border:1px solid rgba(255,215,120,0.15);
-        border-radius:10px;
-        padding:20px;
-        margin-top:20px;
-      ">
-        <p><strong>Booking ID:</strong> ${booking._id}</p>
-        <p><strong>Pickup:</strong> ${booking.pickupLocation}</p>
-        <p><strong>Destination:</strong> ${booking.dropoffLocation}</p>
-        <p><strong>Date:</strong>
-          ${new Date(booking.pickupDate).toLocaleString()}
-        </p>
-        <p><strong>Total:</strong>
-          ${booking.totalPrice?.toLocaleString("en-US", {
-            style: "currency",
-            currency: "USD",
-          })}
-        </p>
-      </div>
-
-      <p style="margin-top:25px;">
-        Your trust means a great deal to us, and we would be honored to
-        serve you again.
-      </p>
-
-      <!-- Review Button -->
-      <div style="text-align:center;margin-top:35px;">
-        <a href="https://g.page/r/YOUR_GOOGLE_REVIEW_LINK"
-           style="
-             background:#d4af37;
-             color:#111;
-             padding:14px 30px;
-             text-decoration:none;
-             border-radius:8px;
-             font-weight:bold;
-             display:inline-block;
-           ">
-          Leave a Review
-        </a>
-      </div>
-
-      <p style="
-        color:#a89b7a;
-        text-align:center;
-        margin-top:12px;
-        font-size:14px;
-      ">
-        We'd love to hear about your experience.
-      </p>
-
-      <p style="margin-top:35px;">
-        <strong>Le Charlot Limousine</strong><br>
-        Where Every Journey Is Treated First-Class.
-      </p>
-    `),
+          subject: "Trip Completed — Thank You",
+          html: emailShell(`<p>Thank you for riding with us...</p>`),
         });
 
         booking.notificationFlags.completedNotifiedUser = true;
-        await booking.save();
       }
+
+      await booking.save();
+
     } catch (emailErr) {
       console.error("Email error:", emailErr);
     }
@@ -682,11 +508,23 @@ export const updateBookingStatus = async (req, res) => {
     return res.json(booking);
   } catch (err) {
     console.error("Update booking status error:", err);
-    return res.status(500).json({ error: err.message });
+
+    const map = {
+      BOOKING_NOT_FOUND: 404,
+      PAYMENT_REQUIRED: 400,
+      MUST_BE_CONFIRMED_FIRST: 400,
+      MUST_BE_ENROUTE_FIRST: 400,
+    };
+
+    return res.status(map[err.message] || 500).json({
+      error: err.message,
+    });
   } finally {
     session.endSession();
   }
 };
+
+
 export const cancelBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);

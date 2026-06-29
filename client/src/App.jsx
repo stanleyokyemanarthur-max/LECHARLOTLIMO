@@ -47,6 +47,7 @@ import ResetPassword from "./Pages/ResetPassword";
 import ScrollToTop from "./Components/ScrollTop.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 
 function App() {
@@ -64,43 +65,48 @@ function App() {
 
   return (
     <>
-    <ScrollToTop/>
-    <Router>
-      <Nav />
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-      />
+      <PayPalScriptProvider
+        options={{
+          "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID,
+          currency: "USD",
+        }}
+      >
 
-      <Routes>
-        {/* Public routes */}
+        <ScrollToTop />
+        <Router>
+          <Nav />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+          />
 
-
-        <Route path="/" element={<Index />} />
-        <Route path="/car/:id" element={<CarsDetails />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/services" element={<AllServices />} />
-        <Route path="/services/:slug" element={<Services />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/reservation-form" element={<ReservationForm />} />
-        <Route path="/reserve" element={<ReservationPage />} />
-        <Route path="/car/:id" element={<CarDetails />} />
-        <Route path="/select-car" element={<SelectCar />} />
-        <Route path="/service/:slug" element={<ServiceDetails />} />
-        <Route path="/final-details" element={<FinalDetails />} />
-        <Route path="/fleet" element={<FleetPage />} />
-        <Route path="/fleet/:slug" element={<FleetDetails />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
-        <Route path="/enableauthenticator" element={<EnableAuthenticator />} />
-        <Route path="/verify-totp-login" element={<VerifyTOTPLogin />} />
-        <Route path="/lost-authenticator" element={<LostAuthenticator />} />
-        <Route path="/reset-totp/:token" element={<ResetTOTP />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Routes>
+            {/* Public routes */}
 
 
+            <Route path="/" element={<Index />} />
+            <Route path="/car/:id" element={<CarsDetails />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<AllServices />} />
+            <Route path="/services/:slug" element={<Services />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/reservation-form" element={<ReservationForm />} />
+            <Route path="/reserve" element={<ReservationPage />} />
+            <Route path="/car/:id" element={<CarDetails />} />
+            <Route path="/select-car" element={<SelectCar />} />
+            <Route path="/service/:slug" element={<ServiceDetails />} />
+            <Route path="/final-details" element={<FinalDetails />} />
+            <Route path="/fleet" element={<FleetPage />} />
+            <Route path="/fleet/:slug" element={<FleetDetails />} />
+            <Route path="/verify-otp" element={<VerifyOtp />} />
+            <Route path="/enableauthenticator" element={<EnableAuthenticator />} />
+            <Route path="/verify-totp-login" element={<VerifyTOTPLogin />} />
+            <Route path="/lost-authenticator" element={<LostAuthenticator />} />
+            <Route path="/reset-totp/:token" element={<ResetTOTP />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
 
 
 
@@ -108,44 +114,47 @@ function App() {
 
 
 
-        {/* Protected routes */}
-
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/mybookings" element={<ProtectedRoute allowedRoles={["customer"]}>
-          <MyBookings />
-        </ProtectedRoute>} />
 
 
-        {/* Booking success route */}
-        <Route path="/booking-success" element={<BookingSuccess />} />
+            {/* Protected routes */}
 
-        <Route path="/booking-cancelled" element={<BookingCancelled />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/mybookings" element={<ProtectedRoute allowedRoles={["customer"]}>
+              <MyBookings />
+            </ProtectedRoute>} />
 
-        <Route path="/admin" element={<AdminLayout />}>
 
-        </Route>
+            {/* Booking success route */}
+            <Route path="/booking-success" element={<BookingSuccess />} />
 
-        {/* Admin routes */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="dashboard" element={<ProtectedRoute allowedRoles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
-          <Route path="bookings" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBookings /></ProtectedRoute>} />
-          <Route path="users" element={<ProtectedRoute allowedRoles={["admin"]}><AdminUsers /></ProtectedRoute>} />
-          <Route path="cars" element={<ProtectedRoute allowedRoles={["admin"]}><AdminCars /></ProtectedRoute>} />
-          <Route path="broadcast" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBroadcast /></ProtectedRoute>} />
-          <Route path="rewards" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminRewardsPage /></ProtectedRoute>} />
-          <Route path="milestones" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminMilestonesPage /></ProtectedRoute>} />
+            <Route path="/booking-cancelled" element={<BookingCancelled />} />
 
-        </Route>
-      </Routes>
-      <Footer />
-    </Router >
+            <Route path="/admin" element={<AdminLayout />}>
+
+            </Route>
+
+            {/* Admin routes */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<ProtectedRoute allowedRoles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
+              <Route path="bookings" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBookings /></ProtectedRoute>} />
+              <Route path="users" element={<ProtectedRoute allowedRoles={["admin"]}><AdminUsers /></ProtectedRoute>} />
+              <Route path="cars" element={<ProtectedRoute allowedRoles={["admin"]}><AdminCars /></ProtectedRoute>} />
+              <Route path="broadcast" element={<ProtectedRoute allowedRoles={["admin"]}><AdminBroadcast /></ProtectedRoute>} />
+              <Route path="rewards" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminRewardsPage /></ProtectedRoute>} />
+              <Route path="milestones" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminMilestonesPage /></ProtectedRoute>} />
+
+            </Route>
+          </Routes>
+          <Footer />
+        </Router >
+      </PayPalScriptProvider>
     </>
   );
 }

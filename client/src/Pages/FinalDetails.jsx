@@ -3,14 +3,20 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
+import PayPalButton from "../Components/PayPalButtons";
 
 function FinalDetails() {
+  const [bookingId, setBookingId] = useState(null);
+  const [bookingReady, setBookingReady] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { rideInfo, selectedCar, estimate } = location.state || {};
 
   const user = useSelector((state) => state.auth.userInfo);
   const [loading, setLoading] = useState(false);
+
+
+
 
 
 
@@ -26,6 +32,7 @@ function FinalDetails() {
 
   // 🔹 Save booking & redirect to Stripe checkout
   const handleBookingConfirm = async (guestInfo = null) => {
+
     try {
       setLoading(true);
 
@@ -81,6 +88,10 @@ function FinalDetails() {
 
       const booking = bookingRes.data.booking;
 
+      // Save booking ID for PayPal
+      setBookingId(booking._id);
+      setBookingReady(true);
+
       // 2. FORCE backend pricing finalization (IMPORTANT)
       const quoteRes = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
@@ -91,73 +102,93 @@ function FinalDetails() {
       console.log("✅ QUOTE FINALIZED");
       console.log(quoteRes.data);
 
+      setBookingId(booking._id);
+      setBookingReady(true);
+
       // Create Stripe session
-      const stripeRes = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
-        { bookingId: booking._id },
-        { headers }
-      );
+      // const stripeRes = await axios.post(
+      //   `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
+      //   { bookingId: booking._id },
+      //   { headers }
+      // );
 
-      window.location.href = stripeRes.data.url;
-} catch (err) {
-  console.error(err.response?.data);
+      // window.location.href = stripeRes.data.url;
+    } catch (err) {
+      console.error(err.response?.data);
 
-  // -----------------------------
-  // Resume existing payment
-  // -----------------------------
-  if (err.response?.data?.resumePayment) {
+      // -----------------------------
+      // Resume existing payment
+      // -----------------------------
+      if (err.response?.data?.resumePayment) {
+        try {
+          const booking = err.response.data.booking;
+
+          toast.info("Resuming your existing payment...");
+
+          const headers = user?.token
+            ? {
+              Authorization: `Bearer ${user.token}`,
+            }
+            : {};
+
+          // Lock quote again (safe)
+          await axios.post(
+            `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
+            {
+              bookingId: booking._id,
+            },
+            { headers }
+          );
+
+          // Create or reuse Stripe session
+
+
+          toast.info("Booking found. Choose your payment method below.");
+          return;
+        } catch (paymentErr) {
+          console.error(paymentErr);
+          toast.error("Unable to resume payment.");
+          return;
+        }
+      }
+
+      const errorMessage =
+        err.response?.data?.error ||
+        err.response?.data?.message;
+
+      if (errorMessage === "CAR_UNAVAILABLE") {
+        toast.error(
+          "Sorry, all vehicles of this model are reserved for the selected time."
+        );
+      } else {
+        toast.error(errorMessage || "Booking failed.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStripePayment = async () => {
     try {
-      const booking = err.response.data.booking;
-
-      toast.info("Resuming your existing payment...");
-
       const headers = user?.token
         ? {
-            Authorization: `Bearer ${user.token}`,
-          }
+          Authorization: `Bearer ${user.token}`,
+        }
         : {};
 
-      // Lock quote again (safe)
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
-        {
-          bookingId: booking._id,
-        },
-        { headers }
-      );
-
-      // Create or reuse Stripe session
       const stripeRes = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
         {
-          bookingId: booking._id,
+          bookingId,
         },
         { headers }
       );
 
       window.location.href = stripeRes.data.url;
-      return;
-    } catch (paymentErr) {
-      console.error(paymentErr);
-      toast.error("Unable to resume payment.");
-      return;
+    } catch (err) {
+      console.error(err);
+      toast.error("Unable to start Stripe checkout.");
     }
-  }
-
-  const errorMessage =
-    err.response?.data?.error ||
-    err.response?.data?.message;
-
-  if (errorMessage === "CAR_UNAVAILABLE") {
-    toast.error(
-      "Sorry, all vehicles of this model are reserved for the selected time."
-    );
-  } else {
-    toast.error(errorMessage || "Booking failed.");
-  }
-} finally {
-  setLoading(false);
-}
   };
 
   const handleGuestSubmit = (e) => {
@@ -274,8 +305,29 @@ function FinalDetails() {
             disabled={loading}
             className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#b58a2a] via-[#D4AF37] to-[#8a6a1f] text-black font-bold text-lg shadow-lg hover:scale-[1.02] transition"
           >
-            {loading ? "Processing..." : "Confirm & Pay"}
+            {loading ? "Processing..." : "Confirm Booking"}
           </button>
+
+          {bookingReady && (
+            <div className="mt-6 space-y-4">
+              <h3 className="text-lg font-semibold text-[#D4AF37]">
+                Choose Payment Method
+              </h3>
+
+              <button
+                onClick={handleStripePayment}
+                className="w-full py-4 rounded-2xl bg-[#635BFF] text-white font-bold hover:opacity-90 transition"
+              >
+                Pay with Stripe
+              </button>
+
+              <PayPalButton
+                amount={estimatedTotal}
+                bookingId={bookingId}
+                token={user?.token}
+              />
+            </div>
+          )}
 
         </div>
 

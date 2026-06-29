@@ -22,6 +22,7 @@ import adminMilestoneRoutes from "./routes/adminMilestone.routes.js";
 import { birthdayRewardJob } from "./jobs/birthdayRewards.js";
 import { expireRewardsJob } from "./jobs/expireRewards.js";
 import { rewardCleanupJob } from "./jobs/rewardCleanup.js";
+import paypalRoutes from "./routes/paypalRoutes.js"; // Import PayPal routes
 import "./jobs/index.js"; // to start the booking expiration job
 // Initialize dotenv
 dotenv.config();
@@ -58,7 +59,7 @@ const startServer = async () => {
     const PORT = process.env.PORT || 5000;
 
     // 4️⃣ Webhook route must come BEFORE express.json()
-    app.use(
+    app.post(
       "/api/payments/webhook",
       bodyParser.raw({ type: "application/json" }),
       paymentWebhook
@@ -79,6 +80,7 @@ const startServer = async () => {
     app.use("/api/rewards", rewardRoutes);
     app.use("/api/admin", adminRewardsRoutes);
     app.use("/api/admin/milestones", adminMilestoneRoutes);
+    app.use("/api/paypal", paypalRoutes); // Add PayPal routes
 
     // Root route
     app.get("/", (req, res) =>
