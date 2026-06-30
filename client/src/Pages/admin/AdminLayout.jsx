@@ -76,10 +76,16 @@ export default function AdminLayout() {
       )}
 
       {/* ================= MOBILE SIDEBAR ================= */}
-      <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-[#111111] border-r border-gray-800 z-50 transform transition-transform duration-300 lg:hidden
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
-      >
+    <aside
+  className={`fixed top-0 left-0 h-full w-72
+  bg-[#111111]
+  border-r border-gray-800
+  z-50
+  flex flex-col
+  transform transition-transform duration-300
+  lg:hidden
+  ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+>
         <div className="flex items-center justify-between p-5 border-b border-gray-800">
           <h2 className="text-2xl font-bold text-[#D4AF37]">
             Admin Panel
@@ -90,7 +96,7 @@ export default function AdminLayout() {
           </button>
         </div>
 
-        <nav className="flex flex-col p-4 space-y-3">
+        <nav className="flex-1 overflow-y-auto flex flex-col p-4 space-y-3">
 
           {menuItems.map((item) => {
             const Icon = item.icon;
