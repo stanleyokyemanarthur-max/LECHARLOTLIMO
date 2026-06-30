@@ -179,6 +179,7 @@ export default function AdminBookings() {
             <tr>
               <th className="px-4 py-3 text-left">Car</th>
               <th className="px-4 py-3 text-left">Customer</th>
+              <th className="px-4 py-3 text-left">Contact</th>
               <th className="px-4 py-3 text-left">Pickup</th>
               <th className="px-4 py-3 text-left">Dropoff</th>
               <th className="px-4 py-3 text-left">Pickup time</th>
