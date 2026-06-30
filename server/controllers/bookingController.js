@@ -273,6 +273,7 @@ export const assignDriver = async (req, res) => {
     if (driverId === null || driverId === "null" || driverId === "") {
       await session.withTransaction(async () => {
         booking.driver = null;
+        booking.driverStatus = "unassigned";
         await booking.save({ session });
       });
 
@@ -296,13 +297,36 @@ export const assignDriver = async (req, res) => {
 
     await session.withTransaction(async () => {
       booking.driver = driver._id;
+      booking.driverStatus = "assigned";
       await booking.save({ session });
     });
 
     const updated = await Booking.findById(booking._id)
-      .populate("user")
-      .populate("car")
+      .populate("user", "name email phone")
+      .populate("car","name")
       .populate("driver", "name email");
+      try {
+  await sendEmail({
+    to: driver.email,
+    subject: "New Booking Assigned — Le Charlot Limousine",
+    html: emailShell(`
+      <h2>Hello ${driver.name},</h2>
+
+      <p>You have been assigned a new booking.</p>
+
+      <p><strong>Customer:</strong> ${updated.user.name}</p>
+      <p><strong>Phone:</strong> ${updated.user.phone || "N/A"}</p>
+      <p><strong>Vehicle:</strong> ${updated.car.name}</p>
+      <p><strong>Pickup:</strong> ${updated.pickupLocation}</p>
+      <p><strong>Dropoff:</strong> ${updated.dropoffLocation}</p>
+      <p><strong>Pickup Time:</strong> ${new Date(updated.pickupDate).toLocaleString()}</p>
+
+      <p>Please log in to your driver dashboard for more details.</p>
+    `),
+  });
+} catch (emailErr) {
+  console.error("Driver assignment email failed:", emailErr);
+}
 
     res.json(updated);
   } catch (err) {

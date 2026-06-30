@@ -14,6 +14,17 @@ const bookingSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
+ driverStatus: {
+  type: String,
+  enum: [
+    "unassigned",
+    "assigned",
+    "picked_up",
+    "enroute",
+    "completed",
+  ],
+  default: "unassigned",
+},
 
     car: {
       type: mongoose.Schema.Types.ObjectId,
