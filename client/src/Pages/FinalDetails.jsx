@@ -299,15 +299,18 @@ function FinalDetails() {
             )}
           </div>
 
-          {/* CTA */}
-          <button
-            onClick={() => handleBookingConfirm()}
-            disabled={loading}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#b58a2a] via-[#D4AF37] to-[#8a6a1f] text-black font-bold text-lg shadow-lg hover:scale-[1.02] transition"
-          >
-            {loading ? "Processing..." : "Confirm Booking"}
-          </button>
+          {/* Confirm Booking Button */}
+          {!bookingReady && (
+            <button
+              onClick={() => handleBookingConfirm()}
+              disabled={loading}
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#b58a2a] via-[#D4AF37] to-[#8a6a1f] text-black font-bold text-lg shadow-lg hover:scale-[1.02] transition"
+            >
+              {loading ? "Processing..." : "Confirm Booking"}
+            </button>
+          )}
 
+          {/* Payment Options */}
           {bookingReady && (
             <div className="mt-6 space-y-4">
               <h3 className="text-lg font-semibold text-[#D4AF37]">
@@ -321,13 +324,11 @@ function FinalDetails() {
                 Pay with Stripe
               </button>
 
-              <div className="border border-red-500 p-4">
-                <PayPalButton
-                  amount={estimatedTotal}
-                  bookingId={bookingId}
-                  token={user?.token}
-                />
-              </div>
+              <PayPalButton
+                amount={estimatedTotal}
+                bookingId={bookingId}
+                token={user?.token}
+              />
             </div>
           )}
 
