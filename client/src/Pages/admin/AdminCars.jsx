@@ -53,7 +53,7 @@ const { token, userInfo } = useSelector((state) => state.auth);
  useEffect(() => {
   const fetchCars = async () => {
     try {
-      const { data } = await api.get("/api/cars", {
+      const { data } = await api.get("/api/fleet", {
         headers: authHeaders,
       });
 
