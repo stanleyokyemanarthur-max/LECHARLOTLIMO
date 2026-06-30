@@ -14,7 +14,7 @@ export default function DriverLayout() {
   return (
     <div className="flex min-h-screen bg-[#0b0b0b] text-white">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#111111] border-r border-gray-800 flex flex-col p-6">
+      <aside className="w-64 bg-[#111111] border-r mt-20 border-gray-800 flex flex-col p-6">
         <h2 className="text-2xl font-bold text-[#D4AF37] mb-8">Driver Panel</h2>
         <nav className="flex flex-col space-y-3">
           <button
