@@ -74,7 +74,7 @@ export default function AdminLayout() {
             <GiftIcon className="w-5 h-5 text-[#D4AF37]" />
             <span>Rewards</span>
           </button>
-          <button
+          {/* <button
             onClick={() => navigate("/admin/milestones")}
             className={`flex items-center gap-3 px-3 py-5 rounded-lg transition font-semibold ${isActive("/admin/milestones")
                 ? "bg-[#d8c305c5]/30"
@@ -83,7 +83,7 @@ export default function AdminLayout() {
           >
             <Flag className="w-5 h-5 text-[#D4AF37]" />
             <span>Milestones</span>
-          </button>
+          </button> */}
 
 
 
