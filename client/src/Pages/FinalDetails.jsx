@@ -321,15 +321,13 @@ function FinalDetails() {
                 Pay with Stripe
               </button>
 
-             <div className="border border-red-500 p-4">
-  <p>PayPal component should be below:</p>
-
-  <PayPalButton
-    amount={estimatedTotal}
-    bookingId={bookingId}
-    token={user?.token}
-  />
-</div>
+              <div className="border border-red-500 p-4">
+                <PayPalButton
+                  amount={estimatedTotal}
+                  bookingId={bookingId}
+                  token={user?.token}
+                />
+              </div>
             </div>
           )}
 

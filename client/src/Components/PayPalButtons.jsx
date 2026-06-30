@@ -1,4 +1,4 @@
-import { PayPalButtons } from "@paypal/react-paypal-js";
+import { PayPalButtons, FUNDING } from "@paypal/react-paypal-js";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +11,14 @@ export default function PayPalButton({ amount, bookingId, token }) {
 
   return (
     <PayPalButtons
+      fundingSource={FUNDING.PAYPAL}
+      style={{
+        layout: "vertical",
+        label: "paypal",
+        color: "gold",
+        shape: "rect",
+        height: 50,
+      }}
       createOrder={async () => {
         const res = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/paypal/create-order`,
@@ -20,7 +28,6 @@ export default function PayPalButton({ amount, bookingId, token }) {
 
         return res.data.id;
       }}
-
       onApprove={async (data) => {
         try {
           const res = await axios.post(
@@ -33,7 +40,9 @@ export default function PayPalButton({ amount, bookingId, token }) {
           );
 
           if (res.data.success) {
-            navigate("/booking-success?source=paypal", { replace: true });
+            navigate("/booking-success?source=paypal", {
+              replace: true,
+            });
           }
         } catch (err) {
           console.error("Capture failed:", err);

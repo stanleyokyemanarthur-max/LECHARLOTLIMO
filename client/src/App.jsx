@@ -69,7 +69,9 @@ function App() {
         options={{
           "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID,
           currency: "USD",
+          disableFunding: "paylater,card",
         }}
+
       >
 
         <ScrollToTop />
