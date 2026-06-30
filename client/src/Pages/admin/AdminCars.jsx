@@ -10,7 +10,7 @@ const api = axios.create({
 });
 
 export default function AdminCars() {
-  const { userInfo } = useSelector((state) => state.auth);
+const { token, userInfo } = useSelector((state) => state.auth);
 
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,10 +50,27 @@ export default function AdminCars() {
     };
   }, [userInfo]);
 
-  useEffect(() => {
-    localStorage.setItem("carFilters", JSON.stringify(filters));
-  }, [filters]);
+ useEffect(() => {
+  const fetchCars = async () => {
+    try {
+      const { data } = await api.get("/api/cars", {
+        headers: authHeaders,
+      });
 
+      setCars(data);
+    } catch (err) {
+      console.error("Fetch cars failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (token) {
+    fetchCars();
+  } else {
+    setLoading(false);
+  }
+}, [token, authHeaders]);
   /**
    * FETCH CARS
    */
