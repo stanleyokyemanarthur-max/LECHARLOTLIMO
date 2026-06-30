@@ -36,20 +36,29 @@ const { token, userInfo } = useSelector((state) => state.auth);
   fetchBookings();
 }, [token]);
 
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      await axios.put(`https://lecharlotlimo-aucd.onrender.com/api/bookings/${id}/status`, {
+ const handleStatusChange = async (id, newStatus) => {
+  try {
+    const res = await axios.put(
+      `https://lecharlotlimo-aucd.onrender.com/api/bookings/${id}/status`,
+      {
         status: newStatus,
-      });
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-      // Optimistic UI update
-      setBookings((prev) =>
-        prev.map((b) => (b._id === id ? { ...b, status: newStatus } : b))
-      );
-    } catch (error) {
-      console.error("Error updating booking status:", error);
-    }
-  };
+   setBookings((prev) =>
+  prev.map((b) =>
+    b._id === id ? res.data : b
+  )
+    );
+  } catch (error) {
+    console.error("STATUS UPDATE FAILED:", error.response?.data || error.message);
+  }
+};
 
   if (loading) {
     return (

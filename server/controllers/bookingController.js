@@ -339,11 +339,11 @@ export const assignDriver = async (req, res) => {
 
 
 export const updateBookingStatus = async (req, res) => {
+  const admins = await User.find({ role: "admin" }).select("email name");
   const session = await mongoose.startSession();
 
   try {
     let booking;
-
     await session.withTransaction(async () => {
       booking = await Booking.findById(req.params.id)
         .populate("user", "email name")
@@ -410,6 +410,22 @@ export const updateBookingStatus = async (req, res) => {
       }
 
       await booking.save({ session });
+      for (const admin of admins) {
+  await sendEmail({
+    to: admin.email,
+    subject: `Booking Updated: ${booking.status}`,
+    html: emailShell(`
+      <h2>Booking Status Updated</h2>
+
+      <p><strong>Booking ID:</strong> ${booking._id}</p>
+      <p><strong>Status:</strong> ${booking.status}</p>
+      <p><strong>Driver:</strong> ${booking.driver?.name || "Not assigned"}</p>
+      <p><strong>Customer:</strong> ${booking.user?.name}</p>
+
+      <p>Please log in to admin dashboard for details.</p>
+    `),
+  });
+}
 
       // =============================
       // 🎁 REWARD HANDLING
@@ -529,7 +545,12 @@ export const updateBookingStatus = async (req, res) => {
       console.error("Email error:", emailErr);
     }
 
-    return res.json(booking);
+    const updatedBooking = await Booking.findById(booking._id)
+  .populate("user", "name email")
+  .populate("car")
+  .populate("driver", "name email");
+
+return res.json(updatedBooking);
   } catch (err) {
     console.error("Update booking status error:", err);
 
