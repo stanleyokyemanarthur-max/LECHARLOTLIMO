@@ -259,7 +259,7 @@ export default function AdminCars() {
       {/* ================= VIEW MODAL ================= */}
       {showDetails && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
-          <div className="bg-gray-900 p-6 rounded w-[400px]">
+         <div className="bg-gray-900 p-6 rounded w-[400px]">
             <h2 className="text-[#D4AF37] text-xl mb-3">
               {showDetails.name}
             </h2>
@@ -271,9 +271,13 @@ export default function AdminCars() {
 
             <p>Type: {showDetails.type}</p>
             <p>Seats: {showDetails.seats}</p>
+            <p>Transmission: {showDetails.transmission}</p>
+            <p>Fuel: {showDetails.fuel}</p>
+            <p>Speed: {showDetails.speed}</p>
             <p>Fleet: {showDetails.fleetKey}</p>
-            <p>Rate Multiplier: {showDetails.rateMultiplier}</p>
-            <p>Per Mile Rate: ${showDetails.perMileRate}</p>
+            <p>Units: {showDetails.totalUnits}</p>
+            <p>Multiplier: {showDetails.rateMultiplier}</p>
+            <p>Rate: ${showDetails.perMileRate}</p>
             <p>Status: {showDetails.status}</p>
 
             <button
@@ -287,7 +291,7 @@ export default function AdminCars() {
       )}
 
       {/* ================= FORM MODAL ================= */}
-      {showForm && (
+       {showForm && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center">
           <form
             onSubmit={handleSubmit}
@@ -297,73 +301,39 @@ export default function AdminCars() {
               {editingCar ? "Edit Car" : "Add Car"}
             </h2>
 
-            {/* NAME */}
-            <input
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Name"
-              className="w-full mb-2 p-2 bg-gray-800"
-            />
+            <input name="name" value={form.name} onChange={handleChange} placeholder="Name" className="input" />
 
-            {/* TYPE */}
-            <select
-              name="type"
-              value={form.type}
-              onChange={handleChange}
-              className="w-full mb-2 p-2 bg-gray-800"
-            >
+            <select name="type" value={form.type} onChange={handleChange} className="input">
               <option>SUV</option>
               <option>Luxury</option>
               <option>Sedan</option>
               <option>Economy</option>
             </select>
 
-            {/* SEATS */}
-            <input
-              name="seats"
-              value={form.seats}
-              onChange={handleChange}
-              placeholder="Seats"
-              className="w-full mb-2 p-2 bg-gray-800"
-            />
+            <input name="seats" type="number" value={form.seats} onChange={handleChange} placeholder="Seats" className="input" />
 
-            {/* RATE MULTIPLIER */}
-            <input
-              name="rateMultiplier"
-              value={form.rateMultiplier}
-              onChange={handleChange}
-              placeholder="Rate Multiplier"
-              className="w-full mb-2 p-2 bg-gray-800"
-            />
+            <input name="transmission" value={form.transmission} onChange={handleChange} placeholder="Transmission" className="input" />
 
-            {/* PER MILE RATE */}
-            <input
-              name="perMileRate"
-              value={form.perMileRate}
-              onChange={handleChange}
-              placeholder="Per Mile Rate"
-              className="w-full mb-2 p-2 bg-gray-800"
-            />
+            <input name="fuel" value={form.fuel} onChange={handleChange} placeholder="Fuel" className="input" />
 
-            {/* FLEET KEY */}
-            <input
-              name="fleetKey"
-              value={form.fleetKey}
-              onChange={handleChange}
-              placeholder="Fleet Key"
-              className="w-full mb-2 p-2 bg-gray-800"
-            />
+            <input name="speed" value={form.speed} onChange={handleChange} placeholder="Speed" className="input" />
 
-            {/* IMAGE */}
-            <input
-              type="file"
-              name="image"
-              onChange={handleChange}
-              className="w-full mb-2"
-            />
+            <input name="fleetKey" value={form.fleetKey} onChange={handleChange} placeholder="Fleet Key" className="input" />
 
-            <div className="flex justify-end gap-2">
+            <input name="totalUnits" type="number" value={form.totalUnits} onChange={handleChange} placeholder="Units" className="input" />
+
+            <input name="rateMultiplier" type="number" value={form.rateMultiplier} onChange={handleChange} placeholder="Multiplier" className="input" />
+
+            <input name="perMileRate" type="number" value={form.perMileRate} onChange={handleChange} placeholder="Rate" className="input" />
+
+            <select name="status" value={form.status} onChange={handleChange} className="input">
+              <option value="available">Available</option>
+              <option value="unavailable">Unavailable</option>
+            </select>
+
+            <input type="file" name="image" onChange={handleChange} className="input" />
+
+            <div className="flex justify-end gap-2 mt-4">
               <button type="button" onClick={resetForm}>
                 Cancel
               </button>
