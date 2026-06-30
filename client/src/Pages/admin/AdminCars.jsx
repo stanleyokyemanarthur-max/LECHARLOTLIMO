@@ -219,7 +219,9 @@ export default function AdminCars() {
             <th>Type</th>
             <th>Seats</th>
             <th>Fleet</th>
-            <th>Rate</th>
+            <th>Total Units</th>
+            <th>Rate Multiplier</th>
+            <th>Per Mile Rate</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -239,6 +241,8 @@ export default function AdminCars() {
               <td>{car.type}</td>
               <td>{car.seats}</td>
               <td>{car.fleetKey}</td>
+              <td>{car.totalUnits}</td>
+<td>{car.rateMultiplier}</td>
               <td>${car.perMileRate}</td>
               <td>{car.status}</td>
 
@@ -268,7 +272,8 @@ export default function AdminCars() {
             <p>Type: {showDetails.type}</p>
             <p>Seats: {showDetails.seats}</p>
             <p>Fleet: {showDetails.fleetKey}</p>
-            <p>Rate: ${showDetails.perMileRate}</p>
+            <p>Rate Multiplier: {showDetails.rateMultiplier}</p>
+            <p>Per Mile Rate: ${showDetails.perMileRate}</p>
             <p>Status: {showDetails.status}</p>
 
             <button
@@ -323,12 +328,21 @@ export default function AdminCars() {
               className="w-full mb-2 p-2 bg-gray-800"
             />
 
-            {/* RATE */}
+            {/* RATE MULTIPLIER */}
+            <input
+              name="rateMultiplier"
+              value={form.rateMultiplier}
+              onChange={handleChange}
+              placeholder="Rate Multiplier"
+              className="w-full mb-2 p-2 bg-gray-800"
+            />
+
+            {/* PER MILE RATE */}
             <input
               name="perMileRate"
               value={form.perMileRate}
               onChange={handleChange}
-              placeholder="Rate"
+              placeholder="Per Mile Rate"
               className="w-full mb-2 p-2 bg-gray-800"
             />
 
