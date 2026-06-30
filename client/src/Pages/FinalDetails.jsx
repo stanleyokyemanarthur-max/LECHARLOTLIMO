@@ -319,16 +319,17 @@ function FinalDetails() {
 
               <button
                 onClick={handleStripePayment}
-                className="w-full py-4 rounded-2xl bg-[#635BFF] text-white font-bold hover:opacity-90 transition"
+                className="w-full py-4 pb-5 rounded-2xl bg-[#635BFF] text-white font-bold hover:opacity-90 transition"
               >
                 Pay with Stripe
               </button>
-
+              <div className="mt-8">
               <PayPalButton
                 amount={estimatedTotal}
                 bookingId={bookingId}
                 token={user?.token}
               />
+              </div>
             </div>
           )}
 
