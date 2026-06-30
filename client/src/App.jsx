@@ -153,6 +153,17 @@ function App() {
               <Route path="milestones" element={<ProtectedRoute allowedRoles={["admin"]}> <AdminMilestonesPage /></ProtectedRoute>} />
 
             </Route>
+
+            <Route
+              path="/driver"
+              element={
+                <ProtectedRoute allowedRoles={["driver"]}>
+                  <DriverLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<DriverDashboard />} />
+            </Route>
           </Routes>
           <Footer />
         </Router >

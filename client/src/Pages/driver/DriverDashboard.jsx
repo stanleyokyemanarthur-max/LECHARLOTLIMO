@@ -6,23 +6,35 @@ import { useSelector } from "react-redux";
 function DriverDashboard() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { userInfo } = useSelector((state) => state.auth);
+const { token, userInfo } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        // 👇 Fetch all bookings (client = single driver)
-        const res = await axios.get("https://lecharlotlimo-aucd.onrender.com/api/bookings");
-        setBookings(res.data);
-      } catch (error) {
-        console.error("Error fetching bookings:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+ useEffect(() => {
+   if (!token) {
+    setLoading(false);
+    return;
+  }
 
-    fetchBookings();
-  }, []);
+  const fetchBookings = async () => {
+    try {
+      const res = await axios.get(
+        "https://lecharlotlimo-aucd.onrender.com/api/bookings/driver",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setBookings(res.data);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchBookings();
+}, [token]);
 
   const handleStatusChange = async (id, newStatus) => {
     try {
