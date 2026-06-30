@@ -173,7 +173,7 @@ export default function AdminBookings() {
         ))}
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-700">
+      <div className="hidden lg:block overflow-x-auto rounded-lg border border-gray-700">
         <table className="min-w-full text-sm">
           <thead className="bg-[#D4AF37] text-black">
             <tr>
@@ -320,6 +320,213 @@ export default function AdminBookings() {
           </tbody>
         </table>
       </div>
+      <div className="lg:hidden space-y-4">
+
+  {filteredBookings.length > 0 ? (
+
+    filteredBookings.map((b) => {
+
+      const paymentStatus = b.paymentStatus || "pending";
+      const isPaid = paymentStatus === "paid";
+      const isFree = b.isPaid === false;
+      const canProgress = isPaid || isFree;
+      const freeLabel = freeBadge(b);
+
+      return (
+
+        <div
+          key={b._id}
+          className="bg-[#111111] border border-gray-700 rounded-xl p-4"
+        >
+
+          <div className="flex justify-between items-start">
+
+            <div>
+              <h3 className="font-semibold text-[#D4AF37]">
+                {b.car?.name || b.carSnapshot?.name}
+              </h3>
+
+              <p className="text-xs text-gray-400">
+                {b.carSnapshot?.category}
+              </p>
+            </div>
+
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-semibold ${statusPill(
+                b.status
+              )}`}
+            >
+              {b.status}
+            </span>
+
+          </div>
+
+          <div className="mt-4 space-y-2 text-sm">
+
+            <div>
+              <span className="text-gray-400">Customer:</span>{" "}
+              {b.user?.name}
+            </div>
+
+            <div>
+              <span className="text-gray-400">Phone:</span>{" "}
+              {b.user?.phone}
+            </div>
+
+            <div>
+              <span className="text-gray-400">Pickup:</span>{" "}
+              {b.pickupLocation}
+            </div>
+
+            <div>
+              <span className="text-gray-400">Dropoff:</span>{" "}
+              {b.dropoffLocation}
+            </div>
+
+            <div>
+              <span className="text-gray-400">Pickup Time:</span>{" "}
+              {formatDateTime(b.pickupDate)}
+            </div>
+
+            <div>
+              <span className="text-gray-400">Total:</span>{" "}
+              <span className="font-bold text-[#D4AF37]">
+                ${formatMoney(b.totalPrice)}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-semibold ${paymentBadge(
+                  paymentStatus
+                )}`}
+              >
+                {paymentStatus}
+              </span>
+
+              {freeLabel && (
+                <span className="text-xs text-gray-300">
+                  {freeLabel}
+                </span>
+              )}
+
+            </div>
+
+          </div>
+
+          <div className="mt-5">
+
+            <label className="block text-xs text-gray-400 mb-1">
+              Assign Driver
+            </label>
+
+            <select
+              value={b.driver?._id || ""}
+              onChange={async (e) => {
+
+                const driverId = e.target.value || null;
+
+                try {
+
+                  const res = await axios.put(
+                    `${API_BASE}/api/bookings/${b._id}/assign-driver`,
+                    { driverId },
+                    {
+                      headers: {
+                        Authorization: `Bearer ${userInfo?.token}`,
+                      },
+                    }
+                  );
+
+                  const updated = res.data;
+
+                  setBookings((prev) =>
+                    prev.map((x) =>
+                      x._id === b._id ? updated : x
+                    )
+                  );
+
+                } catch (err) {
+                  alert(err?.response?.data?.error || err.message);
+                }
+
+              }}
+              className="w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg p-2"
+            >
+
+              <option value="">Unassigned</option>
+
+              {drivers.map((d) => (
+                <option key={d._id} value={d._id}>
+                  {d.name}
+                </option>
+              ))}
+
+            </select>
+
+          </div>
+
+          <div className="mt-4">
+
+            <label className="block text-xs text-gray-400 mb-1">
+              Booking Status
+            </label>
+
+            <select
+              value={b.status}
+              onChange={(e) =>
+                handleStatusChange(b._id, e.target.value)
+              }
+              className="w-full bg-gray-800 border border-gray-600 rounded-lg p-2"
+            >
+
+              <option value="pending">Pending</option>
+
+              <option
+                value="confirmed"
+                disabled={!canProgress}
+              >
+                Confirmed
+              </option>
+
+              <option
+                value="enroute"
+                disabled={!canProgress}
+              >
+                En Route
+              </option>
+
+              <option
+                value="completed"
+                disabled={b.status === "pending"}
+              >
+                Completed
+              </option>
+
+              <option value="cancelled">
+                Cancelled
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+      );
+
+    })
+
+  ) : (
+
+    <div className="text-center py-10 text-gray-400">
+      No bookings found.
+    </div>
+
+  )}
+
+</div>
     </div>
   );
 }
