@@ -97,7 +97,6 @@ function Index() {
                       className="btn btn-gold btn--hero flex items-center justify-center gap-2 text-sm sm:text-base"
                     >
                       <span>Reserve Your Chauffeur</span>
-                      <span className="text-[14px] leading-none translate-y-[1px]">↗</span>
                     </button>
 
                     <button
@@ -105,7 +104,6 @@ function Index() {
                       className="hero-btn hero-btn--link flex items-center justify-center gap-2 text-sm sm:text-base"
                     >
                       <span>View Fleet</span>
-                      <span className="text-[14px] leading-none translate-y-[1px]">↗</span>
                     </button>
                   </div>
 
