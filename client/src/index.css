@@ -927,3 +927,108 @@ input[placeholder="Drop-off Location"] {
     0 1px 0 rgba(255,255,255,.15),
     0 6px 20px rgba(0,0,0,.55);
 }
+
+
+@media (max-width: 768px) {
+
+  /* =========================
+     HERO STRUCTURE FIX
+  ========================= */
+  .hero {
+    height: 100svh;
+  }
+
+  .hero-inner {
+    padding: 0 18px;
+  }
+
+  .hero-content {
+    max-width: 100%;
+    text-align: left;
+  }
+
+  /* =========================
+     REDUCE VISUAL CLUTTER
+  ========================= */
+
+  .hero-content::after {
+    display: none;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    margin-bottom: 10px;
+  }
+
+  .hero-title {
+    font-size: clamp(30px, 9vw, 42px);
+    line-height: 1.08;
+    margin-bottom: 10px;
+  }
+
+  .hero-subcopy {
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    max-width: 100%;
+  }
+
+  .hero-italic {
+    font-size: 12px;
+    margin-bottom: 12px;
+    opacity: 0.85;
+  }
+
+  /* =========================
+     BUTTON STACK (KEY FIX)
+  ========================= */
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .hero-btn--gold {
+    width: 100%;
+    text-align: center;
+  }
+
+  .hero-btn--link {
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  /* =========================
+     FEATURES SIMPLIFY
+  ========================= */
+  .hero-features {
+    font-size: 11px;
+    gap: 10px;
+    opacity: 0.85;
+    margin-top: 10px;
+  }
+
+  /* Optional: reduce to 2 items per row feel */
+  .hero-features span {
+    white-space: nowrap;
+  }
+
+  /* =========================
+     BACKGROUND POSITION FIX
+  ========================= */
+  .hero-slide::before {
+    background-position: 55% 20%, 50% 50%;
+    transform: scale(1.2);
+  }
+
+  /* =========================
+     BOTTOM TEXT CLEANUP
+  ========================= */
+  .hero-bottom {
+    bottom: 14px;
+    font-size: 11px;
+  }
+}

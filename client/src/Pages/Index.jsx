@@ -56,7 +56,7 @@ function Index() {
 
   return (
     <>
-      <div className="hero pt-[env(safe-area-inset-top)] mt-24 md:mt-12 xl:mt-8">
+      <div className="hero pt-[env(safe-area-inset-top)] mt-24 md:mt-12 xl:mt-8 min-h-[100svh] flex items-center">
         {loading && <Spinner />}
 
         <Swiper
@@ -94,16 +94,18 @@ function Index() {
                   <div className="hero-actions">
                     <button
                       onClick={() => navigate("/reservation-form")}
-                      className="btn btn-gold btn--hero"
+                      className="btn btn-gold btn--hero flex items-center justify-center gap-2 text-sm sm:text-base"
                     >
-                      Reserve Your Chauffeur ↗
+                      <span>Reserve Your Chauffeur</span>
+                      <span className="text-[14px] leading-none translate-y-[1px]">↗</span>
                     </button>
 
                     <button
                       onClick={() => navigate("/fleet")}
-                      className="hero-btn hero-btn--link"
+                      className="hero-btn hero-btn--link flex items-center justify-center gap-2 text-sm sm:text-base"
                     >
-                      View Fleet ↗
+                      <span>View Fleet</span>
+                      <span className="text-[14px] leading-none translate-y-[1px]">↗</span>
                     </button>
                   </div>
 
@@ -138,12 +140,12 @@ function Index() {
                   </h1>
 
                   <p className="hero-subcopy">
-                  Chauffeur-driven luxury crafted for those who value discretion, comfort, and impeccable service.
+                    Chauffeur-driven luxury crafted for those who value discretion, comfort, and impeccable service.
                   </p>
                   <p className="hero-subcopy">
-                  Premium airport and corporate transportation across 
-                  Atlanta and its metro areas.
-                
+                    Premium airport and corporate transportation across
+                    Atlanta and its metro areas.
+
                   </p>
 
                   <p className="hero-italic">Discretion. Presence. Confidence.</p>
@@ -191,11 +193,11 @@ function Index() {
                   <span className="hero-eyebrow">COMFORT · CLASS · PRECISION</span>
 
                   <h1 className="hero-title">
-                   A Seamless Journey, <br />Defined by Excellence
+                    A Seamless Journey, <br />Defined by Excellence
                   </h1>
 
                   <p className="hero-subcopy">
-                  From airport transfers to corporate engagements, every detail is curated to exceed expectations.
+                    From airport transfers to corporate engagements, every detail is curated to exceed expectations.
                   </p>
 
                   <p className="hero-italic">Discretion. Presence. Confidence.</p>
@@ -297,59 +299,59 @@ function Index() {
 
         </div>
       </div> */}
-<section className="w-full bg-[#0B0B0B] py-20 px-6 md:px-16">
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+      <section className="w-full bg-[#0B0B0B] py-20 px-6 md:px-16">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
 
-        {/* Image Side */}
-        <div className="relative">
-          <div className="rounded-2xl overflow-hidden border border-[#D4AF37]/20 shadow-[0_0_40px_rgba(212,175,55,0.15)]">
-            <img
-              src="/images/headmug.jpeg"
-              alt="Founder - Pierre Charlot"
-              className="w-full h-[500px] object-cover object-top"
-            />
+          {/* Image Side */}
+          <div className="relative">
+            <div className="rounded-2xl overflow-hidden border border-[#D4AF37]/20 shadow-[0_0_40px_rgba(212,175,55,0.15)]">
+              <img
+                src="/images/headmug.jpeg"
+                alt="Founder - Pierre Charlot"
+                className="w-full h-[500px] object-cover object-top"
+              />
+            </div>
+
+            {/* subtle glow */}
+            <div className="absolute -inset-4 bg-[#D4AF37]/10 blur-3xl rounded-3xl -z-10"></div>
           </div>
 
-          {/* subtle glow */}
-          <div className="absolute -inset-4 bg-[#D4AF37]/10 blur-3xl rounded-3xl -z-10"></div>
-        </div>
+          {/* Text Side */}
+          <div className="text-[#EDEDED] space-y-6">
 
-        {/* Text Side */}
-        <div className="text-[#EDEDED] space-y-6">
-          
-          <div>
-            <h2 className="text-3xl md:text-4xl font-[Playfair_Display] text-[#D4AF37]">
-              About the Founder
-            </h2>
-            <div className="w-20 h-[2px] bg-gradient-to-r from-[#7a5a12] via-[#f2d27a] to-[#8a6316] mt-3"></div>
-          </div>
+            <div>
+              <h2 className="text-3xl md:text-4xl font-[Playfair_Display] text-[#D4AF37]">
+                About the Founder
+              </h2>
+              <div className="w-20 h-[2px] bg-gradient-to-r from-[#7a5a12] via-[#f2d27a] to-[#8a6316] mt-3"></div>
+            </div>
 
-          <p className="leading-relaxed text-[#CFC7B2]">
-            Inspired by the timeless elegance, hospitality, and attention to detail associated
-            with French culture, Pierre Charlot founded <span className="text-[#D4AF37] font-medium">Le Charlot Limousine</span> with a simple vision:
-            to bring a higher standard of service to luxury transportation in Atlanta.
-          </p>
-
-          <p className="leading-relaxed text-[#CFC7B2]">
-            Drawing inspiration from his French heritage, Pierre believes that true luxury is not defined solely by the vehicle,
-            but by the experience. Professionalism, punctuality, discretion, Elegance, hospitality, Uncompromising service and genuine care are the principles that guide every journey
-          </p>
-
-          <p className="leading-relaxed text-[#CFC7B2]">
-            Whether serving executives, families, airport travelers, or guests attending special events,
-            Le Charlot Limousine is committed to delivering a seamless experience marked by comfort,
-            reliability, and exceptional service.
-          </p>
-
-          <div className="pt-2">
-            <p className="italic text-[#D4AF37]">
-              “At Le Charlot Limousine, every detail matters—because excellence is never an accident; it is a standard.”
+            <p className="leading-relaxed text-[#CFC7B2]">
+              Inspired by the timeless elegance, hospitality, and attention to detail associated
+              with French culture, Pierre Charlot founded <span className="text-[#D4AF37] font-medium">Le Charlot Limousine</span> with a simple vision:
+              to bring a higher standard of service to luxury transportation in Atlanta.
             </p>
-          </div>
 
+            <p className="leading-relaxed text-[#CFC7B2]">
+              Drawing inspiration from his French heritage, Pierre believes that true luxury is not defined solely by the vehicle,
+              but by the experience. Professionalism, punctuality, discretion, Elegance, hospitality, Uncompromising service and genuine care are the principles that guide every journey
+            </p>
+
+            <p className="leading-relaxed text-[#CFC7B2]">
+              Whether serving executives, families, airport travelers, or guests attending special events,
+              Le Charlot Limousine is committed to delivering a seamless experience marked by comfort,
+              reliability, and exceptional service.
+            </p>
+
+            <div className="pt-2">
+              <p className="italic text-[#D4AF37]">
+                “At Le Charlot Limousine, every detail matters—because excellence is never an accident; it is a standard.”
+              </p>
+            </div>
+
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
       {/* ================= Banner Section ================= */}
       <div className="banner-section bg-[#0c0c0c] lg:px-[12%] px-[8%] py-[80px] lg:py-[120px] text-center text-white">
 
@@ -572,10 +574,10 @@ function Index() {
               </h1>
               <p className="text-white text-md leading-relaxed">
                 We operate with an uncompromising commitment to precision, discretion, and accountability.
-Every detail is anticipated. Every standard is enforced. Every journey is executed with discipline and control.
+                Every detail is anticipated. Every standard is enforced. Every journey is executed with discipline and control.
 
-We understand that our clients do not measure value in cost, but in time, reliability, and trust.
-For that reason, we deliver a level of service defined by consistency, professionalism, and quiet excellence—without exception.
+                We understand that our clients do not measure value in cost, but in time, reliability, and trust.
+                For that reason, we deliver a level of service defined by consistency, professionalism, and quiet excellence—without exception.
               </p>
               <div className="curv absolute left-0 bottom-0">
                 <div className="service-item-curv section-item-curv w-6 h-6 rounded-full btn btn-gold btn--hero flex items-center justify-center text-white text-lg font-bold shadow-md">
