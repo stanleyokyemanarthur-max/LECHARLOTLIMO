@@ -77,7 +77,7 @@ const { token, userInfo } = useSelector((state) => state.auth);
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const { data } = await api.get("/api/cars", {
+        const { data } = await api.get("/api/fleet", {
           headers: authHeaders,
         });
         setCars(data);
@@ -149,7 +149,7 @@ const { token, userInfo } = useSelector((state) => state.auth);
 
       if (editingCar) {
         res = await api.put(
-          `/api/cars/${editingCar._id}`,
+          `/api/fleet/${editingCar._id}`,
           payload,
           { headers: authHeaders }
         );
@@ -160,7 +160,7 @@ const { token, userInfo } = useSelector((state) => state.auth);
           )
         );
       } else {
-        res = await api.post("/api/cars", payload, {
+        res = await api.post("/api/fleet", payload, {
           headers: authHeaders,
         });
 
@@ -185,7 +185,7 @@ const { token, userInfo } = useSelector((state) => state.auth);
     setActionLoading(true);
 
     try {
-      await api.delete(`/api/cars/${id}`, {
+      await api.delete(`/api/fleet/${id}`, {
         headers: authHeaders,
       });
 
