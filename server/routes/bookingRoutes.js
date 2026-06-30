@@ -35,7 +35,7 @@ router.get("/my-bookings", protect, getUserBookings);
 router.get("/", protect, adminOnly, getAllBookings);
 
 // 🔄 Update booking status (admin)
-router.put("/:id/status", protect, adminOnly, updateBookingStatus);
+router.put("/:id/status", protect, updateBookingStatus);
 router.get("/driver", protect, getDriverBookings);
 
 
