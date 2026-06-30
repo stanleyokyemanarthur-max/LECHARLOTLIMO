@@ -6,18 +6,43 @@ import { useSelector } from "react-redux";
 function DriverDashboard() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-const { token, userInfo } = useSelector((state) => state.auth);
+  const { token, userInfo } = useSelector((state) => state.auth);
 
- useEffect(() => {
-   if (!token) {
-    setLoading(false);
-    return;
-  }
+  useEffect(() => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
-  const fetchBookings = async () => {
+    const fetchBookings = async () => {
+      try {
+        const res = await axios.get(
+          "https://lecharlotlimo-aucd.onrender.com/api/bookings/driver",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setBookings(res.data);
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, [token]);
+
+  const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await axios.get(
-        "https://lecharlotlimo-aucd.onrender.com/api/bookings/driver",
+      const res = await axios.put(
+        `https://lecharlotlimo-aucd.onrender.com/api/bookings/${id}/status`,
+        {
+          status: newStatus,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -25,40 +50,15 @@ const { token, userInfo } = useSelector((state) => state.auth);
         }
       );
 
-      setBookings(res.data);
+      setBookings((prev) =>
+        prev.map((b) =>
+          b._id === id ? res.data : b
+        )
+      );
     } catch (error) {
-      console.error("Error fetching bookings:", error);
-    } finally {
-      setLoading(false);
+      console.error("STATUS UPDATE FAILED:", error.response?.data || error.message);
     }
   };
-
-  fetchBookings();
-}, [token]);
-
- const handleStatusChange = async (id, newStatus) => {
-  try {
-    const res = await axios.put(
-      `https://lecharlotlimo-aucd.onrender.com/api/bookings/${id}/status`,
-      {
-        status: newStatus,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-   setBookings((prev) =>
-  prev.map((b) =>
-    b._id === id ? res.data : b
-  )
-    );
-  } catch (error) {
-    console.error("STATUS UPDATE FAILED:", error.response?.data || error.message);
-  }
-};
 
   if (loading) {
     return (
@@ -100,36 +100,84 @@ const { token, userInfo } = useSelector((state) => state.auth);
         <thead className="bg-[#D4AF37] text-black">
           <tr>
             <th className="px-4 py-2">Car</th>
+            <th className="px-4 py-2">Customer</th>
+            <th className="px-4 py-2">Phone</th>
+            <th className="px-4 py-2">Vehicle</th>
             <th className="px-4 py-2">Pickup</th>
             <th className="px-4 py-2">Dropoff</th>
+            <th className="px-4 py-2">Pickup Time</th>
             <th className="px-4 py-2">Status</th>
             <th className="px-4 py-2">Action</th>
+
           </tr>
         </thead>
         <tbody>
-          {bookings.map((b) => (
-            <tr
-              key={b._id}
-              className="border-t border-gray-700 hover:bg-gray-800"
-            >
-              <td className="px-4 py-2">{b.car?.name}</td>
-              <td className="px-4 py-2">{b.pickupLocation}</td>
-              <td className="px-4 py-2">{b.dropoffLocation}</td>
-              <td className="px-4 py-2 capitalize">{b.status}</td>
-              <td className="px-4 py-2">
-                <select
-                  value={b.status}
-                  onChange={(e) => handleStatusChange(b._id, e.target.value)}
-                  className="bg-gray-700 border border-gray-500 rounded p-1"
-                >
-                  <option value="pending">Pending</option>
-                  <option value="enroute">En Route</option>
-                  <option value="completed">Completed</option>
-                </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+  {bookings.map((b) => (
+    <tr
+      key={b._id}
+      className="border-t border-gray-700 hover:bg-gray-800"
+    >
+      <td className="px-4 py-2">
+        <div className="font-semibold">{b.user?.name || "N/A"}</div>
+        <div className="text-xs text-gray-400">
+          {b.car?.name}
+        </div>
+      </td>
+      <td className="px-4 py-2">
+        <div className="font-semibold">{b.user?.name || "N/A"}</div>
+        <div className="text-xs text-gray-400">
+          {b.user?.email || ""}
+        </div>
+      </td>
+
+      <td className="px-4 py-2">
+        {b.user?.phone || "N/A"}
+      </td>
+
+      <td className="px-4 py-2">
+        {b.car?.name}
+      </td>
+
+      <td className="px-4 py-2">
+        {b.pickupLocation}
+      </td>
+
+      <td className="px-4 py-2">
+        {b.dropoffLocation}
+      </td>
+
+      <td className="px-4 py-2">
+        {new Date(b.pickupDate).toLocaleString()}
+      </td>
+
+      <td className="px-4 py-2 capitalize">
+        {b.status}
+      </td>
+
+      <td className="px-4 py-2">
+        <select
+          value={b.status}
+          onChange={(e) =>
+            handleStatusChange(b._id, e.target.value)
+          }
+          className="bg-gray-700 border border-gray-500 rounded p-1"
+        >
+          <option value="pending" disabled>
+            Pending
+          </option>
+
+          <option value="enroute">
+            En Route
+          </option>
+
+          <option value="completed">
+            Completed
+          </option>
+        </select>
+      </td>
+    </tr>
+  ))}
+</tbody>
       </table>
     </div>
   );

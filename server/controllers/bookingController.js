@@ -221,17 +221,6 @@ export const estimateBooking = async (req, res) => {
   }
 };
 
-
-export const getDriverBookings = async (req, res) => {
-  try {
-    // ✅ Security: driver sees only assigned bookings
-    const bookings = await Booking.find({ driver: req.user._id }).populate("user car driver");
-    res.json(bookings);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
 export const getUserBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ user: req.user._id }).populate("car");
@@ -337,6 +326,18 @@ export const assignDriver = async (req, res) => {
   }
 };
 
+export const getDriverBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ driver: req.user._id })
+      .populate("user", "name email phone")
+      .populate("car", "name type image")
+      .populate("driver", "name email");
+
+    res.json(bookings);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 export const updateBookingStatus = async (req, res) => {
   if (!req.user) {
