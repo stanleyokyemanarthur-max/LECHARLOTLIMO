@@ -63,9 +63,9 @@ export default function DriverLayout() {
   );
 
   return (
-    <div className="flex min-h-screen bg-[#0b0b0b] text-white">
+    <div className="flex min-h-screen mt-16 md:mt-20 lg:mt-36 bg-[#0b0b0b] text-white">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-64 bg-[#111111] border-r border-gray-800 mt-20 flex-col p-6">
+      <aside className="hidden lg:flex w-64 bg-[#111111] border-r border-gray-800 flex-col p-6">
         <SidebarContent />
       </aside>
 
@@ -78,30 +78,73 @@ export default function DriverLayout() {
       )}
 
       {/* Mobile Sidebar */}
-      <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-[#111111] border-r border-gray-800 z-50 transform transition-transform duration-300 md:hidden flex flex-col p-6 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex justify-end mb-4">
-          <button onClick={closeSidebar}>
-            <X className="w-6 h-6 text-[#D4AF37]" />
-          </button>
-        </div>
+    <aside
+  className={`fixed top-0 left-0 h-full w-72
+  bg-[#111111]
+  border-r border-gray-800
+  z-50
+  flex flex-col
+  transform transition-transform duration-300
+  lg:hidden
+  ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+>
+  <div className="flex items-center justify-between p-5 border-b border-gray-800">
+    <h2 className="text-2xl font-bold text-[#D4AF37]">
+      Driver Panel
+    </h2>
 
-        <SidebarContent />
-      </aside>
+    <button onClick={closeSidebar}>
+      <X className="w-6 h-6 text-white" />
+    </button>
+  </div>
+
+  <nav className="flex-1 overflow-y-auto flex flex-col p-4 space-y-3">
+
+    <button
+      onClick={() => {
+        navigate("/driver/dashboard");
+        closeSidebar();
+      }}
+      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#D4AF37]/20 transition font-semibold"
+    >
+      <LayoutDashboard className="w-5 h-5 text-[#D4AF37]" />
+      Dashboard
+    </button>
+
+    <button
+      onClick={() => {
+        navigate("/");
+        closeSidebar();
+      }}
+      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#D4AF37]/20 transition font-semibold"
+    >
+      <ArrowLeftCircle className="w-5 h-5 text-[#D4AF37]" />
+      Back to Site
+    </button>
+
+  </nav>
+
+  <div className="mt-auto p-4">
+    <button
+      onClick={handleLogout}
+      className="w-full flex items-center justify-center gap-2 bg-[#D4AF37] text-black font-semibold py-3 rounded-lg hover:bg-[#b5a004] transition"
+    >
+      <LogOut className="w-4 h-4" />
+      Logout
+    </button>
+  </div>
+</aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 bg-[#111111]/80 border-b border-gray-800 flex items-center justify-between px-4 md:px-8 sticky top-0 z-30 backdrop-blur">
+       <header className="sticky top-0 z-30 h-14 lg:h-16 bg-[#111111]/90 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4 lg:px-8">
           <div className="flex items-center gap-3">
             {/* Mobile Hamburger */}
             <button
               onClick={() => setSidebarOpen(true)}
-              className="md:hidden"
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-800 transition"
             >
-              <Menu className="w-7 h-7 text-[#D4AF37]" />
+              <Menu className="w-6 h-6 text-[#D4AF37]" />
             </button>
 
             <h1 className="text-lg md:text-xl font-semibold text-[#D4AF37]">
@@ -110,7 +153,7 @@ export default function DriverLayout() {
           </div>
         </header>
 
-        <div className="flex-1 p-4 md:p-8 overflow-y-auto bg-[#0b0b0b]">
+        <div className="flex-1 overflow-y-auto bg-[#0b0b0b] p-3 sm:p-5 lg:p-8">
           <Outlet />
         </div>
       </main>
