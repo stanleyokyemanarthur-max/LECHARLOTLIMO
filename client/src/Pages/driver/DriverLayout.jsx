@@ -136,8 +136,8 @@ export default function DriverLayout() {
 </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0">
-       <header className="sticky top-0 z-30 h-14 lg:h-16 bg-[#111111]/90 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4 lg:px-8">
+      <main className="flex-1 flex flex-col min-w-0 pt-2 lg:pt-3">
+       <header className="sticky top-0 z-30 h-14 lg:h-16 mt-6 bg-[#111111]/90 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4 lg:px-8">
           <div className="flex items-center gap-3">
             {/* Mobile Hamburger */}
             <button
@@ -148,7 +148,7 @@ export default function DriverLayout() {
             </button>
 
             <h1 className="text-lg md:text-xl font-semibold text-[#D4AF37]">
-              Welcome, Driver
+              Welcome
             </h1>
           </div>
         </header>
