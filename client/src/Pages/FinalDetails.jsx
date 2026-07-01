@@ -15,6 +15,11 @@ function FinalDetails() {
   const user = useSelector((state) => state.auth.userInfo);
   const [loading, setLoading] = useState(false);
 
+
+
+
+
+
   if (!rideInfo || !selectedCar) {
     return (
       <div className="text-white flex items-center justify-center h-screen bg-black text-center p-4">
@@ -23,7 +28,7 @@ function FinalDetails() {
     );
   }
 
- const [finalPrice, setFinalPrice] = useState(null);
+  const estimatedTotal = estimate?.estimatedPrice ?? 0;
 
   // 🔹 Save booking & redirect to Stripe checkout
   const handleBookingConfirm = async (guestInfo = null) => {
@@ -93,11 +98,6 @@ function FinalDetails() {
         { bookingId: booking._id },
         { headers }
       );
-      setFinalPrice(
-  quoteRes.data.finalPrice ??
-  quoteRes.data.totalPrice ??
-  quoteRes.data.booking?.totalPrice
-);
 
       console.log("✅ QUOTE FINALIZED");
       console.log(quoteRes.data);
@@ -248,7 +248,7 @@ function FinalDetails() {
             <div>
               <p className="text-gray-400 text-sm">Estimated Total</p>
               <p className="text-4xl font-bold text-[#D4AF37]">
-                ${Number(finalPrice ?? 0).toFixed(2)}
+                ${Number(estimatedTotal).toFixed(2)}
               </p>
             </div>
 
@@ -325,7 +325,7 @@ function FinalDetails() {
               </button>
               <div className="mt-8">
               <PayPalButton
-                amount={finalPrice ?? 0}
+                amount={estimatedTotal}
                 bookingId={bookingId}
                 token={user?.token}
               />
