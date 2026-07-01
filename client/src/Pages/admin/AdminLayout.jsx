@@ -197,7 +197,7 @@ export default function AdminLayout() {
       <main className="flex-1 flex flex-col min-w-0">
 
         {/* Header */}
-        <header className="sticky top-0 z-30 h-14 lg:h-16 bg-[#111111]/90 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4 lg:px-8">
+        <header className="sticky top-0 z-30 mt-6 h-14 lg:h-16 bg-[#111111]/90 backdrop-blur-md border-b border-gray-800 flex items-center justify-between px-4 lg:px-8">
 
           <div className="flex items-center gap-3">
 
