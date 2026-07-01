@@ -73,8 +73,6 @@ function DriverDashboard() {
   const pendingTrips = bookings.filter((b) => b.status === "pending").length;
 
   return (
-    <div className="p-3 sm:p-6 lg:p-8">
-
     <div>
       {/* Header */}
       <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">
@@ -183,7 +181,6 @@ function DriverDashboard() {
           </tbody>
         </table>
       </div>
-    </div>
     </div>
   );
 }
