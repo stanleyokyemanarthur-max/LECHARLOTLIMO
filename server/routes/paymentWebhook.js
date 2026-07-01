@@ -43,6 +43,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const processedEvents = new Set();
 
 router.post("/", async (req, res) => {
+  console.log("🔥🔥 WEBHOOK HIT");
+  console.log("Method:", req.method);
+  console.log("Headers:", req.headers);
   const sig = req.headers["stripe-signature"];
 
   console.log("SIG HEADER:", sig);
