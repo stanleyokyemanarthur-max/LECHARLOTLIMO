@@ -79,7 +79,7 @@ export default function DriverLayout() {
 
       {/* Mobile Sidebar */}
     <aside
-  className={`fixed top-0 left-0 h-full w-72
+  className={`fixed mt-20 top-0 left-0 h-full w-72
   bg-[#111111]
   border-r border-gray-800
   z-50
