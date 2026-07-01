@@ -100,7 +100,7 @@ function DriverDashboard() {
       </div>
 
       {/* Bookings Table */}
-      <div className="w-full overflow-x-auto rounded-lg">
+      <div className="hidden md:block  overflow-x-auto rounded-lg">
         <table className="min-w-[800px] sm:min-w-[900px] w-full border border-gray-700 text-xs sm:text-sm">
           <thead className="bg-[#D4AF37] text-black">
             <tr>
@@ -218,6 +218,52 @@ function DriverDashboard() {
           </tbody>
         </table>
       </div>
+    <div className="md:hidden space-y-4">
+  {bookings.map((b) => (
+    <div
+      key={b._id}
+      className="bg-gray-800 border border-gray-700 rounded-xl p-4 space-y-3"
+    >
+      <div>
+        <p className="text-xs text-gray-400">Customer</p>
+        <p className="font-semibold">{b.user?.name || "N/A"}</p>
+        <p className="text-sm text-gray-400">{b.user?.email}</p>
+      </div>
+
+      <div>
+        <p className="text-xs text-gray-400">Phone</p>
+        <p>{b.user?.phone || "N/A"}</p>
+      </div>
+
+      <div>
+        <p className="text-xs text-gray-400">Vehicle</p>
+        <p>{b.car?.name}</p>
+      </div>
+
+      <div>
+        <p className="text-xs text-gray-400">Pickup</p>
+        <p>{b.pickupLocation}</p>
+      </div>
+
+      <div>
+        <p className="text-xs text-gray-400">Dropoff</p>
+        <p>{b.dropoffLocation}</p>
+      </div>
+
+      <div>
+        <p className="text-xs text-gray-400">Pickup Time</p>
+        <p>{new Date(b.pickupDate).toLocaleString()}</p>
+      </div>
+
+      <div>
+        <p className="text-xs text-gray-400">Status</p>
+        <p className="capitalize">{b.status}</p>
+      </div>
+
+      {/* Put your existing select here unchanged */}
+    </div>
+  ))}
+</div>
     </div>
   );
 }
