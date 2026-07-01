@@ -75,113 +75,115 @@ function DriverDashboard() {
   return (
     <div className="p-3 sm:p-6 lg:p-8">
 
-      <div>
-        {/* Header */}
-        <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">
-          Welcome, {userInfo?.name || "Driver"}
-        </h1>
+    <div>
+      {/* Header */}
+      <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">
+        Welcome, {userInfo?.name || "Driver"}
+      </h1>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-gray-800 p-6 rounded-xl text-center">
-            <h3 className="text-lg text-gray-400">Total Trips</h3>
-            <p className="text-3xl font-bold text-[#D4AF37]">{totalTrips}</p>
-          </div>
-          <div className="bg-gray-800 p-6 rounded-xl text-center">
-            <h3 className="text-lg text-gray-400">Completed</h3>
-            <p className="text-3xl font-bold text-green-400">{completedTrips}</p>
-          </div>
-          <div className="bg-gray-800 p-6 rounded-xl text-center">
-            <h3 className="text-lg text-gray-400">Pending</h3>
-            <p className="text-3xl font-bold text-yellow-400">{pendingTrips}</p>
-          </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-gray-800 p-6 rounded-xl text-center">
+          <h3 className="text-lg text-gray-400">Total Trips</h3>
+          <p className="text-3xl font-bold text-[#D4AF37]">{totalTrips}</p>
         </div>
-
-        {/* Bookings Table */}
-        <div className="w-full overflow-x-auto">
-          <table className="min-w-[900px] w-full border border-gray-700 text-sm">
-            <thead className="bg-[#D4AF37] text-black">
-              <tr>
-                <th className="px-4 py-2">Car</th>
-                <th className="px-4 py-2">Customer</th>
-                <th className="px-4 py-2">Phone</th>
-                <th className="px-4 py-2">Vehicle</th>
-                <th className="px-4 py-2">Pickup</th>
-                <th className="px-4 py-2">Dropoff</th>
-                <th className="px-4 py-2">Pickup Time</th>
-                <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Action</th>
-
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((b) => (
-                <tr
-                  key={b._id}
-                  className="border-t border-gray-700 hover:bg-gray-800"
-                >
-                  <td className="px-4 py-2">
-                    <div className="font-semibold">{b.user?.name || "N/A"}</div>
-                    <div className="text-xs text-gray-400">
-                      {b.car?.name}
-                    </div>
-                  </td>
-                  <td className="px-4 py-2">
-                    <div className="font-semibold">{b.user?.name || "N/A"}</div>
-                    <div className="text-xs text-gray-400">
-                      {b.user?.email || ""}
-                    </div>
-                  </td>
-
-                  <td className="px-4 py-2">
-                    {b.user?.phone || "N/A"}
-                  </td>
-
-                  <td className="px-4 py-2">
-                    {b.car?.name}
-                  </td>
-
-                  <td className="px-4 py-2">
-                    {b.pickupLocation}
-                  </td>
-
-                  <td className="px-4 py-2">
-                    {b.dropoffLocation}
-                  </td>
-
-                  <td className="px-4 py-2">
-                    {new Date(b.pickupDate).toLocaleString()}
-                  </td>
-
-                  <td className="px-4 py-2 capitalize">
-                    {b.status}
-                  </td>
-
-                  <td className="px-4 py-2">
-                    <select
-                      value={b.status}
-                      onChange={(e) => handleStatusChange(b._id, e.target.value)}
-                      className="bg-gray-700 border border-gray-500 rounded p-1"
-                    >
-                      <option value={b.status} disabled>
-                        {b.status.charAt(0).toUpperCase() + b.status.slice(1)}
-                      </option>
-
-                      {b.status === "pending" && (
-                        <option value="enroute">En Route</option>
-                      )}
-
-                      {b.status === "enroute" && (
-                        <option value="completed">Completed</option>
-                      )}
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="bg-gray-800 p-6 rounded-xl text-center">
+          <h3 className="text-lg text-gray-400">Completed</h3>
+          <p className="text-3xl font-bold text-green-400">{completedTrips}</p>
+        </div>
+        <div className="bg-gray-800 p-6 rounded-xl text-center">
+          <h3 className="text-lg text-gray-400">Pending</h3>
+          <p className="text-3xl font-bold text-yellow-400">{pendingTrips}</p>
         </div>
       </div>
+
+      {/* Bookings Table */}
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-[900px] w-full border border-gray-700 text-sm">
+          <thead className="bg-[#D4AF37] text-black">
+            <tr>
+              <th className="px-4 py-2">Car</th>
+              <th className="px-4 py-2">Customer</th>
+              <th className="px-4 py-2">Phone</th>
+              <th className="px-4 py-2">Vehicle</th>
+              <th className="px-4 py-2">Pickup</th>
+              <th className="px-4 py-2">Dropoff</th>
+              <th className="px-4 py-2">Pickup Time</th>
+              <th className="px-4 py-2">Status</th>
+              <th className="px-4 py-2">Action</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            {bookings.map((b) => (
+              <tr
+                key={b._id}
+                className="border-t border-gray-700 hover:bg-gray-800"
+              >
+                <td className="px-4 py-2">
+                  <div className="font-semibold">{b.user?.name || "N/A"}</div>
+                  <div className="text-xs text-gray-400">
+                    {b.car?.name}
+                  </div>
+                </td>
+                <td className="px-4 py-2">
+                  <div className="font-semibold">{b.user?.name || "N/A"}</div>
+                  <div className="text-xs text-gray-400">
+                    {b.user?.email || ""}
+                  </div>
+                </td>
+
+                <td className="px-4 py-2">
+                  {b.user?.phone || "N/A"}
+                </td>
+
+                <td className="px-4 py-2">
+                  {b.car?.name}
+                </td>
+
+                <td className="px-4 py-2">
+                  {b.pickupLocation}
+                </td>
+
+                <td className="px-4 py-2">
+                  {b.dropoffLocation}
+                </td>
+
+                <td className="px-4 py-2">
+                  {new Date(b.pickupDate).toLocaleString()}
+                </td>
+
+                <td className="px-4 py-2 capitalize">
+                  {b.status}
+                </td>
+
+                <td className="px-4 py-2">
+                  <select
+                    value={b.status}
+                    onChange={(e) =>
+                      handleStatusChange(b._id, e.target.value)
+                    }
+                    className="bg-gray-700 border border-gray-500 rounded p-1"
+                  >
+                    <option value="pending" disabled>
+                      Pending
+                    </option>
+
+                    <option value="enroute">
+                      En Route
+                    </option>
+
+                    <option value="completed">
+                      Completed
+                    </option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
     </div>
   );
 }
