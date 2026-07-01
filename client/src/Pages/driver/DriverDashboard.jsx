@@ -155,27 +155,51 @@ function DriverDashboard() {
                   {b.status}
                 </td>
 
-                <td className="px-4 py-2">
-                  <select
-                    value={b.status}
-                    onChange={(e) =>
-                      handleStatusChange(b._id, e.target.value)
-                    }
-                    className="bg-gray-700 border border-gray-500 rounded p-1"
-                  >
-                    <option value="pending" disabled>
-                      Pending
-                    </option>
+              <td className="px-4 py-2">
+  <select
+    value={b.status}
+    disabled={
+      b.status === "pending" ||
+      b.status === "completed" ||
+      b.status === "cancelled"
+    }
+    onChange={(e) => handleStatusChange(b._id, e.target.value)}
+    className={`rounded p-2 border text-sm min-w-[150px]
+      ${
+        b.status === "pending" ||
+        b.status === "completed" ||
+        b.status === "cancelled"
+          ? "bg-gray-600 text-gray-300 cursor-not-allowed border-gray-600"
+          : "bg-gray-700 text-white border-gray-500"
+      }`}
+  >
+    {b.status === "pending" && (
+      <option value="pending">Awaiting Admin Confirmation</option>
+    )}
 
-                    <option value="enroute">
-                      En Route
-                    </option>
+    {b.status === "confirmed" && (
+      <>
+        <option value="confirmed">Confirmed</option>
+        <option value="enroute">En Route</option>
+      </>
+    )}
 
-                    <option value="completed">
-                      Completed
-                    </option>
-                  </select>
-                </td>
+    {b.status === "enroute" && (
+      <>
+        <option value="enroute">En Route</option>
+        <option value="completed">Completed</option>
+      </>
+    )}
+
+    {b.status === "completed" && (
+      <option value="completed">Completed</option>
+    )}
+
+    {b.status === "cancelled" && (
+      <option value="cancelled">Cancelled</option>
+    )}
+  </select>
+</td>
               </tr>
             ))}
           </tbody>
