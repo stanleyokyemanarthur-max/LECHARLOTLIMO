@@ -47,9 +47,8 @@ function Nav() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-[9999] transition-all duration-300 ${
-        isScrolled ? "bg-[#111111] shadow-md backdrop-blur-md" : "bg-transparent"
-      }`}
+      className={`fixed top-0 left-0 w-full z-[9999] transition-all duration-300 ${isScrolled ? "bg-[#111111] shadow-md backdrop-blur-md" : "bg-transparent"
+        }`}
     >
       <div className="w-full mx-auto flex justify-between items-center py-4 px-8 lg:px-12 relative">
         {/* Logo */}
@@ -85,10 +84,9 @@ function Nav() {
             overflow-hidden lg:overflow-visible
             gap-6 lg:gap-10
             border-t border-white/10 lg:border-none
-            ${
-              isMobileMenuOpen
-                ? "max-h-[520px] opacity-100 py-6"
-                : "max-h-0 opacity-0 lg:opacity-100 lg:max-h-none"
+            ${isMobileMenuOpen
+              ? "max-h-[520px] opacity-100 py-6"
+              : "max-h-0 opacity-0 lg:opacity-100 lg:max-h-none"
             }`}
         >
           {menuItems.map((item) => (
@@ -147,6 +145,20 @@ function Nav() {
                       >
                         <i className="ri-dashboard-line"></i> Dashboard
                       </li>
+                    </>
+                  ) : userRole === "driver" ? (
+                    <>
+                      <li
+                        onClick={() => {
+                          navigate("/driver/dashboard");
+                          setIsDropdownOpen(false);
+                          closeMobile();
+                        }}
+                        className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
+                      >
+                        <i className="ri-steering-2-line"></i> Driver Dashboard
+                      </li>
+
                       <li
                         onClick={() => {
                           navigate("/enableauthenticator");
@@ -157,6 +169,7 @@ function Nav() {
                       >
                         <i className="ri-shield-keyhole-line"></i> Enable Authenticator
                       </li>
+
                       <li
                         onClick={handleLogout}
                         className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
@@ -176,6 +189,7 @@ function Nav() {
                       >
                         <i className="ri-calendar-line"></i> My Bookings
                       </li>
+
                       <li
                         onClick={() => {
                           navigate("/enableauthenticator");
@@ -186,6 +200,7 @@ function Nav() {
                       >
                         <i className="ri-shield-keyhole-line"></i> Enable Authenticator
                       </li>
+
                       <li
                         onClick={handleLogout}
                         className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
