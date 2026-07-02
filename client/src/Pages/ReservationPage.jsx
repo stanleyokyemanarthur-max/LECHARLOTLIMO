@@ -120,7 +120,7 @@ export default function ReservationPage() {
 
       console.log(place);
 
-      if (!place.formatted_address) return;
+      if (!place?.formatted_address) return;
 
       setTripDataState((s) => ({
         ...s,
@@ -133,7 +133,7 @@ export default function ReservationPage() {
     dropoffAutocomplete.addListener("place_changed", () => {
       const place = dropoffAutocomplete.getPlace();
       console.log("Dropoff place changed:", place);
-      if (!place.formatted_address) return;
+      if (!place?.formatted_address) return;
       setTripDataState((s) => ({
         ...s,
         dropoffLocation: place.name
