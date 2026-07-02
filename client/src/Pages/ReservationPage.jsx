@@ -89,28 +89,60 @@ export default function ReservationPage() {
   // Google Autocomplete setup
   useEffect(() => {
     if (!isLoaded) return;
-    const options = { types: ["geocode"], componentRestrictions: { country: "us" } };
+    const options = {
+      componentRestrictions: {
+        country: "us",
+      },
+    };
 
     const pickupAutocomplete = new window.google.maps.places.Autocomplete(pickupRef.current, options);
+    pickupAutocomplete.setFields([
+      "name",
+      "formatted_address",
+      "geometry",
+      "place_id",
+    ]);
+
     const dropoffAutocomplete =
       new window.google.maps.places.Autocomplete(
         dropoffRef.current,
         options
       );
+    dropoffAutocomplete.setFields([
+      "name",
+      "formatted_address",
+      "geometry",
+      "place_id",
+    ]);
 
     pickupAutocomplete.addListener("place_changed", () => {
       const place = pickupAutocomplete.getPlace();
-      if (place?.formatted_address) {
-        setTripDataState((s) => ({ ...s, pickupLocation: place.formatted_address }));
-      }
+
+      console.log(place);
+
+      if (!place.formatted_address) return;
+
+      setTripDataState((s) => ({
+        ...s,
+        pickupLocation: place.name
+          ? `${place.name}, ${place.formatted_address}`
+          : place.formatted_address,
+      }));
     });
 
     dropoffAutocomplete.addListener("place_changed", () => {
       const place = dropoffAutocomplete.getPlace();
-      if (place?.formatted_address) {
-        setTripDataState((s) => ({ ...s, dropoffLocation: place.formatted_address }));
-      }
+      console.log("Dropoff place changed:", place);
+      if (!place.formatted_address) return;
+      setTripDataState((s) => ({
+        ...s,
+        dropoffLocation: place.name
+          ? `${place.name}, ${place.formatted_address}`
+          : place.formatted_address,
+      }));
     });
+
+
 
     return () => {
       if (pickupAutocomplete && pickupAutocomplete.getPlace) {
@@ -223,7 +255,7 @@ export default function ReservationPage() {
       dropoffDate: computedDropoff ? computedDropoff.toISOString() : null,
       distance: tripData.distance ? Number(tripData.distance.toFixed(2)) : null,
     };
-console.log("PAYLOAD BEFORE DISPATCH", payload);
+    console.log("PAYLOAD BEFORE DISPATCH", payload);
     dispatch(setTripData(payload));
     navigate("/select-car");
   };
