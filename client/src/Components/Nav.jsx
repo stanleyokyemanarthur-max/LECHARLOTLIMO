@@ -81,11 +81,11 @@ function Nav() {
             bg-[#0B0B0B]/95 lg:bg-transparent 
             backdrop-blur-md
             transition-all duration-500 ease-in-out
-            overflow-hidden lg:overflow-visible
+            overflow-x-hidden overflow-y-visible
             gap-6 lg:gap-10
             border-t border-white/10 lg:border-none
             ${isMobileMenuOpen
-              ? "max-h-[520px] opacity-100 py-6"
+              ? "max-h-screen opacity-100 py-6"
               : "max-h-0 opacity-0 lg:opacity-100 lg:max-h-none"
             }`}
         >
@@ -130,7 +130,7 @@ function Nav() {
               </span>
 
               {isDropdownOpen && (
-                <ul className="absolute right-5 md:top-2 w-56 bg-[#111111] text-white rounded-xl shadow-lg z-[9999] animate-fadeIn overflow-hidden border border-white/10">
+                <ul className="absolute top-full right-0 mt-2 w-56 bg-[#111111] text-white rounded-xl shadow-lg z-[9999] animate-fadeIn border border-white/10">
                   <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-[#111111]"></div>
 
                   {userRole === "admin" ? (
