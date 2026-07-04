@@ -145,6 +145,12 @@ function Nav() {
                       >
                         <i className="ri-dashboard-line"></i> Dashboard
                       </li>
+                      <li
+                        onClick={handleLogout}
+                        className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
+                      >
+                        <i className="ri-logout-box-line"></i> Logout
+                      </li>
                     </>
                   ) : userRole === "driver" ? (
                     <>
@@ -159,7 +165,7 @@ function Nav() {
                         <i className="ri-steering-2-line"></i> Driver Dashboard
                       </li>
 
-                      <li
+                      {/* <li
                         onClick={() => {
                           navigate("/enableauthenticator");
                           setIsDropdownOpen(false);
@@ -168,7 +174,7 @@ function Nav() {
                         className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-shield-keyhole-line"></i> Enable Authenticator
-                      </li>
+                      </li> */}
 
                       <li
                         onClick={handleLogout}
@@ -190,7 +196,7 @@ function Nav() {
                         <i className="ri-calendar-line"></i> My Bookings
                       </li>
 
-                      <li
+                      {/* <li
                         onClick={() => {
                           navigate("/enableauthenticator");
                           setIsDropdownOpen(false);
@@ -199,7 +205,7 @@ function Nav() {
                         className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
                       >
                         <i className="ri-shield-keyhole-line"></i> Enable Authenticator
-                      </li>
+                      </li> */}
 
                       <li
                         onClick={handleLogout}
