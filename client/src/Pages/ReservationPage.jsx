@@ -305,7 +305,7 @@ export default function ReservationPage() {
                   <DateTimePicker
                     label="Pickup Date & Time"
                     value={tripData.pickupDate ? dayjs(tripData.pickupDate) : null}
-                    minDateTime={dayjs().add(2, "hour")}
+                    minDateTime={dayjs().add(1, "hour")}
                     onChange={(newValue) => {
                       setTripDataState((s) => ({
                         ...s,
