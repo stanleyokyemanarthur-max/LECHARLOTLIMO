@@ -160,7 +160,7 @@ export default function ReservationPage() {
   const validateTwoHourRule = () => {
     if (!tripData.pickupDate) return false;
     const pickup = dayjs(tripData.pickupDate);
-    return pickup.diff(dayjs(), "minute") >= 120;
+    return pickup.diff(dayjs(), "minute") >= 60;
   };
 
   // Auto draw route
@@ -240,7 +240,7 @@ export default function ReservationPage() {
     }
 
     if (!validateTwoHourRule()) {
-      setError("Reservations are disallowed less than 2 hour(s) before trip time.");
+      setError("Reservations are disallowed less than 1 hour(s) before trip time.");
       return;
     }
 

@@ -3,7 +3,7 @@ import Booking from "../models/Booking.js";
 export const expirePendingBookings = async () => {
   try {
     const cutoff = new Date(
-      Date.now() - 10 * 60 * 1000
+      Date.now() - 60 * 60 * 1000
     );
 const result = await Booking.updateMany(
   {

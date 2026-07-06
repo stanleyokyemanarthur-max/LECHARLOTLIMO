@@ -123,13 +123,17 @@ export default function AdminBookings() {
   };
 
   const freeBadge = (b) => {
-    if (b.isPaid === false) {
-      if (b.freeReason === "reward") return "FREE (Reward)";
-      if (b.freeReason === "admin") return "FREE (Admin)";
+  switch (b.freeReason) {
+    case "reward":
+      return "FREE (Reward)";
+    case "admin":
+      return "FREE (Admin)";
+    case "free":
       return "FREE";
-    }
-    return null;
-  };
+    default:
+      return null;
+  }
+};
 
   if (loading) {
     return (
@@ -196,7 +200,7 @@ export default function AdminBookings() {
               filteredBookings.map((b) => {
                 const paymentStatus = b.paymentStatus || "pending";
                 const isPaid = paymentStatus === "paid";
-                const isFree = b.isPaid === false;
+                const isFree = !!b.freeReason;
                 const canProgress = isPaid || isFree;
 
                 const freeLabel = freeBadge(b);
