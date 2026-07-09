@@ -11,7 +11,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { setTripData } from "../slices/bookingSlice";
 import { GoogleMap, DirectionsRenderer, useJsApiLoader } from "@react-google-maps/api";
 
-const MAP_CONTAINER_STYLE = { width: "100%", height: "clamp(250px, 40vh, 400px)" };
+const MAP_CONTAINER_STYLE = { 
+  width: "100%", 
+  height: "100%" 
+};
 const DEFAULT_CENTER = { lat: 39.8283, lng: -98.5795 }; // Center of USA
 
 export default function ReservationPage() {
@@ -486,7 +489,7 @@ export default function ReservationPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-6xl w-full bg-[#121212] shadow-[0_0_25px_rgba(212,175,55,0.15)] rounded-2xl p-10 grid md:grid-cols-2 gap-10"
+        className="max-w-6xl w-full bg-[#121212] shadow-[0_0_25px_rgba(212,175,55,0.15)] rounded-2xl p-10 grid md:grid-cols-2 gap-10 items-stretch"
       >
         {/* Left: Form */}
         {/* form */}
@@ -797,7 +800,7 @@ export default function ReservationPage() {
         </ThemeProvider>
 
         {/* Google Map */}
-        <div className="rounded-xl overflow-hidden border border-[#2A2A2A]">
+        <div className="rounded-xl overflow-hidden border border-[#2A2A2A] h-full min-h-[400px]">
           {isLoaded && (
             <GoogleMap
               mapContainerStyle={MAP_CONTAINER_STYLE}
