@@ -11,9 +11,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setTripData } from "../slices/bookingSlice";
 import { GoogleMap, DirectionsRenderer, useJsApiLoader } from "@react-google-maps/api";
 
-const MAP_CONTAINER_STYLE = { 
-  width: "100%", 
-  height: "100%" 
+const MAP_CONTAINER_STYLE = {
+  width: "100%",
+  height: "100%"
 };
 const DEFAULT_CENTER = { lat: 39.8283, lng: -98.5795 }; // Center of USA
 
@@ -499,28 +499,103 @@ export default function ReservationPage() {
               <h2 className="text-3xl  font-[Playfair_Display] font-semibold text-[#D4AF37] tracking-wide mb-4">
                 Step 1 — Booking Information
               </h2>
-              <div className="flex gap-6">
-                <label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                {/* One Way */}
+                <label
+                  className={`
+      relative cursor-pointer rounded-xl border p-5 transition-all duration-300
+      ${tripData.tripType === "one-way"
+                      ? "border-[#D4AF37] bg-[#D4AF37]/10 shadow-[0_0_20px_rgba(212,175,55,0.25)]"
+                      : "border-[#2D2D2D] bg-[#181818] hover:border-[#D4AF37]/50"
+                    }
+    `}
+                >
                   <input
                     type="radio"
                     name="tripType"
                     value="one-way"
                     checked={tripData.tripType === "one-way"}
                     onChange={handleInputChange}
+                    className="hidden"
                   />
-                  One Way
+
+                  <div className="flex items-center gap-4">
+
+                    <div
+                      className={`
+          w-6 h-6 rounded-full border-2 flex items-center justify-center
+          ${tripData.tripType === "one-way"
+                          ? "border-[#D4AF37]"
+                          : "border-gray-500"
+                        }
+        `}
+                    >
+                      {tripData.tripType === "one-way" && (
+                        <div className="w-3 h-3 rounded-full bg-[#D4AF37]" />
+                      )}
+                    </div>
+
+                    <div>
+                      <h3 className="text-white font-semibold text-lg">
+                        One Way
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        Single destination transfer
+                      </p>
+                    </div>
+
+                  </div>
                 </label>
 
-                <label>
+
+                {/* Round Trip */}
+                <label
+                  className={`
+      relative cursor-pointer rounded-xl border p-5 transition-all duration-300
+      ${tripData.tripType === "roundTrip"
+                      ? "border-[#D4AF37] bg-[#D4AF37]/10 shadow-[0_0_20px_rgba(212,175,55,0.25)]"
+                      : "border-[#2D2D2D] bg-[#181818] hover:border-[#D4AF37]/50"
+                    }
+    `}
+                >
                   <input
                     type="radio"
                     name="tripType"
                     value="roundTrip"
                     checked={tripData.tripType === "roundTrip"}
                     onChange={handleInputChange}
+                    className="hidden"
                   />
-                  Round Trip
+
+                  <div className="flex items-center gap-4">
+
+                    <div
+                      className={`
+          w-6 h-6 rounded-full border-2 flex items-center justify-center
+          ${tripData.tripType === "roundTrip"
+                          ? "border-[#D4AF37]"
+                          : "border-gray-500"
+                        }
+        `}
+                    >
+                      {tripData.tripType === "roundTrip" && (
+                        <div className="w-3 h-3 rounded-full bg-[#D4AF37]" />
+                      )}
+                    </div>
+
+                    <div>
+                      <h3 className="text-white font-semibold text-lg">
+                        Round Trip
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        Return journey included
+                      </p>
+                    </div>
+
+                  </div>
                 </label>
+
               </div>
 
               {[{ label: "Pickup Location", name: "pickupLocation", ref: pickupRef, placeholder: "e.g. Raleigh Convention Center" },
