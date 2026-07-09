@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence, distance } from "framer-motion";
+import { motion, AnimatePresence, } from "framer-motion";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setSelectedCar } from "../slices/bookingSlice";
@@ -81,7 +81,7 @@ export default function SelectCar() {
     fetchCars();
   }, [tripData]);
 
-  
+
 
   // get estimate per car
   const handleSelect = async (car) => {
@@ -94,10 +94,31 @@ export default function SelectCar() {
         {
           pickup: tripData.pickupLocation,
           dropoff: tripData.dropoffLocation,
+
           carId: car._id,
+
           distance: tripData.distance,
+
+          tripType: tripData.tripType,
+
+          returnPickup:
+            tripData.tripType === "roundTrip"
+              ? tripData.returnTrip?.pickupLocation
+              : null,
+
+          returnDropoff:
+            tripData.tripType === "roundTrip"
+              ? tripData.returnTrip?.dropoffLocation
+              : null,
+
+          returnDistance:
+            tripData.tripType === "roundTrip"
+              ? tripData.returnTrip?.distance
+              : 0,
         }
       );
+
+      console.log("ESTIMATE RESPONSE:", res.data);
 
       setEstimates((prev) => ({
         ...prev,
@@ -108,12 +129,18 @@ export default function SelectCar() {
       }));
 
       setReadyCarId(car._id);
+
     } catch (err) {
-      console.error("ESTIMATE ERROR:", err?.response?.data || err.message);
+      console.error(
+        "ESTIMATE ERROR:",
+        err?.response?.data || err.message
+      );
+
       setError(
-        err?.response?.data?.message ||
+        err?.response?.data?.error ||
         "Unable to generate estimate. Please try again."
       );
+
     } finally {
       setLoadingCarId(null);
     }
@@ -162,6 +189,23 @@ export default function SelectCar() {
           <p><span className="text-[#D4AF37] font-semibold">Passengers:</span> {tripData.passengers || "—"}</p>
           <p><span className="text-[#D4AF37] font-semibold">Luggage:</span> {tripData.luggage || "—"}</p>
           <p><span className="text-[#D4AF37] font-semibold">Distance:</span> {tripData.distance?.toFixed(2)} mi</p>
+          {tripData.tripType === "roundTrip" && tripData.returnTrip && (
+            <>
+              <p>
+                <span className="text-[#D4AF37] font-semibold">
+                  Return Pickup:
+                </span>{" "}
+                {tripData.returnTrip.pickupLocation}
+              </p>
+
+              <p>
+                <span className="text-[#D4AF37] font-semibold">
+                  Return Drop-off:
+                </span>{" "}
+                {tripData.returnTrip.dropoffLocation}
+              </p>
+            </>
+          )}
         </div>
 
         {/* STATES */}
@@ -203,13 +247,9 @@ export default function SelectCar() {
                       <p className="text-[#D4AF37] text-sm font-medium">
                         {car.availableUnits} available
                       </p>
-
                       <p className="text-gray-400 text-xs">
-                        <p className="text-gray-400 text-xs">
-                          {car.availableUnits} of {car.totalUnits} vehicles available
-                        </p>
+                        {car.availableUnits} of {car.totalUnits} vehicles available
                       </p>
-
                       <p className="text-gray-400 text-sm">
                         {car.seats} Seats • {car.transmission} • {car.fuel}
                       </p>
@@ -285,21 +325,27 @@ export default function SelectCar() {
                               <span className="flex items-center gap-2">
                                 <MapPin size={14} /> Distance
                               </span>
-                              <span className="text-white">{estimate.distanceMiles} mi</span>
+                              <span className="text-white">
+                                {Number(estimate.outbound?.distanceMiles || 0).toFixed(2)} mi
+                              </span>
                             </div>
 
                             <div className="flex justify-between items-center">
                               <span className="flex items-center gap-2">
                                 <Clock size={14} /> Duration
                               </span>
-                              <span className="text-white">{estimate.durationText}</span>
+                              <span className="text-white">
+                                {estimate.outbound?.durationText}
+                              </span>
                             </div>
 
                             <div className="flex justify-between items-center">
                               <span className="flex items-center gap-2">
                                 <Route size={14} /> Traffic Impact
                               </span>
-                              <span className="text-white">{estimate.trafficDurationText}</span>
+                              <span className="text-white">
+                                {estimate.outbound?.trafficDurationText}
+                              </span>
                             </div>
 
                             <div className="flex justify-between items-center">
@@ -307,7 +353,7 @@ export default function SelectCar() {
                                 <TrendingDown size={14} /> Delay
                               </span>
                               <span className="text-white">
-                                {estimate.trafficDelayPercent}%
+                                {estimate.outbound?.trafficDelayPercent || 0}%
                               </span>
                             </div>
                           </div>
@@ -319,7 +365,7 @@ export default function SelectCar() {
                             </span>
 
                             <span className="text-white text-xl font-bold">
-                              ${estimate.estimatedPrice}
+                              ${Number(estimate.TotalPrice || 0).toFixed(2)}
                             </span>
                           </div>
                         </motion.div>

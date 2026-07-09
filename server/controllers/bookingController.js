@@ -24,6 +24,13 @@ export const createBooking = async (req, res) => {
       dropoffLocation,
       pickupDate,
       dropoffDate,
+
+      tripType,
+
+      returnTrip,
+
+      pricing,
+
       rewardId,
     } = req.body;
 
@@ -62,16 +69,19 @@ export const createBooking = async (req, res) => {
       return res.status(400).json({ error: "Missing fleetKey" });
     }
 
-    const estimate = await calculateTripEstimate({
-      pickup: pickupLocation,
-      dropoff: dropoffLocation,
-      carRatePerMile: carData.perMileRate,
-      car: carData,
-    });
-
-    if (!estimate?.distanceMiles) {
-      return res.status(400).json({ error: "INVALID_ESTIMATE" });
+    if (!pricing?.outboundFare) {
+      return res.status(400).json({
+        error: "Missing booking pricing",
+      });
     }
+    const outboundFare = Number(pricing.outboundFare);
+
+    const returnFare = Number(
+      pricing.returnFare || 0
+    );
+
+    const totalPrice =
+      outboundFare + returnFare;
 
     let createdBooking;
 
@@ -92,14 +102,21 @@ export const createBooking = async (req, res) => {
 
       const rate = Number(carData.perMileRate);
       const multiplier = Number(carData.rateMultiplier || 1);
-      const distance = Number(estimate.distanceMiles);
+      const outboundDistance = Number(pricing.outboundDistance || 0);
+      const returnDistance = Number(pricing.returnDistance || 0);
+
+      const totalDistance =
+        outboundDistance + returnDistance;
 
       if (!Number.isFinite(rate) || rate <= 0) {
         throw new Error("INVALID_CAR_PRICING");
       }
 
-      if (!Number.isFinite(distance) || distance <= 0) {
-        throw new Error("INVALID_DISTANCE");
+      if (
+        !Number.isFinite(outboundDistance) ||
+        outboundDistance <= 0
+      ) {
+        throw new Error("INVALID_OUTBOUND_DISTANCE");
       }
 
       console.log("BOOKING MODEL CHECK");
@@ -142,10 +159,37 @@ export const createBooking = async (req, res) => {
             dropoffLocation,
             pickupDate: start,
             dropoffDate: end,
+            tripType: tripType || "oneWay",
+            returnTrip:
+              tripType === "roundTrip"
+                ? returnTrip
+                : null,
 
-            distance: estimate.distanceMiles,
+            distance: Number(pricing.outboundDistance || 0),
 
-            totalPrice: estimate.estimatedPrice,
+            returnDistance:
+              tripType === "roundTrip"
+                ? Number(pricing.returnDistance || 0)
+                : 0,
+
+            totalDistance:
+              Number(pricing.outboundDistance || 0) +
+              Number(pricing.returnDistance || 0),
+
+            totalPrice,
+
+            pricing: {
+              outboundFare,
+              returnFare,
+
+              outboundDistance:
+                Number(pricing.outboundDistance || 0),
+
+              returnDistance:
+                tripType === "roundTrip"
+                  ? Number(pricing.returnDistance || 0)
+                  : 0,
+            },
             pricingLocked: true,
 
             isPaid: false,
@@ -186,7 +230,18 @@ export const createBooking = async (req, res) => {
 
 export const estimateBooking = async (req, res) => {
   try {
-    const { pickup, dropoff, carId, distance } = req.body;
+    const {
+      pickup,
+      dropoff,
+      carId,
+      distance,
+
+      tripType,
+
+      returnPickup,
+      returnDropoff,
+      returnDistance,
+    } = req.body;
 
     if (!pickup || !dropoff || !carId) {
       return res.status(400).json({
@@ -200,19 +255,48 @@ export const estimateBooking = async (req, res) => {
       return res.status(404).json({ error: "Car not found" });
     }
 
-    const estimate = await calculateTripEstimate({
+    const outboundEstimate = await calculateTripEstimate({
       pickup,
       dropoff,
       carRatePerMile: carData.perMileRate,
       car: carData,
-      fixedDistance: distance, // use provided distance if available
+      fixedDistance: distance,
     });
+
+
+    let returnEstimate = null;
+
+
+    if (
+      tripType === "roundTrip" &&
+      returnPickup &&
+      returnDropoff
+    ) {
+
+      returnEstimate = await calculateTripEstimate({
+        pickup: returnPickup,
+        dropoff: returnDropoff,
+        carRatePerMile: carData.perMileRate,
+        car: carData,
+        fixedDistance: returnDistance,
+      });
+
+    }
+    const totalPrice =
+      outboundEstimate.estimatedPrice +
+      (returnEstimate?.estimatedPrice || 0);
 
     return res.json({
-      ...estimate,
+      tripType: tripType || "oneWay",
+
+      outbound: outboundEstimate,
+
+      return: returnEstimate,
+
+      totalPrice: Number(totalPrice.toFixed(2)),
+
       perMileRate: carData.perMileRate,
     });
-
   } catch (err) {
     console.error("Estimate booking error:", err);
     return res.status(500).json({
@@ -233,11 +317,11 @@ export const getUserBookings = async (req, res) => {
 export const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find()
-  .populate("user", "name email phone")
-  .populate("car")
-  .populate("driver", "name email")
-  .sort({ createdAt: -1 })
-  .limit(100);
+      .populate("user", "name email phone")
+      .populate("car")
+      .populate("driver", "name email")
+      .sort({ createdAt: -1 })
+      .limit(100);
     res.json(bookings);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -292,13 +376,13 @@ export const assignDriver = async (req, res) => {
 
     const updated = await Booking.findById(booking._id)
       .populate("user", "name email phone")
-      .populate("car","name")
+      .populate("car", "name")
       .populate("driver", "name email");
-      try {
-  await sendEmail({
-    to: driver.email,
-    subject: "New Booking Assigned — Le Charlot Limousine",
-    html: emailShell(`
+    try {
+      await sendEmail({
+        to: driver.email,
+        subject: "New Booking Assigned — Le Charlot Limousine",
+        html: emailShell(`
       <h2>Hello ${driver.name},</h2>
 
       <p>You have been assigned a new booking.</p>
@@ -312,10 +396,10 @@ export const assignDriver = async (req, res) => {
 
       <p>Please log in to your driver dashboard for more details.</p>
     `),
-  });
-} catch (emailErr) {
-  console.error("Driver assignment email failed:", emailErr);
-}
+      });
+    } catch (emailErr) {
+      console.error("Driver assignment email failed:", emailErr);
+    }
 
     res.json(updated);
   } catch (err) {
@@ -586,6 +670,14 @@ export const finalizeBookingQuote = async (req, res) => {
 
     return res.json({
       message: "Quote finalized",
+      quote: {
+        pricing: {
+          outboundFare: booking.pricing.outboundFare,
+          returnFare: booking.pricing.returnFare,
+          totalFare: booking.totalPrice,
+        },
+        totalDistance: booking.totalDistance,
+      },
       booking,
     });
 

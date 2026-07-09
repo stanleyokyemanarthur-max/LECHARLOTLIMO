@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setTripData } from "../slices/bookingSlice";
 import { GoogleMap, DirectionsRenderer, useJsApiLoader } from "@react-google-maps/api";
 
-const MAP_CONTAINER_STYLE = { width: "100%", height: "400px" };
+const MAP_CONTAINER_STYLE = { width: "100%", height: "clamp(250px, 40vh, 400px)" };
 const DEFAULT_CENTER = { lat: 39.8283, lng: -98.5795 }; // Center of USA
 
 export default function ReservationPage() {
@@ -26,9 +26,16 @@ export default function ReservationPage() {
   });
 
   const [tripData, setTripDataState] = useState({
+    tripType: "one-way",
     pickupLocation: "",
     dropoffLocation: "",
+    pickupIsAirport: false,
+    dropoffIsAirport: false,
+    flightNumber: "",
+
     pickupDate: null,
+    returnDate: null,
+    returnFlightNumber: "",
     passengers: "",
     luggage: "",
 
@@ -39,16 +46,28 @@ export default function ReservationPage() {
 
     trafficMinutes: null,
     trafficDurationText: "",
+    returnDistance: null,
+    returnDurationMinutes: null,
+    returnDurationText: "",
 
     trafficDelayPercent: 0,
   });
 
-  const [directionsResult, setDirectionsResult] = useState(null);
+  const [outboundDirections, setOutboundDirections] = useState(null);
+  const [returnDirections, setReturnDirections] = useState(null);
   const [loadingRoute, setLoadingRoute] = useState(false);
   const [error, setError] = useState("");
 
+  const mapRef = useRef(null);
+
   const pickupRef = useRef(null);
   const dropoffRef = useRef(null);
+  const returnPickupLocation = tripData.dropoffLocation;
+  const returnDropoffLocation = tripData.pickupLocation;
+
+  const returnPickupIsAirport = tripData.dropoffIsAirport;
+  const returnDropoffIsAirport = tripData.pickupIsAirport;
+
 
   const computedDropoff = useMemo(() => {
     if (!tripData.pickupDate) return null;
@@ -70,6 +89,8 @@ export default function ReservationPage() {
     tripData.trafficMinutes,
     tripData.durationMinutes,
   ]);
+
+
 
   // const minPickupDate = useMemo(() => new Date(Date.now() + 2 * 60 * 60 * 1000), []);
 
@@ -101,6 +122,7 @@ export default function ReservationPage() {
       "formatted_address",
       "geometry",
       "place_id",
+      "types"
     ]);
 
     const dropoffAutocomplete =
@@ -113,55 +135,95 @@ export default function ReservationPage() {
       "formatted_address",
       "geometry",
       "place_id",
+      "types"
     ]);
 
-    pickupAutocomplete.addListener("place_changed", () => {
+    const pickupListener = pickupAutocomplete.addListener("place_changed", () => {
       const place = pickupAutocomplete.getPlace();
 
       console.log(place);
 
       if (!place?.formatted_address) return;
 
+      const isAirport =
+        place.types?.includes("airport") ||
+        place.name?.toLowerCase().includes("airport") ||
+        place.formatted_address?.toLowerCase().includes("airport");
+
       setTripDataState((s) => ({
         ...s,
+
         pickupLocation: place.name
           ? `${place.name}, ${place.formatted_address}`
           : place.formatted_address,
+
+        pickupIsAirport: isAirport,
+
+        flightNumber: isAirport ? s.flightNumber : "",
       }));
     });
 
-    dropoffAutocomplete.addListener("place_changed", () => {
+
+    const dropoffListener = dropoffAutocomplete.addListener("place_changed", () => {
       const place = dropoffAutocomplete.getPlace();
+
       console.log("Dropoff place changed:", place);
+
       if (!place?.formatted_address) return;
+
+      const isAirport =
+        place.types?.includes("airport") ||
+        place.name?.toLowerCase().includes("airport") ||
+        place.formatted_address?.toLowerCase().includes("airport");
+
       setTripDataState((s) => ({
         ...s,
+
         dropoffLocation: place.name
           ? `${place.name}, ${place.formatted_address}`
           : place.formatted_address,
+
+        dropoffIsAirport: isAirport,
       }));
     });
 
 
-
     return () => {
-      if (pickupAutocomplete && pickupAutocomplete.getPlace) {
-        window.google.maps.event.clearInstanceListeners(pickupAutocomplete);
-      }
-      if (dropoffAutocomplete && dropoffAutocomplete.getPlace) {
-        window.google.maps.event.clearInstanceListeners(dropoffAutocomplete);
-      }
+      pickupListener.remove();
+      dropoffListener.remove();
+
+      window.google.maps.event.clearInstanceListeners(pickupAutocomplete);
+      window.google.maps.event.clearInstanceListeners(dropoffAutocomplete);
     };
   }, [isLoaded]);
 
   const handleInputChange = (e) =>
-    setTripDataState((s) => ({ ...s, [e.target.name]: e.target.value }));
+    setTripDataState((s) => ({
+      ...s,
+      [e.target.name]: e.target.value,
 
-  const validateTwoHourRule = () => {
+      ...(e.target.name === "tripType" &&
+        e.target.value === "one-way"
+        ? {
+          returnDate: null,
+          returnFlightNumber: "",
+          returnDistance: null,
+          returnDurationMinutes: null,
+          returnDurationText: "",
+        }
+        : {})
+    }));
+
+  const validateOneHourRule = () => {
     if (!tripData.pickupDate) return false;
     const pickup = dayjs(tripData.pickupDate);
     return pickup.diff(dayjs(), "minute") >= 60;
   };
+
+  const totalDistance =
+    tripData.tripType === "roundTrip"
+      ? (tripData.distance || 0) + (tripData.returnDistance || 0)
+      : tripData.distance || 0;
 
   // Auto draw route
   useEffect(() => {
@@ -192,7 +254,7 @@ export default function ReservationPage() {
               const durationText =
                 leg.duration.text;
 
-              setDirectionsResult(result);
+              setOutboundDirections(result);
 
               setTripDataState((prev) => {
                 return {
@@ -210,7 +272,8 @@ export default function ReservationPage() {
                 };
               });
             } else {
-              setDirectionsResult(null);
+              setOutboundDirections(null);
+              setReturnDirections(null);
               setError("Could not draw route. Please check the locations.");
             }
             setLoadingRoute(false);
@@ -225,6 +288,103 @@ export default function ReservationPage() {
     autoDrawRoute();
   }, [tripData.pickupLocation, tripData.dropoffLocation]);
 
+  useEffect(() => {
+    if (!mapRef.current || !outboundDirections) return;
+
+    // Wait for the return route if it's a round trip
+    if (tripData.tripType === "roundTrip" && !returnDirections) return;
+
+    const bounds = new window.google.maps.LatLngBounds();
+
+    outboundDirections.routes[0].overview_path.forEach((point) => {
+      bounds.extend(point);
+    });
+
+    if (returnDirections) {
+      returnDirections.routes[0].overview_path.forEach((point) => {
+        bounds.extend(point);
+      });
+    }
+
+    mapRef.current.fitBounds(bounds);
+  }, [
+    outboundDirections,
+    returnDirections,
+    tripData.tripType,
+  ]);
+
+  useEffect(() => {
+    if (
+      !isLoaded ||
+      tripData.tripType !== "roundTrip" ||
+      !tripData.pickupLocation ||
+      !tripData.dropoffLocation
+    ) {
+      setReturnDirections(null);
+
+      setTripDataState(prev => ({
+        ...prev,
+        returnDistance: null,
+        returnDurationMinutes: null,
+        returnDurationText: "",
+      }));
+
+      return;
+    }
+
+    const directionsService =
+      new window.google.maps.DirectionsService();
+
+    directionsService.route(
+      {
+        origin: tripData.dropoffLocation,
+        destination: tripData.pickupLocation,
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      },
+
+      (result, status) => {
+
+        if (status === "OK" && result.routes?.length) {
+
+          const leg = result.routes[0].legs[0];
+
+          const returnDistance =
+            leg.distance.value / 1609.344;
+
+          const returnDurationMinutes =
+            Math.round(leg.duration.value / 60);
+
+
+          setReturnDirections(result);
+
+
+          setTripDataState(prev => ({
+            ...prev,
+
+            returnDistance,
+
+            returnDurationMinutes,
+
+            returnDurationText:
+              leg.duration.text,
+          }));
+
+        } else {
+
+          setReturnDirections(null);
+
+        }
+      }
+    );
+
+  }, [
+    isLoaded,
+    tripData.tripType,
+    tripData.pickupLocation,
+    tripData.dropoffLocation,
+  ]);
+
+
   const handlePreviewAndProceed = (e) => {
     e.preventDefault();
     setError("");
@@ -234,13 +394,26 @@ export default function ReservationPage() {
       return;
     }
 
-    if (!tripData.pickupLocation || !tripData.dropoffLocation || !tripData.pickupDate) {
+    if (
+      !tripData.pickupLocation ||
+      !tripData.dropoffLocation ||
+      !tripData.pickupDate ||
+      (tripData.tripType === "roundTrip" && !tripData.returnDate)
+    ) {
       setError("Please fill pickup, drop-off, and pickup date/time.");
       return;
     }
 
-    if (!validateTwoHourRule()) {
+    if (!validateOneHourRule()) {
       setError("Reservations are disallowed less than 1 hour(s) before trip time.");
+      return;
+    }
+
+    if (
+      tripData.tripType === "roundTrip" &&
+      isReturnBeforePickup(tripData.pickupDate, tripData.returnDate)
+    ) {
+      setError("Return date cannot be before pickup date.");
       return;
     }
 
@@ -249,16 +422,56 @@ export default function ReservationPage() {
       return;
     }
 
+    if (
+      tripData.tripType === "roundTrip" &&
+      !tripData.returnDistance
+    ) {
+      setError("Please wait for the return route to load before continuing.");
+      return;
+    }
+
     const payload = {
       ...tripData,
-      pickupDate: tripData.pickupDate ? tripData.pickupDate.toISOString() : null,
-      dropoffDate: computedDropoff ? computedDropoff.toISOString() : null,
-      distance: tripData.distance ? Number(tripData.distance.toFixed(2)) : null,
+
+      ...(tripData.tripType === "roundTrip" && {
+        returnPickupLocation: tripData.dropoffLocation,
+        returnDropoffLocation: tripData.pickupLocation,
+
+        returnPickupIsAirport: tripData.dropoffIsAirport,
+        returnDropoffIsAirport: tripData.pickupIsAirport,
+      }),
+
+      pickupDate: tripData.pickupDate
+        ? tripData.pickupDate.toISOString()
+        : null,
+
+      returnDate: tripData.returnDate
+        ? tripData.returnDate.toISOString()
+        : null,
+
+      dropoffDate: computedDropoff
+        ? computedDropoff.toISOString()
+        : null,
+
+      distance: Number(totalDistance.toFixed(2)),
+
+      returnDistance:
+        tripData.returnDistance
+          ? Number(tripData.returnDistance.toFixed(2))
+          : null,
+
+      returnDurationMinutes:
+        tripData.returnDurationMinutes || null,
+
+      returnDurationText:
+        tripData.returnDurationText || "",
     };
+
     console.log("PAYLOAD BEFORE DISPATCH", payload);
     dispatch(setTripData(payload));
     navigate("/select-car");
   };
+
   if (loadError) {
     return <div style={{ color: "red", padding: "20px" }}>Map failed to load</div>;
   }
@@ -267,8 +480,9 @@ export default function ReservationPage() {
     return <div style={{ color: "white", padding: "20px" }}>Loading map...</div>;
   }
 
+
   return (
-    <div className="min-h-screen bg-[#0B0B0B] flex flex-col items-center mt-18 py-28 px-4 font-[Poppins]">
+    <div className="min-h-screen bg-[#0B0B0B] flex flex-col items-center mt-18 py-16 md:py-28 px-4 sm:px-6 font-[Poppins]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -282,6 +496,29 @@ export default function ReservationPage() {
               <h2 className="text-3xl  font-[Playfair_Display] font-semibold text-[#D4AF37] tracking-wide mb-4">
                 Step 1 — Booking Information
               </h2>
+              <div className="flex gap-6">
+                <label>
+                  <input
+                    type="radio"
+                    name="tripType"
+                    value="one-way"
+                    checked={tripData.tripType === "one-way"}
+                    onChange={handleInputChange}
+                  />
+                  One Way
+                </label>
+
+                <label>
+                  <input
+                    type="radio"
+                    name="tripType"
+                    value="roundTrip"
+                    checked={tripData.tripType === "roundTrip"}
+                    onChange={handleInputChange}
+                  />
+                  Round Trip
+                </label>
+              </div>
 
               {[{ label: "Pickup Location", name: "pickupLocation", ref: pickupRef, placeholder: "e.g. Raleigh Convention Center" },
               { label: "Drop-off Location", name: "dropoffLocation", ref: dropoffRef, placeholder: "e.g. Crown Complex, Fayetteville" }].map((f) => (
@@ -298,10 +535,30 @@ export default function ReservationPage() {
                   />
                 </div>
               ))}
+              {tripData.pickupIsAirport && (
+                <div>
+                  <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">
+                    Arrival Flight Number (Optional)
+                  </label>
 
+                  <p className="text-xs text-gray-400 mt-1">
+                    Helps our driver monitor your arriving flight.
+                  </p>
+
+                  <input
+                    name="flightNumber"
+                    value={tripData.flightNumber || ""}
+                    onChange={handleInputChange}
+                    placeholder="e.g. BA215"
+                    className="w-full mt-2 bg-transparent border border-[#2D2D2D] text-[#F5F5F5] p-3 rounded-lg focus:border-[#D4AF37]"
+                  />
+                </div>
+
+              )}
+
+              {/* 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  {/* <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">Pickup Date & Time</label> */}
                   <DateTimePicker
                     label="Pickup Date & Time"
                     value={tripData.pickupDate ? dayjs(tripData.pickupDate) : null}
@@ -328,37 +585,110 @@ export default function ReservationPage() {
                       },
                     }}
                   />
+
+                  {tripData.tripType === "roundTrip" && (
+                    <DateTimePicker
+                      label="Return Date & Time"
+                      value={
+                        tripData.returnDate
+                          ? dayjs(tripData.returnDate)
+                          : null
+                      }
+                      minDateTime={
+                        tripData.pickupDate
+                          ? dayjs(tripData.pickupDate)
+                          : dayjs().add(1, "hour")
+                      }
+                      onChange={(newValue) => {
+                        setTripDataState((s) => ({
+                          ...s,
+                          returnDate: newValue ? newValue.toDate() : null,
+                        }));
+                      }}
+                    />
+                  )}
                 </div>
-                {computedDropoff && (
-                  <div className="mt-3 p-3 rounded-lg border border-[#D4AF37] bg-black/20">
-                    <p className="text-[#D4AF37] text-sm font-semibold">
-                      Estimated Arrival Time
-                    </p>
 
-                    <p className="text-white">
-                      {dayjs(computedDropoff).format("MMMM D, YYYY h:mm A")}
-                    </p>
+              </div> */}
+              {/* PICKUP DATE */}
+              <div>
+                <DateTimePicker
+                  label="Pickup Date & Time"
+                  value={
+                    tripData.pickupDate
+                      ? dayjs(tripData.pickupDate)
+                      : null
+                  }
+                  minDateTime={dayjs().add(1, "hour")}
+                  onChange={(newValue) => {
+                    setTripDataState((s) => ({
+                      ...s,
+                      pickupDate: newValue
+                        ? newValue.toDate()
+                        : null,
+                    }));
+                  }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      sx: {
+                        "& .MuiOutlinedInput-root": {
+                          color: "#fff",
+                          backgroundColor: "rgba(0,0,0,0.4)",
+                          borderRadius: "12px",
+                        },
+                        "& .MuiInputLabel-root": {
+                          color: "#C0C0C0",
+                        },
+                      },
+                    },
+                  }}
+                />
+              </div>
 
-                    <p className="text-gray-400 text-sm mt-1">
-                      Duration: {tripData.durationText}
-                    </p>
-                  </div>
-                )}
 
-                {/* <div>
-              
+              {/* ESTIMATED ARRIVAL */}
+              {computedDropoff && (
+                <div className="mt-4 p-3 rounded-lg border border-[#D4AF37] bg-black/20">
+                  <p className="text-[#D4AF37] text-sm font-semibold">
+                    Estimated Arrival Time
+                  </p>
+
+                  <p className="text-white">
+                    {dayjs(computedDropoff).format(
+                      "MMMM D, YYYY h:mm A"
+                    )}
+                  </p>
+
+                  <p className="text-gray-400 text-sm mt-1">
+                    Duration: {tripData.durationText}
+                  </p>
+                </div>
+              )}
+
+
+              {/* RETURN DATE ONLY FOR ROUND TRIP */}
+              {tripData.tripType === "roundTrip" && (
+                <div className="mt-6">
+
                   <DateTimePicker
-                    label="Drop-off Date & Time"
-                    value={tripData.dropoffDate ? dayjs(tripData.dropoffDate) : null}
+                    label="Return Date & Time"
+                    value={
+                      tripData.returnDate
+                        ? dayjs(tripData.returnDate)
+                        : null
+                    }
                     minDateTime={
                       tripData.pickupDate
                         ? dayjs(tripData.pickupDate)
-                        : dayjs().add(2, "hour")
+                        : dayjs().add(1, "hour")
                     }
                     onChange={(newValue) => {
                       setTripDataState((s) => ({
                         ...s,
-                        dropoffDate: newValue ? newValue.toDate() : null,
+                        returnDate: newValue
+                          ? newValue.toDate()
+                          : null,
                       }));
                     }}
                     slotProps={{
@@ -377,11 +707,63 @@ export default function ReservationPage() {
                       },
                     }}
                   />
-                </div> */}
-              </div>
+
+                </div>
+              )}
+
+
+              {/* RETURN JOURNEY */}
+              {tripData.tripType === "roundTrip" && (
+                <div className="mt-8 border-t border-[#2D2D2D] pt-6">
+
+                  <h3 className="text-xl text-[#D4AF37] font-semibold mb-5">
+                    Return Journey
+                  </h3>
+
+                  <div className="space-y-4">
+
+                    <div>
+                      <label>Pickup</label>
+                      <div className="mt-1 p-3 rounded-lg border border-[#2D2D2D] bg-[#181818]">
+                        {returnPickupLocation}
+                      </div>
+                    </div>
+
+
+                    <div>
+                      <label>Drop-off</label>
+                      <div className="mt-1 p-3 rounded-lg border border-[#2D2D2D] bg-[#181818]">
+                        {returnDropoffLocation}
+                      </div>
+                    </div>
+
+
+                    {returnPickupIsAirport && (
+                      <div>
+                        <label>
+                          Departure Flight Number (Optional)
+                        </label>
+
+                        <p className="text-xs text-gray-400 mt-1">
+                          Helps our driver track your departing flight time.
+                        </p>
+
+                        <input
+                          name="returnFlightNumber"
+                          value={tripData.returnFlightNumber}
+                          onChange={handleInputChange}
+                          placeholder="e.g. AA432"
+                          className="w-full mt-2 bg-transparent border border-[#2D2D2D] p-3 rounded-lg"
+                        />
+                      </div>
+                    )}
+
+                  </div>
+                </div>
+              )}
 
               {/* Passengers / Luggage */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[{ label: "Passengers", name: "passengers", placeholder: "3" },
                 { label: "Luggage", name: "luggage", placeholder: "2" }].map((f) => (
                   <div key={f.name}>
@@ -419,20 +801,35 @@ export default function ReservationPage() {
           {isLoaded && (
             <GoogleMap
               mapContainerStyle={MAP_CONTAINER_STYLE}
-              center={directionsResult ? undefined : DEFAULT_CENTER}
-              zoom={directionsResult ? undefined : 4}
+              center={outboundDirections ? undefined : DEFAULT_CENTER}
+              zoom={outboundDirections ? undefined : 4}
               onLoad={(map) => {
-                if (directionsResult?.routes?.[0]) {
-                  map.fitBounds(directionsResult.routes[0].bounds);
-                }
+                mapRef.current = map;
               }}
             >
-              {directionsResult && (
+              {outboundDirections && (
                 <DirectionsRenderer
-                  directions={directionsResult}
+                  directions={outboundDirections}
                   options={{
                     suppressMarkers: false,
-                    polylineOptions: { strokeColor: "#D4AF37", strokeWeight: 5 },
+                    polylineOptions: {
+                      strokeColor: "#D4AF37",
+                      strokeWeight: 5,
+                    },
+                  }}
+                />
+              )}
+
+              {returnDirections && (
+                <DirectionsRenderer
+                  directions={returnDirections}
+                  options={{
+                    suppressMarkers: true,
+                    polylineOptions: {
+                      strokeColor: "#4DA3FF",
+                      strokeWeight: 5,
+                      strokeOpacity: 0.8,
+                    },
                   }}
                 />
               )}
@@ -445,7 +842,7 @@ export default function ReservationPage() {
 }
 
 // Helper: check if dropoff is earlier than pickup
-function sHasDropEarlier(pickupDate, dropoffDate) {
+function isReturnBeforePickup(pickupDate, dropoffDate) {
   if (!pickupDate || !dropoffDate) return false;
   try {
     return dayjs(dropoffDate).isBefore(dayjs(pickupDate));

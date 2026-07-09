@@ -14,10 +14,7 @@ function FinalDetails() {
 
   const user = useSelector((state) => state.auth.userInfo);
   const [loading, setLoading] = useState(false);
-
-
-
-
+  const [finalQuote, setFinalQuote] = useState(null);
 
 
   if (!rideInfo || !selectedCar) {
@@ -28,15 +25,28 @@ function FinalDetails() {
     );
   }
 
-  const estimatedTotal = estimate?.estimatedPrice ?? 0;
+  const estimatedTotal =
+    estimate?.TotalPrice ??
+    (
+      (estimate?.outbound?.TotalPrice || 0) +
+      (estimate?.return?.TotalPrice || 0)
+    );
+
+  const displayTotal =
+    finalQuote?.pricing?.totalFare ??
+    estimatedTotal;
+  console.log("Estimate:", estimate);
 
   // 🔹 Save booking & redirect to Stripe checkout
   const handleBookingConfirm = async (guestInfo = null) => {
-
     try {
       setLoading(true);
 
-      if (!rideInfo.pickupLocation || !rideInfo.dropoffLocation || rideInfo.distance == null) {
+      if (
+        !rideInfo.pickupLocation ||
+        !rideInfo.dropoffLocation ||
+        rideInfo.distance == null
+      ) {
         alert("Incomplete ride information.");
         return;
       }
@@ -46,11 +56,12 @@ function FinalDetails() {
         return;
       }
 
-      // 1. Create booking (NO price sent)
       const bookingPayload = {
         user: user?._id || undefined,
         guest: guestInfo || undefined,
+
         car: selectedCar._id,
+
         carSnapshot: {
           name: selectedCar.name,
           type: selectedCar.type || "",
@@ -59,71 +70,98 @@ function FinalDetails() {
           totalUnits: Number(selectedCar.totalUnits) || 1,
           fleetKey: selectedCar.fleetKey || null,
         },
+
         pickupLocation: rideInfo.pickupLocation,
         dropoffLocation: rideInfo.dropoffLocation,
+
         pickupDate: rideInfo.pickupDate
           ? new Date(rideInfo.pickupDate).toISOString()
           : null,
+
         dropoffDate: rideInfo.dropoffDate
           ? new Date(rideInfo.dropoffDate).toISOString()
           : null,
+
         passengers: rideInfo.passengers || 1,
         luggage: rideInfo.luggage || 0,
+
         distance: Number(rideInfo.distance || 0),
+
         status: "pending",
+
+        pricing: {
+          outboundFare: estimate?.outbound?.TotalPrice || 0,
+          returnFare: estimate?.return?.TotalPrice || 0,
+
+          outboundDistance: rideInfo.distance || 0,
+
+          returnDistance:
+            rideInfo.tripType === "roundTrip"
+              ? rideInfo.returnTrip?.distance || 0
+              : 0,
+        },
+
+        tripType: rideInfo.tripType || "oneWay",
+
+        returnTrip:
+          rideInfo.tripType === "roundTrip"
+            ? rideInfo.returnTrip
+            : null,
       };
 
+
       const headers = user?.token
-        ? { Authorization: `Bearer ${user.token}` }
+        ? {
+          Authorization: `Bearer ${user.token}`,
+        }
         : {};
 
+
+      // CREATE BOOKING
       const bookingRes = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/bookings`,
         bookingPayload,
         { headers }
       );
 
-      console.log("✅ BOOKING CREATED");
-      console.log(bookingRes.data);
 
       const booking = bookingRes.data.booking;
 
-      // Save booking ID for PayPal
-      setBookingId(booking._id);
-      setBookingReady(true);
 
-      // 2. FORCE backend pricing finalization (IMPORTANT)
+      // FINALIZE BACKEND PRICE
       const quoteRes = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
-        { bookingId: booking._id },
+        {
+          bookingId: booking._id,
+        },
         { headers }
       );
 
-      console.log("✅ QUOTE FINALIZED");
-      console.log(quoteRes.data);
 
+      setFinalQuote(quoteRes.data.quote);
       setBookingId(booking._id);
       setBookingReady(true);
 
-      // Create Stripe session
-      // const stripeRes = await axios.post(
-      //   `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
-      //   { bookingId: booking._id },
-      //   { headers }
-      // );
 
-      // window.location.href = stripeRes.data.url;
+      toast.success(
+        "Booking confirmed. Choose your payment method below."
+      );
+
+
     } catch (err) {
-      console.error(err.response?.data);
 
-      // -----------------------------
-      // Resume existing payment
-      // -----------------------------
+      console.error(
+        err.response?.data || err.message
+      );
+
+
+      // EXISTING PAYMENT / BOOKING RESUME
       if (err.response?.data?.resumePayment) {
+
         try {
+
           const booking = err.response.data.booking;
 
-          toast.info("Resuming your existing payment...");
 
           const headers = user?.token
             ? {
@@ -131,8 +169,8 @@ function FinalDetails() {
             }
             : {};
 
-          // Lock quote again (safe)
-          await axios.post(
+
+          const quoteRes = await axios.post(
             `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
             {
               bookingId: booking._id,
@@ -140,34 +178,58 @@ function FinalDetails() {
             { headers }
           );
 
-          // Create or reuse Stripe session
+
+          setFinalQuote(quoteRes.data.quote);
+          setBookingId(booking._id);
+          setBookingReady(true);
 
 
-          toast.info("Booking found. Choose your payment method below.");
+          toast.info(
+            "Existing booking found. Choose your payment method below."
+          );
+
+
           return;
+
+
         } catch (paymentErr) {
+
           console.error(paymentErr);
-          toast.error("Unable to resume payment.");
+
+          toast.error(
+            "Unable to resume payment."
+          );
+
           return;
         }
       }
+
 
       const errorMessage =
         err.response?.data?.error ||
         err.response?.data?.message;
 
+
       if (errorMessage === "CAR_UNAVAILABLE") {
+
         toast.error(
           "Sorry, all vehicles of this model are reserved for the selected time."
         );
+
       } else {
-        toast.error(errorMessage || "Booking failed.");
+
+        toast.error(
+          errorMessage || "Booking failed."
+        );
       }
+
+
     } finally {
+
       setLoading(false);
+
     }
   };
-
   const handleStripePayment = async () => {
     try {
       const headers = user?.token
@@ -246,24 +308,92 @@ function FinalDetails() {
           {/* PRICING STRIP */}
           <div className="p-6 flex items-end justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Estimated Total</p>
-              <p className="text-4xl font-bold text-[#D4AF37]">
-                ${Number(estimatedTotal).toFixed(2)}
+              <p className="text-gray-400 text-sm">
+                {finalQuote ? "Final Total" : "Estimated Total"}
               </p>
+
+              <p className="text-4xl font-bold text-[#D4AF37]">
+                ${Number(displayTotal).toFixed(2)}
+              </p>
+
+              {rideInfo.tripType === "roundTrip" && (
+                <div className="mt-4 text-sm space-y-1 text-gray-400">
+                  <div className="flex justify-between gap-10">
+                    <span>Outbound</span>
+                    <span className="text-white">
+                      ${Number(estimate?.outbound?.TotalPrice || 0).toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between gap-10">
+                    <span>Return</span>
+                    <span className="text-white">
+                      ${Number(estimate?.return?.TotalPrice || 0).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {estimate && (
-              <div className="text-right text-xs text-gray-400 space-y-1">
-                <p>{estimate.distanceMiles} mi distance</p>
-                <p>Base: ${estimate.basePrice}</p>
-                <p>Traffic impact: {estimate.trafficDelayPercent}%</p>
+            <div className="text-right text-xs text-gray-400 space-y-2">
+
+              <div>
+                <p className="text-[#D4AF37] font-semibold">Outbound</p>
+
+                <p>
+                  Distance: {Number(estimate?.outbound?.distanceMiles || 0).toFixed(2)} mi
+                </p>
+
+                <p>
+                  Base: $
+                  {Number(estimate?.outbound?.basePrice || 0).toFixed(2)}
+                </p>
+
+                <p>
+                  Traffic: {estimate?.outbound?.trafficDelayPercent || 0}%
+                </p>
+
+                <p className="text-white font-semibold">
+                  Total: $
+                  {Number(estimate?.outbound?.TotalPrice || 0).toFixed(2)}
+                </p>
               </div>
-            )}
+
+              {rideInfo.tripType === "roundTrip" && (
+                <div className="pt-3 border-t border-[#333]">
+
+                  <p className="text-[#D4AF37] font-semibold">
+                    Return
+                  </p>
+
+                  <p>
+                    Distance: {Number(estimate?.return?.distanceMiles || 0).toFixed(2)} mi
+                  </p>
+
+                  <p>
+                    Base: $
+                    {Number(estimate?.return?.basePrice || 0).toFixed(2)}
+                  </p>
+
+                  <p>
+                    Traffic: {estimate?.return?.trafficDelayPercent || 0}%
+                  </p>
+
+                  <p className="text-white font-semibold">
+                    Total: $
+                    {Number(estimate?.return?.TotalPrice || 0).toFixed(2)}
+                  </p>
+
+                </div>
+              )}
+
+            </div>
           </div>
         </div>
         {/* LEFT SIDE - HERO CAR */}
         <div className="space-y-6">
 
+          {/* RIDE INFO */}
           {/* RIDE INFO */}
           <div className="bg-[#141414] p-6 rounded-2xl border border-[#2a2a2a]">
             <h3 className="text-lg font-semibold mb-4 text-[#D4AF37]">
@@ -271,12 +401,65 @@ function FinalDetails() {
             </h3>
 
             <div className="space-y-2 text-sm text-gray-300">
-              <p><strong>Pickup:</strong> {rideInfo.pickupLocation}</p>
-              <p><strong>Drop-off:</strong> {rideInfo.dropoffLocation}</p>
-              <p><strong>Date:</strong> {new Date(rideInfo.pickupDate).toLocaleString()}</p>
-              <p><strong>Passengers:</strong> {rideInfo.passengers || 1}</p>
-              <p><strong>Luggage:</strong> {rideInfo.luggage || 0}</p>
-              <p><strong>Distance:</strong> {rideInfo.distance?.toFixed(2)} mi</p>
+
+              <p>
+                <strong>Pickup:</strong> {rideInfo.pickupLocation}
+              </p>
+
+              <p>
+                <strong>Drop-off:</strong> {rideInfo.dropoffLocation}
+              </p>
+
+              <p>
+                <strong>Pickup Date:</strong>{" "}
+                {new Date(rideInfo.pickupDate).toLocaleString()}
+              </p>
+
+              {rideInfo.tripType === "roundTrip" && rideInfo.returnTrip && (
+                <>
+                  <hr className="border-[#2a2a2a] my-3" />
+
+                  <p>
+                    <strong>Return Pickup:</strong>{" "}
+                    {rideInfo.returnTrip.pickupLocation}
+                  </p>
+
+                  <p>
+                    <strong>Return Drop-off:</strong>{" "}
+                    {rideInfo.returnTrip.dropoffLocation}
+                  </p>
+
+                  <p>
+                    <strong>Return Date:</strong>{" "}
+                    {new Date(
+                      rideInfo.returnTrip.pickupDate
+                    ).toLocaleString()}
+                  </p>
+
+                  <p>
+                    <strong>Return Distance:</strong>{" "}
+                    {Number(
+                      rideInfo.returnTrip.distance || 0
+                    ).toFixed(2)} mi
+                  </p>
+                </>
+              )}
+
+              <hr className="border-[#2a2a2a] my-3" />
+
+              <p>
+                <strong>Passengers:</strong> {rideInfo.passengers || 1}
+              </p>
+
+              <p>
+                <strong>Luggage:</strong> {rideInfo.luggage || 0}
+              </p>
+
+              <p>
+                <strong>Outbound Distance:</strong>{" "}
+                {Number(rideInfo.distance || 0).toFixed(2)} mi
+              </p>
+
             </div>
           </div>
 
@@ -306,7 +489,7 @@ function FinalDetails() {
               disabled={loading}
               className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#b58a2a] via-[#D4AF37] to-[#8a6a1f] text-black font-bold text-lg shadow-lg hover:scale-[1.02] transition"
             >
-              {loading ? "Processing..." : "Confirm Booking"}
+              {loading ? "Finalizing Payment..." : "Confirm Booking"}
             </button>
           )}
 
@@ -324,11 +507,11 @@ function FinalDetails() {
                 Pay with Stripe
               </button>
               <div className="mt-8">
-              <PayPalButton
-                amount={estimatedTotal}
-                bookingId={bookingId}
-                token={user?.token}
-              />
+                <PayPalButton
+                  amount={displayTotal}
+                  bookingId={bookingId}
+                  token={user?.token}
+                />
               </div>
             </div>
           )}
