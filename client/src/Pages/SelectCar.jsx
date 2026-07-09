@@ -103,20 +103,28 @@ export default function SelectCar() {
 
           returnPickup:
             tripData.tripType === "roundTrip"
-              ? tripData.returnTrip?.pickupLocation
+              ? tripData.returnPickupLocation
               : null,
 
           returnDropoff:
             tripData.tripType === "roundTrip"
-              ? tripData.returnTrip?.dropoffLocation
+              ? tripData.returnDropoffLocation
               : null,
 
           returnDistance:
             tripData.tripType === "roundTrip"
-              ? tripData.returnTrip?.distance
+              ? tripData.returnDistance
               : 0,
         }
       );
+      console.log("Sending estimate:", {
+        pickup: tripData.pickupLocation,
+        dropoff: tripData.dropoffLocation,
+        tripType: tripData.tripType,
+        returnPickup: tripData.returnPickupLocation,
+        returnDropoff: tripData.returnDropoffLocation,
+        returnDistance: tripData.returnDistance,
+      });
 
       console.log("ESTIMATE RESPONSE:", res.data);
 
