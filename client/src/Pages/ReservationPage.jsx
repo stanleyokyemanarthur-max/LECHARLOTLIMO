@@ -456,7 +456,9 @@ export default function ReservationPage() {
         ? computedDropoff.toISOString()
         : null,
 
-      distance: Number(totalDistance.toFixed(2)),
+      distance: Number(tripData.distance.toFixed(2)),
+
+      totalDistance:Number(totalDistance.toFixed(2)),
 
       returnDistance:
         tripData.returnDistance
