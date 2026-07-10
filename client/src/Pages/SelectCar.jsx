@@ -88,13 +88,25 @@ export default function SelectCar() {
     try {
       setActiveCarId(car._id);
       setLoadingCarId(car._id);
+      console.log("========== TRIP DATA FROM REDUX ==========");
+      console.log(tripData);
+
+      console.log("========== SENDING ESTIMATE ==========");
+      console.log({
+        pickup: tripData.pickupLocation,
+        dropoff: tripData.dropoffLocation,
+        tripType: tripData.tripType,
+        returnPickup: tripData.returnPickupLocation,
+        returnDropoff: tripData.returnDropoffLocation,
+        returnDistance: tripData.returnDistance,
+      });
 
       const res = await axios.post(
+
         "https://lecharlotlimo-aucd.onrender.com/api/bookings/estimate",
         {
           pickup: tripData.pickupLocation,
           dropoff: tripData.dropoffLocation,
-
           carId: car._id,
 
           distance: tripData.distance,
@@ -115,18 +127,14 @@ export default function SelectCar() {
             tripData.tripType === "roundTrip"
               ? tripData.returnDistance
               : 0,
+
         }
       );
-      console.log("Sending estimate:", {
-        pickup: tripData.pickupLocation,
-        dropoff: tripData.dropoffLocation,
-        tripType: tripData.tripType,
-        returnPickup: tripData.returnPickupLocation,
-        returnDropoff: tripData.returnDropoffLocation,
-        returnDistance: tripData.returnDistance,
-      });
 
-      console.log("ESTIMATE RESPONSE:", res.data);
+      console.log("========== ESTIMATE RESPONSE ==========");
+      console.log(res.data);
+
+
 
       setEstimates((prev) => ({
         ...prev,
