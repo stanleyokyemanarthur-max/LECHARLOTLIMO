@@ -205,20 +205,27 @@ export default function SelectCar() {
           <p><span className="text-[#D4AF37] font-semibold">Passengers:</span> {tripData.passengers || "—"}</p>
           <p><span className="text-[#D4AF37] font-semibold">Luggage:</span> {tripData.luggage || "—"}</p>
           <p><span className="text-[#D4AF37] font-semibold">Distance:</span> {tripData.distance?.toFixed(2)} mi</p>
-          {tripData.tripType === "roundTrip" && tripData.returnTrip && (
+          {tripData.tripType === "roundTrip" && (
             <>
               <p>
                 <span className="text-[#D4AF37] font-semibold">
                   Return Pickup:
                 </span>{" "}
-                {tripData.returnTrip.pickupLocation}
+                {tripData.returnPickupLocation}
               </p>
 
               <p>
                 <span className="text-[#D4AF37] font-semibold">
                   Return Drop-off:
                 </span>{" "}
-                {tripData.returnTrip.dropoffLocation}
+                {tripData.returnDropoffLocation}
+              </p>
+
+              <p>
+                <span className="text-[#D4AF37] font-semibold">
+                  Return Distance:
+                </span>{" "}
+                {tripData.returnDistance?.toFixed(2)} mi
               </p>
             </>
           )}
@@ -381,7 +388,7 @@ export default function SelectCar() {
                             </span>
 
                             <span className="text-white text-xl font-bold">
-                              ${Number(estimate.TotalPrice || 0).toFixed(2)}
+                              ${Number(estimate.totalPrice || 0).toFixed(2)}
                             </span>
                           </div>
                         </motion.div>
