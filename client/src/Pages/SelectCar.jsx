@@ -247,19 +247,49 @@ export default function SelectCar() {
               const isActive = activeCarId === car._id;
               const isLoading = loadingCarId === car._id;
 
+              const outbound = estimate?.outbound;
+              const returnTrip = estimate?.return;
+
               const displayDistance =
                 tripData.tripType === "roundTrip"
-                  ? (estimate?.outbound?.distanceMiles || 0) +
-                  (estimate?.return?.distanceMiles || 0)
-                  : (estimate?.outbound?.distanceMiles || 0);
-
+                  ? (outbound?.distanceMiles ?? tripData.distance ?? 0) +
+                  (returnTrip?.distanceMiles ?? tripData.returnDistance ?? 0)
+                  : (outbound?.distanceMiles ?? tripData.distance ?? 0);
 
               const totalDuration =
                 tripData.tripType === "roundTrip"
-                  ? (estimate?.outbound?.durationMinutes || 0) +
-                  (estimate?.return?.durationMinutes || 0)
-                  : (estimate?.outbound?.durationMinutes || 0);
+                  ? (outbound?.durationMinutes ?? 0) +
+                  (returnTrip?.durationMinutes ?? 0)
+                  : (outbound?.durationMinutes ?? 0);
 
+              const formatMinutes = (minutes) => {
+                const hrs = Math.floor(minutes / 60);
+                const mins = Math.round(minutes % 60);
+
+                if (hrs > 0 && mins > 0) {
+                  return `${hrs} hr${hrs > 1 ? "s" : ""} ${mins} min`;
+                }
+
+                if (hrs > 0) {
+                  return `${hrs} hr${hrs > 1 ? "s" : ""}`;
+                }
+
+                return `${mins} mins`;
+              };
+
+              const totalTrafficDuration =
+                tripData.tripType === "roundTrip"
+                  ? (outbound?.trafficDurationMinutes ?? 0) +
+                  (returnTrip?.trafficDurationMinutes ?? 0)
+                  : (outbound?.trafficDurationMinutes ?? 0);
+
+
+              const delayPercent =
+                totalDuration > 0
+                  ? Math.round(
+                    ((totalTrafficDuration - totalDuration) / totalDuration) * 100
+                  )
+                  : 0;
               return (
                 <motion.div
                   key={car._id}
@@ -372,8 +402,9 @@ export default function SelectCar() {
                               <span className="flex items-center gap-2">
                                 <Clock size={14} /> Duration
                               </span>
+
                               <span className="text-white">
-                                {estimate.outbound?.durationText}
+                                {formatMinutes(totalDuration)}
                               </span>
                             </div>
 
@@ -381,8 +412,9 @@ export default function SelectCar() {
                               <span className="flex items-center gap-2">
                                 <Route size={14} /> Traffic Impact
                               </span>
+
                               <span className="text-white">
-                                {estimate.outbound?.trafficDurationText}
+                                {formatMinutes(totalTrafficDuration)}
                               </span>
                             </div>
 
@@ -390,8 +422,9 @@ export default function SelectCar() {
                               <span className="flex items-center gap-2">
                                 <TrendingDown size={14} /> Delay
                               </span>
+
                               <span className="text-white">
-                                {estimate.outbound?.trafficDelayPercent || 0}%
+                                {delayPercent}%
                               </span>
                             </div>
                           </div>
