@@ -180,13 +180,7 @@ export default function SelectCar() {
   const format = (d) =>
     d ? dayjs(d).format("MM/DD/YYYY hh:mm A") : "";
 
-  const displayDistance =
-    tripData.tripType === "roundTrip"
-      ? (
-        (estimate?.outbound?.distanceMiles || 0) +
-        (estimate?.return?.distanceMiles || 0)
-      )
-      : (estimate?.outbound?.distanceMiles || 0);
+
 
   return (
     <div className="min-h-screen bg-[#0B0B0B] mt-10 py-10 px-4 flex flex-col items-center">
@@ -253,12 +247,18 @@ export default function SelectCar() {
               const isActive = activeCarId === car._id;
               const isLoading = loadingCarId === car._id;
 
+              const displayDistance =
+                tripData.tripType === "roundTrip"
+                  ? (estimate?.outbound?.distanceMiles || 0) +
+                  (estimate?.return?.distanceMiles || 0)
+                  : (estimate?.outbound?.distanceMiles || 0);
+
 
               const totalDuration =
-  tripData.tripType === "roundTrip"
-    ? (estimate?.outbound?.durationMinutes || 0) +
-      (estimate?.return?.durationMinutes || 0)
-    : (estimate?.outbound?.durationMinutes || 0);
+                tripData.tripType === "roundTrip"
+                  ? (estimate?.outbound?.durationMinutes || 0) +
+                  (estimate?.return?.durationMinutes || 0)
+                  : (estimate?.outbound?.durationMinutes || 0);
 
               return (
                 <motion.div
