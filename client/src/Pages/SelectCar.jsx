@@ -279,9 +279,9 @@ export default function SelectCar() {
 
               const totalTrafficDuration =
                 tripData.tripType === "roundTrip"
-                  ? (outbound?.trafficDurationMinutes ?? 0) +
-                  (returnTrip?.trafficDurationMinutes ?? 0)
-                  : (outbound?.trafficDurationMinutes ?? 0);
+                  ? (outbound?.trafficMinutes || 0) +
+                  (returnTrip?.trafficMinutes || 0)
+                  : (outbound?.trafficMinutes || 0);
 
 
               const delayPercent =
