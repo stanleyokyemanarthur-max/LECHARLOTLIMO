@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -8,13 +8,27 @@ import PayPalButton from "../Components/PayPalButtons";
 function FinalDetails() {
   const [bookingId, setBookingId] = useState(null);
   const [bookingReady, setBookingReady] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
   const { rideInfo, selectedCar, estimate } = location.state || {};
+  const outboundEstimate = estimate?.outbound || {};
+  const returnEstimate = estimate?.return || {};
+  const outboundFare = Number(outboundEstimate.estimatedPrice || 0);
+  const returnFare = Number(returnEstimate.estimatedPrice || 0);
 
   const user = useSelector((state) => state.auth.userInfo);
   const [loading, setLoading] = useState(false);
   const [finalQuote, setFinalQuote] = useState(null);
+  const totalDistance =
+    Number(outboundEstimate.distanceMiles || 0) +
+    Number(returnEstimate.distanceMiles || 0);
+
+  const totalDuration =
+    Number(outboundEstimate.durationMinutes || 0) +
+    Number(returnEstimate.durationMinutes || 0);
+
+  const isRoundTrip =
+    estimate?.tripType === "roundTrip" ||
+    rideInfo?.tripType === "roundTrip";
 
 
   if (!rideInfo || !selectedCar) {
@@ -24,18 +38,13 @@ function FinalDetails() {
       </div>
     );
   }
-
-  const estimatedTotal =
-    estimate?.TotalPrice ??
-    (
-      (estimate?.outbound?.TotalPrice || 0) +
-      (estimate?.return?.TotalPrice || 0)
-    );
+  const estimatedTotal = Number(
+    estimate?.totalPrice ??
+    outboundFare + returnFare
+  );
 
   const displayTotal =
-    finalQuote?.pricing?.totalFare ??
-    estimatedTotal;
-  console.log("Estimate:", estimate);
+    Number(finalQuote?.pricing?.totalFare) || estimatedTotal;
 
   // 🔹 Save booking & redirect to Stripe checkout
   const handleBookingConfirm = async (guestInfo = null) => {
@@ -45,7 +54,7 @@ function FinalDetails() {
       if (
         !rideInfo.pickupLocation ||
         !rideInfo.dropoffLocation ||
-        rideInfo.distance == null
+        Number(outboundEstimate.distanceMiles || 0) <= 0
       ) {
         alert("Incomplete ride information.");
         return;
@@ -85,26 +94,31 @@ function FinalDetails() {
         passengers: rideInfo.passengers || 1,
         luggage: rideInfo.luggage || 0,
 
-        distance: Number(rideInfo.distance || 0),
+        distance:
+          isRoundTrip
+            ? Number(outboundEstimate.distanceMiles || 0) +
+            Number(returnEstimate.distanceMiles || 0)
+            : Number(outboundEstimate.distanceMiles || 0),
 
         status: "pending",
 
         pricing: {
-          outboundFare: estimate?.outbound?.TotalPrice || 0,
-          returnFare: estimate?.return?.TotalPrice || 0,
+          outboundFare,
+          returnFare,
+          totalFare: estimatedTotal,
 
-          outboundDistance: rideInfo.distance || 0,
+          outboundDistance: Number(outboundEstimate.distanceMiles || 0),
 
           returnDistance:
-            rideInfo.tripType === "roundTrip"
-              ? rideInfo.returnTrip?.distance || 0
+            isRoundTrip
+              ? Number(returnEstimate.distanceMiles || 0)
               : 0,
         },
 
         tripType: rideInfo.tripType || "oneWay",
 
         returnTrip:
-          rideInfo.tripType === "roundTrip"
+          isRoundTrip
             ? rideInfo.returnTrip
             : null,
       };
@@ -267,7 +281,15 @@ function FinalDetails() {
 
   return (
     <div className="min-h-screen bg-black mt-10 text-white px-[8%] pt-12 py-12">
-      <h2 className="text-3xl font-semibold mb-6">Final Details</h2>
+      <h2 className="text-3xl font-semibold">
+        Final Details
+      </h2>
+
+      <p className="text-gray-400 mt-1 mb-6">
+        {isRoundTrip
+          ? "Round Trip Reservation"
+          : "One Way Reservation"}
+      </p>
 
       <div className="grid lg:grid-cols-2 gap-10">
         {/* Ride Summary */}
@@ -316,19 +338,19 @@ function FinalDetails() {
                 ${Number(displayTotal).toFixed(2)}
               </p>
 
-              {rideInfo.tripType === "roundTrip" && (
+              {isRoundTrip && (
                 <div className="mt-4 text-sm space-y-1 text-gray-400">
                   <div className="flex justify-between gap-10">
                     <span>Outbound</span>
                     <span className="text-white">
-                      ${Number(estimate?.outbound?.TotalPrice || 0).toFixed(2)}
+                      ${Number(outboundFare || 0).toFixed(2)}
                     </span>
                   </div>
 
                   <div className="flex justify-between gap-10">
                     <span>Return</span>
                     <span className="text-white">
-                      ${Number(estimate?.return?.TotalPrice || 0).toFixed(2)}
+                      ${Number(returnFare || 0).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -341,25 +363,29 @@ function FinalDetails() {
                 <p className="text-[#D4AF37] font-semibold">Outbound</p>
 
                 <p>
-                  Distance: {Number(estimate?.outbound?.distanceMiles || 0).toFixed(2)} mi
+                  Distance: {Number(outboundEstimate.distanceMiles || 0).toFixed(2)} mi
                 </p>
 
                 <p>
                   Base: $
-                  {Number(estimate?.outbound?.basePrice || 0).toFixed(2)}
+                  {Number(outboundEstimate.basePrice || 0).toFixed(2)}
                 </p>
 
                 <p>
-                  Traffic: {estimate?.outbound?.trafficDelayPercent || 0}%
+                  Duration: {outboundEstimate.durationText || "--"}
+                </p>
+
+                <p>
+                  With Traffic: {outboundEstimate.trafficDurationText || "--"}
                 </p>
 
                 <p className="text-white font-semibold">
                   Total: $
-                  {Number(estimate?.outbound?.TotalPrice || 0).toFixed(2)}
+                  {Number(outboundFare || 0).toFixed(2)}
                 </p>
               </div>
 
-              {rideInfo.tripType === "roundTrip" && (
+              {isRoundTrip && (
                 <div className="pt-3 border-t border-[#333]">
 
                   <p className="text-[#D4AF37] font-semibold">
@@ -367,21 +393,38 @@ function FinalDetails() {
                   </p>
 
                   <p>
-                    Distance: {Number(estimate?.return?.distanceMiles || 0).toFixed(2)} mi
+                    <strong>Return Distance:</strong>{" "}
+                    {Number(returnEstimate.distanceMiles || 0).toFixed(2)} mi
+                  </p>
+
+                  <hr className="border-[#2a2a2a] my-3" />
+                  <p>
+                    <strong>Total Distance:</strong>{" "}
+                    {Number(totalDistance || 0).toFixed(2)} mi
+                  </p>
+
+                  <p>
+                    <strong>Total Duration:</strong>{" "}
+                    {Math.floor(totalDuration / 60)} hr{" "}
+                    {totalDuration % 60} min
                   </p>
 
                   <p>
                     Base: $
-                    {Number(estimate?.return?.basePrice || 0).toFixed(2)}
+                    {Number(returnEstimate.basePrice || 0).toFixed(2)}
                   </p>
 
                   <p>
-                    Traffic: {estimate?.return?.trafficDelayPercent || 0}%
+                    Duration: {returnEstimate.durationText || "--"}
+                  </p>
+
+                  <p>
+                    With Traffic: {returnEstimate.trafficDurationText || "--"}
                   </p>
 
                   <p className="text-white font-semibold">
                     Total: $
-                    {Number(estimate?.return?.TotalPrice || 0).toFixed(2)}
+                    {Number(returnFare || 0).toFixed(2)}
                   </p>
 
                 </div>
@@ -415,10 +458,8 @@ function FinalDetails() {
                 {new Date(rideInfo.pickupDate).toLocaleString()}
               </p>
 
-              {rideInfo.tripType === "roundTrip" && rideInfo.returnTrip && (
+              {isRoundTrip && rideInfo.returnTrip && (
                 <>
-                  <hr className="border-[#2a2a2a] my-3" />
-
                   <p>
                     <strong>Return Pickup:</strong>{" "}
                     {rideInfo.returnTrip.pickupLocation}
@@ -438,10 +479,9 @@ function FinalDetails() {
 
                   <p>
                     <strong>Return Distance:</strong>{" "}
-                    {Number(
-                      rideInfo.returnTrip.distance || 0
-                    ).toFixed(2)} mi
+                    {Number(returnEstimate.distanceMiles || 0).toFixed(2)} mi
                   </p>
+
                 </>
               )}
 
@@ -454,10 +494,11 @@ function FinalDetails() {
               <p>
                 <strong>Luggage:</strong> {rideInfo.luggage || 0}
               </p>
-
               <p>
-                <strong>Outbound Distance:</strong>{" "}
-                {Number(rideInfo.distance || 0).toFixed(2)} mi
+                <strong>
+                  {isRoundTrip ? "Outbound Distance" : "Trip Distance"}:
+                </strong>{" "}
+                {Number(outboundEstimate.distanceMiles || 0).toFixed(2)} mi
               </p>
 
             </div>
