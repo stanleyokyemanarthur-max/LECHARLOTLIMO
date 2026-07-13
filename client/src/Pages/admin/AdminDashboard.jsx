@@ -22,7 +22,7 @@ export default function AdminDashboard() {
     const fetchStats = async () => {
       try {
         const res = await axios.get(
-          "https://lecharlotlimo-aucd.onrender.com/api/admin/stats",
+          `${import.meta.env.VITE_API_URL}/api/admin/stats`,
           {
             headers: {
               Authorization: `Bearer ${userInfo?.token}`,
@@ -70,7 +70,10 @@ export default function AdminDashboard() {
     },
     {
       title: "Total Revenue",
-      value: `$${Number(stats.totalRevenue).toLocaleString()}`,
+      value: `$${Number(stats.totalRevenue || 0).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`,
       icon: "fa-solid fa-dollar-sign",
       color: "bg-purple-600",
     },
@@ -140,7 +143,7 @@ export default function AdminDashboard() {
                     </h3>
 
                     <p className="text-white mt-1">
-                      {b.user?.name}
+                    {b.user?.name || "Unknown Customer"}
                     </p>
 
                     <p className="text-sm text-gray-400 mt-2">
@@ -149,13 +152,12 @@ export default function AdminDashboard() {
                   </div>
 
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      b.status === "pending"
-                        ? "bg-[#D4AF37] text-yellow-900"
-                        : b.status === "cancelled"
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${b.status === "pending"
+                      ? "bg-[#D4AF37] text-yellow-900"
+                      : b.status === "cancelled"
                         ? "bg-red-100 text-red-700"
                         : "bg-green-100 text-green-700"
-                    }`}
+                      }`}
                   >
                     {b.status}
                   </span>
@@ -169,7 +171,12 @@ export default function AdminDashboard() {
                   </span>
 
                   <span className="font-bold text-white">
-                    ${Number(b.totalPrice).toFixed(2)}
+                    $
+                    {Number(
+                      b.pricing?.totalFare ??
+                      b.totalPrice ??
+                      0
+                    ).toFixed(2)}
                   </span>
 
                 </div>
@@ -221,7 +228,7 @@ export default function AdminDashboard() {
                     </td>
 
                     <td className="px-4 py-3">
-                      {b.user?.name}
+                     {b.user?.name || "Unknown Customer"}
                     </td>
 
                     <td className="px-4 py-3">
@@ -231,13 +238,12 @@ export default function AdminDashboard() {
                     <td className="px-4 py-3">
 
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          b.status === "pending"
-                            ? "bg-[#D4AF37] text-yellow-900"
-                            : b.status === "cancelled"
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${b.status === "pending"
+                          ? "bg-[#D4AF37] text-yellow-900"
+                          : b.status === "cancelled"
                             ? "bg-red-100 text-red-700"
                             : "bg-green-100 text-green-700"
-                        }`}
+                          }`}
                       >
                         {b.status}
                       </span>
@@ -245,7 +251,12 @@ export default function AdminDashboard() {
                     </td>
 
                     <td className="px-4 py-3">
-                      ${Number(b.totalPrice).toFixed(2)}
+                      $
+                      {Number(
+                        b.pricing?.totalFare ??
+                        b.totalPrice ??
+                        0
+                      ).toFixed(2)}
                     </td>
 
                   </tr>

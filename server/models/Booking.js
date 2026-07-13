@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
   {
+    // =========================
+    // CUSTOMER
+    // =========================
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -9,11 +13,16 @@ const bookingSchema = new mongoose.Schema(
       index: true,
     },
 
+    // =========================
+    // DRIVER
+    // =========================
+
     driver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       default: null,
     },
+
     driverStatus: {
       type: String,
       enum: [
@@ -26,6 +35,10 @@ const bookingSchema = new mongoose.Schema(
       default: "unassigned",
     },
 
+    // =========================
+    // VEHICLE
+    // =========================
+
     car: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Car",
@@ -36,30 +49,34 @@ const bookingSchema = new mongoose.Schema(
     carSnapshot: {
       name: String,
       category: String,
-      pricePerMile: { type: Number, required: true },
-      rateMultiplier: { type: Number, default: 1 },
-      totalUnits: { type: Number, default: 1 },
-      fleetKey: { type: String, required: true, index: true },
-    },
-    returnDistance: {
-      type: Number,
-      default: 0,
+      image: String,
+
+      pricePerMile: {
+        type: Number,
+        required: true,
+      },
+
+      rateMultiplier: {
+        type: Number,
+        default: 1,
+      },
+
+      totalUnits: {
+        type: Number,
+        default: 1,
+      },
+
+      fleetKey: {
+        type: String,
+        required: true,
+        index: true,
+      },
     },
 
-    totalDistance: {
-      type: Number,
-      default: 0,
-    },
+    // =========================
+    // TRIP DETAILS
+    // =========================
 
-    pricing: {
-      outboundFare: Number,
-      returnFare: Number,
-      outboundDistance: Number,
-      returnDistance: Number,
-    },
-
-    pickupLocation: { type: String, required: true },
-    dropoffLocation: { type: String, required: true },
     tripType: {
       type: String,
       enum: ["oneWay", "roundTrip"],
@@ -67,64 +84,14 @@ const bookingSchema = new mongoose.Schema(
       index: true,
     },
 
-    distance: { type: Number, required: true },
-
-    totalPrice: { type: Number, default: null },
-    pricing: {
-      outboundFare: {
-        type: Number,
-        default: null,
-      },
-
-      returnFare: {
-        type: Number,
-        default: 0,
-      },
-    },
-    pricingLocked: { type: Boolean, default: false },
-
-    paymentStatus: {
-      type: String,
-      enum: [
-        "unquoted",
-        "quoted",
-        "awaiting_payment",
-        "processing",
-        "paid",
-        "failed",
-        "refunded",
-        "cancelled",
-        "expired",
-      ],
-      default: "unquoted",
-      index: true,
-    },
-
-    isPaid: { type: Boolean, default: false },
-
-    fleetKey: {
+    pickupLocation: {
       type: String,
       required: true,
-      index: true,
     },
 
-    freeReason: {
+    dropoffLocation: {
       type: String,
-      enum: ["reward", "admin", null],
-      default: null,
-    },
-
-    reward: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Reward",
-      default: null,
-    },
-
-    status: {
-      type: String,
-      enum: ["pending", "confirmed", "enroute", "completed", "cancelled", "expired"],
-      default: "pending",
-      index: true,
+      required: true,
     },
 
     pickupDate: {
@@ -135,9 +102,45 @@ const bookingSchema = new mongoose.Schema(
 
     dropoffDate: {
       type: Date,
-      required: true, // 🔥 FIX: do NOT allow null (important for availability queries)
+      required: true,
       index: true,
     },
+
+    // outbound flight
+    flightNumber: {
+      type: String,
+      default: null,
+    },
+
+    passengers: {
+      type: Number,
+      default: 1,
+    },
+
+    luggage: {
+      type: Number,
+      default: 0,
+    },
+
+    distance: {
+      type: Number,
+      required: true,
+    },
+
+    totalDistance: {
+      type: Number,
+      default: 0,
+    },
+
+    returnDistance: {
+      type: Number,
+      default: 0,
+    },
+
+    // =========================
+    // ROUND TRIP
+    // =========================
+
     returnTrip: {
       pickupLocation: {
         type: String,
@@ -161,7 +164,7 @@ const bookingSchema = new mongoose.Schema(
 
       distance: {
         type: Number,
-        default: null,
+        default: 0,
       },
 
       flightNumber: {
@@ -170,31 +173,149 @@ const bookingSchema = new mongoose.Schema(
       },
     },
 
+    // =========================
+    // PRICING
+    // =========================
+
+    totalPrice: {
+      type: Number,
+      default: null,
+    },
+
+    pricing: {
+      outboundFare: {
+        type: Number,
+        default: 0,
+      },
+
+      returnFare: {
+        type: Number,
+        default: 0,
+      },
+
+      outboundDistance: {
+        type: Number,
+        default: 0,
+      },
+
+      returnDistance: {
+        type: Number,
+        default: 0,
+      },
+    },
+
+    pricingLocked: {
+      type: Boolean,
+      default: false,
+    },
+
+    // =========================
+    // PAYMENT
+    // =========================
+
+    paymentStatus: {
+      type: String,
+      enum: [
+        "unquoted",
+        "quoted",
+        "awaiting_payment",
+        "processing",
+        "paid",
+        "failed",
+        "refunded",
+        "cancelled",
+        "expired",
+      ],
+      default: "unquoted",
+      index: true,
+    },
+
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
+
     stripeSessionId: {
       type: String,
       default: null,
       index: true,
     },
 
+    // =========================
+    // REWARDS
+    // =========================
+
+    freeReason: {
+      type: String,
+      enum: ["reward", "admin", null],
+      default: null,
+    },
+
+    reward: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Reward",
+      default: null,
+    },
+
+    // =========================
+    // AVAILABILITY
+    // =========================
+
+    fleetKey: {
+      type: String,
+      required: true,
+      index: true,
+    },
+
+    // =========================
+    // BOOKING STATUS
+    // =========================
+
+    status: {
+      type: String,
+      enum: [
+        "pending",
+        "confirmed",
+        "enroute",
+        "completed",
+        "cancelled",
+        "expired",
+      ],
+      default: "pending",
+      index: true,
+    },
+
+    // =========================
+    // NOTIFICATIONS
+    // =========================
+
     notificationFlags: {
-      bookingConfirmedNotifiedUser: { type: Boolean, default: false },
-      enrouteNotifiedUser: { type: Boolean, default: false },
+      bookingConfirmedNotifiedUser: {
+        type: Boolean,
+        default: false,
+      },
+
+      enrouteNotifiedUser: {
+        type: Boolean,
+        default: false,
+      },
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-/**
- * 🔥 CRITICAL PERFORMANCE INDEX (THIS FIXES YOUR HANGING ISSUE)
- * Helps availability queries:
- * status + pickupDate + dropoffDate
- */
+// ===================================
+// PERFORMANCE INDEXES
+// ===================================
 
 bookingSchema.index({
   status: 1,
   pickupDate: 1,
   dropoffDate: 1,
 });
+
 bookingSchema.index({
   status: 1,
   "returnTrip.pickupDate": 1,
@@ -202,6 +323,7 @@ bookingSchema.index({
 });
 
 const Booking =
-  mongoose.models.Booking || mongoose.model("Booking", bookingSchema);
+  mongoose.models.Booking ||
+  mongoose.model("Booking", bookingSchema);
 
 export default Booking;

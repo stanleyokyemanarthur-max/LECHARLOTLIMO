@@ -382,20 +382,148 @@ export const assignDriver = async (req, res) => {
       await sendEmail({
         to: driver.email,
         subject: "New Booking Assigned — Le Charlot Limousine",
-        html: emailShell(`
-      <h2>Hello ${driver.name},</h2>
+    html: emailShell(`
+  <div style="font-family:Arial,sans-serif;color:#333;line-height:1.6;">
 
-      <p>You have been assigned a new booking.</p>
+    <h2 style="color:#B8860B;margin-bottom:5px;">
+      LE CHARLOT LIMOUSINE
+    </h2>
 
-      <p><strong>Customer:</strong> ${updated.user.name}</p>
-      <p><strong>Phone:</strong> ${updated.user.phone || "N/A"}</p>
-      <p><strong>Vehicle:</strong> ${updated.car.name}</p>
-      <p><strong>Pickup:</strong> ${updated.pickupLocation}</p>
-      <p><strong>Dropoff:</strong> ${updated.dropoffLocation}</p>
-      <p><strong>Pickup Time:</strong> ${new Date(updated.pickupDate).toLocaleString()}</p>
+    <h3 style="margin-top:0;">
+      DRIVER TRIP SHEET
+    </h3>
 
-      <p>Please log in to your driver dashboard for more details.</p>
-    `),
+    <hr>
+
+    <h3>Booking Information</h3>
+
+    <table cellpadding="6" cellspacing="0">
+      <tr>
+        <td><strong>Booking ID:</strong></td>
+        <td>${updated.bookingNumber || updated._id}</td>
+      </tr>
+
+      <tr>
+        <td><strong>Status:</strong></td>
+        <td>${updated.status}</td>
+      </tr>
+
+      <tr>
+        <td><strong>Vehicle:</strong></td>
+        <td>${updated.car?.name || "N/A"}</td>
+      </tr>
+    </table>
+
+    <hr>
+
+    <h3>Passenger Information</h3>
+
+    <table cellpadding="6" cellspacing="0">
+      <tr>
+        <td><strong>Name:</strong></td>
+        <td>${updated.user?.name || "Guest"}</td>
+      </tr>
+
+      <tr>
+        <td><strong>Phone:</strong></td>
+        <td>${updated.user?.phone || "N/A"}</td>
+      </tr>
+
+      <tr>
+        <td><strong>Passengers:</strong></td>
+        <td>${updated.passengers || "N/A"}</td>
+      </tr>
+
+      <tr>
+        <td><strong>Luggage:</strong></td>
+        <td>${updated.luggage || "N/A"}</td>
+      </tr>
+    </table>
+
+    <hr>
+
+    <h3>Pickup Details</h3>
+
+    <table cellpadding="6" cellspacing="0">
+
+      <tr>
+        <td><strong>Pickup Address:</strong></td>
+        <td>${updated.pickupLocation}</td>
+      </tr>
+
+      <tr>
+        <td><strong>Date & Time:</strong></td>
+        <td>${new Date(updated.pickupDate).toLocaleString()}</td>
+      </tr>
+
+      ${
+        updated.flightNumber
+          ? `
+      <tr>
+        <td><strong>Arrival Flight:</strong></td>
+        <td>${updated.flightNumber}</td>
+      </tr>
+      `
+          : ""
+      }
+
+    </table>
+
+    <hr>
+
+    <h3>Destination</h3>
+
+    <table cellpadding="6" cellspacing="0">
+
+      <tr>
+        <td><strong>Dropoff:</strong></td>
+        <td>${updated.dropoffLocation}</td>
+      </tr>
+
+    </table>
+
+    ${
+      updated.tripType === "roundTrip" && updated.returnTrip
+        ? `
+      <hr>
+
+      <h3>Return Trip</h3>
+
+      <table cellpadding="6" cellspacing="0">
+
+        <tr>
+          <td><strong>Pickup:</strong></td>
+          <td>${updated.returnTrip.pickupLocation}</td>
+        </tr>
+
+        <tr>
+          <td><strong>Dropoff:</strong></td>
+          <td>${updated.returnTrip.dropoffLocation}</td>
+        </tr>
+
+        <tr>
+          <td><strong>Date & Time:</strong></td>
+          <td>${new Date(updated.returnTrip.pickupDate).toLocaleString()}</td>
+        </tr>
+
+      </table>
+      `
+        : ""
+    }
+
+    <hr>
+
+    <p>
+      Please arrive early, verify passenger identity, assist with luggage,
+      and provide professional chauffeur service.
+    </p>
+
+    <p>
+      This document serves as your official trip sheet for this assignment.
+    </p>
+
+  </div>
+`),
       });
     } catch (emailErr) {
       console.error("Driver assignment email failed:", emailErr);

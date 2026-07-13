@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const API_BASE = "https://lecharlotlimo-aucd.onrender.com";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -230,17 +230,57 @@ function MyBookings() {
                 )}
 
                 <div className="text-gray-300 text-sm space-y-2 break-words">
+                   <p>
+                    <span className="text-gray-500">Trip:</span>{" "}
+                    {booking.tripType === "roundTrip"
+                      ? "Round Trip"
+                      : "One Way"}
+                  </p>
                   <p><span className="text-gray-500">Pickup:</span> {booking.pickupLocation}</p>
+                 
                   <p><span className="text-gray-500">Dropoff:</span> {booking.dropoffLocation}</p>
                   <p>
                     <span className="text-gray-500">Pickup:</span>{" "}
                     {dayjs(booking.pickupDate).format("MMM DD, YYYY h:mm A")}
                   </p>
+                  {booking.tripType === "roundTrip" &&
+                    booking.returnTrip && (
+                      <>
+                        <hr className="border-[#2a2a2a] my-3" />
+
+                        <p>
+                          <span className="text-gray-500">
+                            Return Pickup:
+                          </span>{" "}
+                          {booking.returnTrip.pickupLocation}
+                        </p>
+
+                        <p>
+                          <span className="text-gray-500">
+                            Return Dropoff:
+                          </span>{" "}
+                          {booking.returnTrip.dropoffLocation}
+                        </p>
+
+                        <p>
+                          <span className="text-gray-500">
+                            Return Date:
+                          </span>{" "}
+                          {dayjs(
+                            booking.returnTrip.pickupDate
+                          ).format("MMM DD, YYYY h:mm A")}
+                        </p>
+                      </>
+                    )}
 
                   <p className="font-semibold text-base sm:text-lg">
                     Total:{" "}
                     <span className="text-[#D4AF37]">
-                      ${Number(booking.totalPrice || 0).toFixed(2)}
+                      ${Number(
+                        booking.pricing?.totalFare ??
+                        booking.totalPrice ??
+                        0
+                      ).toFixed(2)}
                     </span>
                   </p>
                 </div>
