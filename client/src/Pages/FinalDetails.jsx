@@ -10,6 +10,10 @@ function FinalDetails() {
   const [bookingReady, setBookingReady] = useState(false);
   const location = useLocation();
   const { rideInfo, selectedCar, estimate } = location.state || {};
+  console.log("RIDE INFO");
+console.log(rideInfo);
+console.log("Flight Number:", rideInfo?.flightNumber);
+
   const outboundEstimate = estimate?.outbound || {};
   const returnEstimate = estimate?.return || {};
   const outboundFare = Number(outboundEstimate.estimatedPrice || 0);
@@ -82,6 +86,7 @@ function FinalDetails() {
 
         pickupLocation: rideInfo.pickupLocation,
         dropoffLocation: rideInfo.dropoffLocation,
+        flightNumber: rideInfo.flightNumber || null,
 
         pickupDate: rideInfo.pickupDate
           ? new Date(rideInfo.pickupDate).toISOString()

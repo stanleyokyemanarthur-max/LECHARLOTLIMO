@@ -473,6 +473,7 @@ export default function ReservationPage() {
     };
 
     console.log("PAYLOAD BEFORE DISPATCH", payload);
+    console.log("Flight Number:", payload.flightNumber);
     dispatch(setTripData(payload));
     navigate("/select-car");
   };
