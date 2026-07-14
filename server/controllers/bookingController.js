@@ -137,6 +137,14 @@ export const createBooking = async (req, res) => {
         Booking.schema.paths
       );
 
+      console.log("============== CREATE BOOKING ==============");
+console.log("tripType:", tripType);
+
+console.log("returnTrip received:");
+console.log(JSON.stringify(returnTrip, null, 2));
+
+console.log("pricing received:");
+console.log(JSON.stringify(pricing, null, 2));
       const [booking] = await Booking.create(
 
         [
@@ -383,7 +391,7 @@ export const assignDriver = async (req, res) => {
         to: driver.email,
         subject: "New Booking Assigned — Le Charlot Limousine",
     html: emailShell(`
-  <div style="font-family:Arial,sans-serif;color:#333;line-height:1.6;">
+  <div style="font-family:Arial,sans-serif;color: #ffffff;line-height:1.6;">
 
     <h2 style="color:#B8860B;margin-bottom:5px;">
       LE CHARLOT LIMOUSINE

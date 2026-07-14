@@ -116,11 +116,20 @@ function FinalDetails() {
         },
 
         tripType: rideInfo.tripType || "oneWay",
-
-        returnTrip:
-          isRoundTrip
-            ? rideInfo.returnTrip
-            : null,
+        returnTrip: isRoundTrip
+          ? {
+            pickupLocation: rideInfo.returnPickupLocation,
+            dropoffLocation: rideInfo.returnDropoffLocation,
+            pickupDate: rideInfo.returnPickupDate
+              ? new Date(rideInfo.returnPickupDate).toISOString()
+              : null,
+            dropoffDate: rideInfo.returnDropoffDate
+              ? new Date(rideInfo.returnDropoffDate).toISOString()
+              : null,
+            distance: Number(returnEstimate.distanceMiles || 0),
+            flightNumber: rideInfo.returnFlightNumber || null,
+          }
+          : null,
       };
 
 
