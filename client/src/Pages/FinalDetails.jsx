@@ -120,13 +120,20 @@ function FinalDetails() {
           ? {
             pickupLocation: rideInfo.returnPickupLocation,
             dropoffLocation: rideInfo.returnDropoffLocation,
-            pickupDate: rideInfo.returnPickupDate
-              ? new Date(rideInfo.returnPickupDate).toISOString()
+
+            pickupDate: rideInfo.returnDate
+              ? new Date(rideInfo.returnDate).toISOString()
               : null,
-            dropoffDate: rideInfo.returnDropoffDate
-              ? new Date(rideInfo.returnDropoffDate).toISOString()
+
+            dropoffDate: rideInfo.returnDate
+              ? new Date(
+                new Date(rideInfo.returnDate).getTime() +
+                (returnEstimate.durationMinutes || 0) * 60000
+              ).toISOString()
               : null,
+
             distance: Number(returnEstimate.distanceMiles || 0),
+
             flightNumber: rideInfo.returnFlightNumber || null,
           }
           : null,
@@ -139,12 +146,16 @@ function FinalDetails() {
         }
         : {};
 
-
+      console.log("BOOKING PAYLOAD");
+      console.log(JSON.stringify(bookingPayload, null, 2));
       // CREATE BOOKING
       const bookingRes = await axios.post(
+
         `${import.meta.env.VITE_API_URL}/api/bookings`,
         bookingPayload,
         { headers }
+
+
       );
 
 
@@ -467,30 +478,27 @@ function FinalDetails() {
                 {new Date(rideInfo.pickupDate).toLocaleString()}
               </p>
 
-              {isRoundTrip && rideInfo.returnTrip && (
+              {isRoundTrip && (
                 <>
                   <p>
                     <strong>Return Pickup:</strong>{" "}
-                    {rideInfo.returnTrip.pickupLocation}
+                    {rideInfo.returnPickupLocation}
                   </p>
 
                   <p>
                     <strong>Return Drop-off:</strong>{" "}
-                    {rideInfo.returnTrip.dropoffLocation}
+                    {rideInfo.returnDropoffLocation}
                   </p>
 
                   <p>
                     <strong>Return Date:</strong>{" "}
-                    {new Date(
-                      rideInfo.returnTrip.pickupDate
-                    ).toLocaleString()}
+                    {new Date(rideInfo.returnDate).toLocaleString()}
                   </p>
 
                   <p>
                     <strong>Return Distance:</strong>{" "}
                     {Number(returnEstimate.distanceMiles || 0).toFixed(2)} mi
                   </p>
-
                 </>
               )}
 
