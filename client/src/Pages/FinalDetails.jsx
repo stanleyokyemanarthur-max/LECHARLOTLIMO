@@ -87,6 +87,7 @@ console.log("Flight Number:", rideInfo?.flightNumber);
         pickupLocation: rideInfo.pickupLocation,
         dropoffLocation: rideInfo.dropoffLocation,
         flightNumber: rideInfo.flightNumber || null,
+        
 
         pickupDate: rideInfo.pickupDate
           ? new Date(rideInfo.pickupDate).toISOString()

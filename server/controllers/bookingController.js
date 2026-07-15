@@ -24,6 +24,7 @@ export const createBooking = async (req, res) => {
       dropoffLocation,
       pickupDate,
       dropoffDate,
+      flightNumber,
 
       tripType,
 
@@ -165,6 +166,7 @@ console.log(JSON.stringify(pricing, null, 2));
 
             pickupLocation,
             dropoffLocation,
+            flightNumber,
             pickupDate: start,
             dropoffDate: end,
             tripType: tripType || "oneWay",
