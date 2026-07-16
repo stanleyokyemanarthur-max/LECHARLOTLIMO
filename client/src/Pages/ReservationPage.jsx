@@ -29,7 +29,7 @@ export default function ReservationPage() {
   });
 
   const [tripData, setTripDataState] = useState({
-    tripType: "one-way",
+    tripType: "oneway",
     pickupLocation: "",
     dropoffLocation: "",
     pickupIsAirport: false,
@@ -206,7 +206,7 @@ export default function ReservationPage() {
       [e.target.name]: e.target.value,
 
       ...(e.target.name === "tripType" &&
-        e.target.value === "one-way"
+        e.target.value === "oneway"
         ? {
           returnDate: null,
           returnFlightNumber: "",
@@ -508,7 +508,7 @@ export default function ReservationPage() {
                 <label
                   className={`
       relative cursor-pointer rounded-xl border p-5 transition-all duration-300
-      ${tripData.tripType === "one-way"
+      ${tripData.tripType === "oneway"
                       ? "border-[#D4AF37] bg-[#D4AF37]/10 shadow-[0_0_20px_rgba(212,175,55,0.25)]"
                       : "border-[#2D2D2D] bg-[#181818] hover:border-[#D4AF37]/50"
                     }
@@ -517,8 +517,8 @@ export default function ReservationPage() {
                   <input
                     type="radio"
                     name="tripType"
-                    value="one-way"
-                    checked={tripData.tripType === "one-way"}
+                    value="oneway"
+                    checked={tripData.tripType === "oneway"}
                     onChange={handleInputChange}
                     className="hidden"
                   />
@@ -528,13 +528,13 @@ export default function ReservationPage() {
                     <div
                       className={`
           w-6 h-6 rounded-full border-2 flex items-center justify-center
-          ${tripData.tripType === "one-way"
+          ${tripData.tripType === "oneway"
                           ? "border-[#D4AF37]"
                           : "border-gray-500"
                         }
         `}
                     >
-                      {tripData.tripType === "one-way" && (
+                      {tripData.tripType === "oneway" && (
                         <div className="w-3 h-3 rounded-full bg-[#D4AF37]" />
                       )}
                     </div>
