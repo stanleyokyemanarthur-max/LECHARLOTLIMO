@@ -29,7 +29,7 @@ export default function ReservationPage() {
   });
 
   const [tripData, setTripDataState] = useState({
-    tripType: "oneway",
+    tripType: "oneWay",
     pickupLocation: "",
     dropoffLocation: "",
     pickupIsAirport: false,
@@ -206,7 +206,7 @@ export default function ReservationPage() {
       [e.target.name]: e.target.value,
 
       ...(e.target.name === "tripType" &&
-        e.target.value === "oneway"
+        e.target.value === "oneWay"
         ? {
           returnDate: null,
           returnFlightNumber: "",
@@ -508,7 +508,7 @@ export default function ReservationPage() {
                 <label
                   className={`
       relative cursor-pointer rounded-xl border p-5 transition-all duration-300
-      ${tripData.tripType === "oneway"
+      ${tripData.tripType === "oneWay"
                       ? "border-[#D4AF37] bg-[#D4AF37]/10 shadow-[0_0_20px_rgba(212,175,55,0.25)]"
                       : "border-[#2D2D2D] bg-[#181818] hover:border-[#D4AF37]/50"
                     }
@@ -517,8 +517,8 @@ export default function ReservationPage() {
                   <input
                     type="radio"
                     name="tripType"
-                    value="oneway"
-                    checked={tripData.tripType === "oneway"}
+                    value="oneWay"
+                    checked={tripData.tripType === "oneWay"}
                     onChange={handleInputChange}
                     className="hidden"
                   />
@@ -528,13 +528,13 @@ export default function ReservationPage() {
                     <div
                       className={`
           w-6 h-6 rounded-full border-2 flex items-center justify-center
-          ${tripData.tripType === "oneway"
+          ${tripData.tripType === "oneWay"
                           ? "border-[#D4AF37]"
                           : "border-gray-500"
                         }
         `}
                     >
-                      {tripData.tripType === "oneway" && (
+                      {tripData.tripType === "oneWay" && (
                         <div className="w-3 h-3 rounded-full bg-[#D4AF37]" />
                       )}
                     </div>
