@@ -25,13 +25,11 @@ export const createBooking = async (req, res) => {
       pickupDate,
       dropoffDate,
       flightNumber,
-
       tripType,
-
       returnTrip,
-
       pricing,
-
+      passengers,
+      luggage,
       rewardId,
     } = req.body;
 
@@ -139,13 +137,13 @@ export const createBooking = async (req, res) => {
       );
 
       console.log("============== CREATE BOOKING ==============");
-console.log("tripType:", tripType);
+      console.log("tripType:", tripType);
 
-console.log("returnTrip received:");
-console.log(JSON.stringify(returnTrip, null, 2));
+      console.log("returnTrip received:");
+      console.log(JSON.stringify(returnTrip, null, 2));
 
-console.log("pricing received:");
-console.log(JSON.stringify(pricing, null, 2));
+      console.log("pricing received:");
+      console.log(JSON.stringify(pricing, null, 2));
       const [booking] = await Booking.create(
 
         [
@@ -166,7 +164,9 @@ console.log(JSON.stringify(pricing, null, 2));
 
             pickupLocation,
             dropoffLocation,
-            flightNumber,
+            flightNumber: flightNumber || null,
+            passengers: Number(passengers || 1),
+            luggage: Number(luggage || 0),
             pickupDate: start,
             dropoffDate: end,
             tripType: tripType || "oneWay",
@@ -392,7 +392,7 @@ export const assignDriver = async (req, res) => {
       await sendEmail({
         to: driver.email,
         subject: "New Booking Assigned — Le Charlot Limousine",
-    html: emailShell(`
+        html: emailShell(`
   <div style="font-family:Arial,sans-serif;color: #ffffff;line-height:1.6;">
 
     <h2 style="color:#B8860B;margin-bottom:5px;">
@@ -466,16 +466,15 @@ export const assignDriver = async (req, res) => {
         <td>${new Date(updated.pickupDate).toLocaleString()}</td>
       </tr>
 
-      ${
-        updated.flightNumber
-          ? `
+      ${updated.flightNumber
+            ? `
       <tr>
         <td><strong>Arrival Flight:</strong></td>
         <td>${updated.flightNumber}</td>
       </tr>
       `
-          : ""
-      }
+            : ""
+          }
 
     </table>
 
@@ -492,9 +491,8 @@ export const assignDriver = async (req, res) => {
 
     </table>
 
-    ${
-      updated.tripType === "roundTrip" && updated.returnTrip
-        ? `
+    ${updated.tripType === "roundTrip" && updated.returnTrip
+            ? `
       <hr>
 
       <h3>Return Trip</h3>
@@ -518,8 +516,8 @@ export const assignDriver = async (req, res) => {
 
       </table>
       `
-        : ""
-    }
+            : ""
+          }
 
     <hr>
 
