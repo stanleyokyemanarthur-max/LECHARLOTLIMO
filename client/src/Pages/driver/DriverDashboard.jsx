@@ -102,7 +102,7 @@ function DriverDashboard() {
       </div>
 
       {/* Bookings Table */}
-      <div className="hidden md:block w-full overflow-hidden rounded-lg border border-gray-700">
+      <div className="hidden md:block w-full overflow-x-auto rounded-lg border border-gray-700">
         <table className="w-full table-fixed text-xs sm:text-sm">
           <thead className="bg-[#D4AF37] text-black">
             <tr>
@@ -112,8 +112,8 @@ function DriverDashboard() {
               <th className="px-3 py-2 whitespace-nowrap w-[120px]">Pickup</th>
               <th className="px-3 py-2 whitespace-nowrap w-[120px]">Trip</th>
               <th className="px-3 py-2 whitespace-nowrap w-[120px]">Dropoff</th>
-              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Pickup Time</th>
-              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Fare</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[180px]">Pickup Time</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[100px]">Fare</th>
               <th className="px-3 py-2 whitespace-nowrap w-[120px]">Status</th>
               <th className="px-3 py-2 whitespace-nowrap w-[120px]">Action</th>
             </tr>
@@ -164,7 +164,13 @@ function DriverDashboard() {
                 </td>
 
                 <td className="px-3 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap">
-                  {new Date(b.pickupDate).toLocaleString()}
+                  {new Date(b.pickupDate).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
                 </td>
                 <td className="px-3 py-2 font-semibold text-[#D4AF37]">
                   $
@@ -266,7 +272,13 @@ function DriverDashboard() {
 
             <div>
               <p className="text-xs text-gray-400">Pickup Time</p>
-              <p>{new Date(b.pickupDate).toLocaleString()}</p>
+              <p>{new Date(b.pickupDate).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+              })}</p>
             </div>
 
             <div>
