@@ -102,8 +102,8 @@ function DriverDashboard() {
       </div>
 
       {/* Bookings Table */}
-      <div className="hidden md:block  overflow-x-auto rounded-lg border border-gray-700">
-        <table className="min-w-[900px] w-full text-xs sm:text-sm">
+      <div className="hidden md:block w-full overflow-x-auto rounded-lg border border-gray-700">
+  <table className="w-full min-w-[1200px] text-xs sm:text-sm">
           <thead className="bg-[#D4AF37] text-black">
             <tr>
               <th className="px-3 py-2 whitespace-nowrap">Car</th>
