@@ -116,17 +116,6 @@ function DriverDashboard() {
               </th>
               <th className="px-3 py-2 whitespace-nowrap">Dropoff</th>
               <th className="px-3 py-2 whitespace-nowrap">Pickup Time</th>
-              <div>
-                <p className="text-xs text-gray-400">
-                  Trip
-                </p>
-
-                <p>
-                  {b.tripType === "roundTrip"
-                    ? "Round Trip"
-                    : "One Way"}
-                </p>
-              </div>
               <th className="px-3 py-2">
                 Fare
               </th>
@@ -183,18 +172,7 @@ function DriverDashboard() {
                 <td className="px-3 sm:px-4 py-2 text-xs sm:text-sm">
                   {b.dropoffLocation}
                 </td>
-                {b.tripType === "roundTrip" && b.returnTrip && (
-                  <div className="mt-2 text-xs text-gray-400">
-                    Return:
-                    <br />
-                    {b.returnTrip.pickupLocation}
-                    <br />
-                    →
-                    <br />
-                    {b.returnTrip.dropoffLocation}
-                  </div>
-                )}
-
+              
                 <td className="px-3 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap">
                   {new Date(b.pickupDate).toLocaleString()}
                 </td>
@@ -206,38 +184,7 @@ function DriverDashboard() {
                     0
                   ).toFixed(2)}
                 </td>
-                <div>
-                  <p className="text-xs text-gray-400">
-                    Fare
-                  </p>
-
-                  <p className="text-[#D4AF37] font-semibold">
-                    $
-                    {Number(
-                      b.pricing?.totalFare ??
-                      b.totalPrice ??
-                      0
-                    ).toFixed(2)}
-                  </p>
-                </div>
-                {b.tripType === "roundTrip" && b.returnTrip && (
-                  <div>
-                    <p className="text-xs text-gray-400">
-                      Return Trip
-                    </p>
-
-                    <p>{b.returnTrip.pickupLocation}</p>
-
-                    <p>{b.returnTrip.dropoffLocation}</p>
-
-                    <p>
-                      {new Date(
-                        b.returnTrip.pickupDate
-                      ).toLocaleString()}
-                    </p>
-                  </div>
-                )}
-
+                
                 <td className="px-3 sm:px-4 py-2 capitalize text-xs sm:text-sm">
                   {b.status}
                 </td>
