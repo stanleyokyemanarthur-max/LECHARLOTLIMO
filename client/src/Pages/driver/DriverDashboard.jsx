@@ -102,25 +102,20 @@ function DriverDashboard() {
       </div>
 
       {/* Bookings Table */}
-      <div className="hidden md:block w-full overflow-x-auto rounded-lg border border-gray-700">
-  <table className="w-full min-w-[1200px] text-xs sm:text-sm">
+      <div className="hidden md:block w-full overflow-hidden rounded-lg border border-gray-700">
+        <table className="w-full table-fixed text-xs sm:text-sm">
           <thead className="bg-[#D4AF37] text-black">
             <tr>
-              <th className="px-3 py-2 whitespace-nowrap">Car</th>
-              <th className="px-3 py-2 whitespace-nowrap">Customer</th>
-              <th className="px-3 py-2 whitespace-nowrap">Phone</th>
-              <th className="px-3 py-2 whitespace-nowrap">Vehicle</th>
-              <th className="px-3 py-2 whitespace-nowrap">Pickup</th>
-              <th className="px-3 py-2 whitespace-nowrap">
-                Trip
-              </th>
-              <th className="px-3 py-2 whitespace-nowrap">Dropoff</th>
-              <th className="px-3 py-2 whitespace-nowrap">Pickup Time</th>
-              <th className="px-3 py-2">
-                Fare
-              </th>
-              <th className="px-3 py-2 whitespace-nowrap">Status</th>
-              <th className="px-3 py-2 whitespace-nowrap">Action</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Customer</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Phone</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Vehicle</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Pickup</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Trip</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Dropoff</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Pickup Time</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Fare</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Status</th>
+              <th className="px-3 py-2 whitespace-nowrap w-[120px]">Action</th>
             </tr>
           </thead>
 
@@ -130,16 +125,7 @@ function DriverDashboard() {
                 key={b._id}
                 className="border-t border-gray-700 hover:bg-gray-800"
               >
-                <td className="px-3 sm:px-4 py-2">
-                  <div className="font-semibold text-xs sm:text-sm">
-                    {b.user?.name ||
-                      `${b.guest?.firstName || ""} ${b.guest?.lastName || ""}`.trim() ||
-                      "Guest"}
-                  </div>
-                  <div className="text-[10px] sm:text-xs text-gray-400">
-                    {b.car?.name}
-                  </div>
-                </td>
+
 
                 <td className="px-3 sm:px-4 py-2">
                   <div className="font-semibold text-xs sm:text-sm">
@@ -160,8 +146,10 @@ function DriverDashboard() {
                   {b.car?.name}
                 </td>
 
-                <td className="px-3 sm:px-4 py-2 text-xs sm:text-sm">
-                  {b.pickupLocation}
+                <td className="px-3 py-2 text-xs">
+                  <div className="truncate" title={b.pickupLocation}>
+                    {b.pickupLocation}
+                  </div>
                 </td>
                 <td className="px-3 py-2">
                   {b.tripType === "roundTrip"
@@ -169,10 +157,12 @@ function DriverDashboard() {
                     : "One Way"}
                 </td>
 
-                <td className="px-3 sm:px-4 py-2 text-xs sm:text-sm">
-                  {b.dropoffLocation}
+                <td className="px-3 py-2 text-xs">
+                  <div className="truncate" title={b.dropoffLocation}>
+                    {b.dropoffLocation}
+                  </div>
                 </td>
-              
+
                 <td className="px-3 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap">
                   {new Date(b.pickupDate).toLocaleString()}
                 </td>
@@ -184,7 +174,7 @@ function DriverDashboard() {
                     0
                   ).toFixed(2)}
                 </td>
-                
+
                 <td className="px-3 sm:px-4 py-2 capitalize text-xs sm:text-sm">
                   {b.status}
                 </td>
