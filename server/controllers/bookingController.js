@@ -468,13 +468,10 @@ export const assignDriver = async (req, res) => {
         <td>${new Date(updated.pickupDate).toLocaleString()}</td>
       </tr>
 
-     ${updated.flightNumber
+   ${updated.pickupIsAirport && updated.flightNumber
             ? `
 <tr>
-  <td><strong>${updated.pickupIsAirport
-              ? "Arrival Flight"
-              : "Flight Number"
-            }:</strong></td>
+  <td><strong>Arrival Flight:</strong></td>
   <td>${updated.flightNumber}</td>
 </tr>
 `
@@ -493,6 +490,15 @@ export const assignDriver = async (req, res) => {
         <td><strong>Dropoff:</strong></td>
         <td>${updated.dropoffLocation}</td>
       </tr>
+      ${updated.dropoffIsAirport && updated.flightNumber
+            ? `
+<tr>
+  <td><strong>Departure Flight:</strong></td>
+  <td>${updated.flightNumber}</td>
+</tr>
+`
+            : ""
+          }
 
     </table>
 
@@ -522,18 +528,27 @@ export const assignDriver = async (req, res) => {
 <td>${new Date(updated.returnTrip.pickupDate).toLocaleString()}</td>
 </tr>
 
- ${updated.returnTrip?.flightNumber
-              ? `
-  <tr>
-    <td><strong>${updated.returnTrip.pickupIsAirport
-                ? "Arrival Flight"
-                : "Flight Number"
-              }:</strong></td>
-    <td>${updated.returnTrip.flightNumber}</td>
-  </tr>
-  `
-              : ""
-            }
+${updated.returnTrip?.pickupIsAirport &&
+updated.returnTrip?.flightNumber
+  ? `
+<tr>
+  <td><strong>Arrival Flight:</strong></td>
+  <td>${updated.returnTrip.flightNumber}</td>
+</tr>
+`
+  : ""
+}
+
+${updated.returnTrip?.dropoffIsAirport &&
+updated.returnTrip?.flightNumber
+  ? `
+<tr>
+  <td><strong>Departure Flight:</strong></td>
+  <td>${updated.returnTrip.flightNumber}</td>
+</tr>
+`
+  : ""
+}
 
 </table>
       `
