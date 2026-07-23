@@ -105,6 +105,15 @@ const bookingSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    pickupIsAirport: {
+      type: Boolean,
+      default: false,
+    },
+
+    dropoffIsAirport: {
+      type: Boolean,
+      default: false,
+    },
 
     // outbound flight
     flightNumber: {
