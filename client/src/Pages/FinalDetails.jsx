@@ -11,8 +11,8 @@ function FinalDetails() {
   const location = useLocation();
   const { rideInfo, selectedCar, estimate } = location.state || {};
   console.log("RIDE INFO");
-console.log(rideInfo);
-console.log("Flight Number:", rideInfo?.flightNumber);
+  console.log(rideInfo);
+  console.log("Flight Number:", rideInfo?.flightNumber);
 
   const outboundEstimate = estimate?.outbound || {};
   const returnEstimate = estimate?.return || {};
@@ -83,11 +83,13 @@ console.log("Flight Number:", rideInfo?.flightNumber);
           totalUnits: Number(selectedCar.totalUnits) || 1,
           fleetKey: selectedCar.fleetKey || null,
         },
+        pickupIsAirport: rideInfo.pickupIsAirport || false,
+        dropoffIsAirport: rideInfo.dropoffIsAirport || false,
 
         pickupLocation: rideInfo.pickupLocation,
         dropoffLocation: rideInfo.dropoffLocation,
         flightNumber: rideInfo.flightNumber || null,
-        
+
 
         pickupDate: rideInfo.pickupDate
           ? new Date(rideInfo.pickupDate).toISOString()
@@ -126,7 +128,8 @@ console.log("Flight Number:", rideInfo?.flightNumber);
           ? {
             pickupLocation: rideInfo.returnPickupLocation,
             dropoffLocation: rideInfo.returnDropoffLocation,
-
+            pickupIsAirport: rideInfo.returnPickupIsAirport || false,
+            dropoffIsAirport: rideInfo.returnDropoffIsAirport || false,
             pickupDate: rideInfo.returnDate
               ? new Date(rideInfo.returnDate).toISOString()
               : null,

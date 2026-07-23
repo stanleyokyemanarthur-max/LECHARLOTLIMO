@@ -161,6 +161,15 @@ const bookingSchema = new mongoose.Schema(
         type: Date,
         default: null,
       },
+      pickupIsAirport: {
+        type: Boolean,
+        default: false,
+      },
+
+      dropoffIsAirport: {
+        type: Boolean,
+        default: false,
+      },
 
       distance: {
         type: Number,

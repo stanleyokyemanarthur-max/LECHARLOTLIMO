@@ -164,6 +164,8 @@ export const createBooking = async (req, res) => {
 
             pickupLocation,
             dropoffLocation,
+            pickupIsAirport: req.body.pickupIsAirport || false,
+            dropoffIsAirport: req.body.dropoffIsAirport || false,
             flightNumber: flightNumber || null,
             passengers: Number(passengers || 1),
             luggage: Number(luggage || 0),
@@ -466,13 +468,16 @@ export const assignDriver = async (req, res) => {
         <td>${new Date(updated.pickupDate).toLocaleString()}</td>
       </tr>
 
-      ${updated.flightNumber
+     ${updated.flightNumber
             ? `
-      <tr>
-        <td><strong>Arrival Flight:</strong></td>
-        <td>${updated.flightNumber}</td>
-      </tr>
-      `
+<tr>
+  <td><strong>${updated.pickupIsAirport
+              ? "Arrival Flight"
+              : "Flight Number"
+            }:</strong></td>
+  <td>${updated.flightNumber}</td>
+</tr>
+`
             : ""
           }
 
@@ -495,26 +500,42 @@ export const assignDriver = async (req, res) => {
             ? `
       <hr>
 
-      <h3>Return Trip</h3>
+     <hr>
 
-      <table cellpadding="6" cellspacing="0">
+<h3>Return Trip</h3>
 
-        <tr>
-          <td><strong>Pickup:</strong></td>
-          <td>${updated.returnTrip.pickupLocation}</td>
-        </tr>
 
-        <tr>
-          <td><strong>Dropoff:</strong></td>
-          <td>${updated.returnTrip.dropoffLocation}</td>
-        </tr>
+<table cellpadding="6" cellspacing="0">
 
-        <tr>
-          <td><strong>Date & Time:</strong></td>
-          <td>${new Date(updated.returnTrip.pickupDate).toLocaleString()}</td>
-        </tr>
+<tr>
+<td><strong>Pickup:</strong></td>
+<td>${updated.returnTrip.pickupLocation}</td>
+</tr>
 
-      </table>
+<tr>
+<td><strong>Dropoff:</strong></td>
+<td>${updated.returnTrip.dropoffLocation}</td>
+</tr>
+
+<tr>
+<td><strong>Date & Time:</strong></td>
+<td>${new Date(updated.returnTrip.pickupDate).toLocaleString()}</td>
+</tr>
+
+ ${updated.returnTrip?.flightNumber
+              ? `
+  <tr>
+    <td><strong>${updated.returnTrip.pickupIsAirport
+                ? "Arrival Flight"
+                : "Flight Number"
+              }:</strong></td>
+    <td>${updated.returnTrip.flightNumber}</td>
+  </tr>
+  `
+              : ""
+            }
+
+</table>
       `
             : ""
           }
