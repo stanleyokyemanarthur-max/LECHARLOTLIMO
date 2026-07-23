@@ -229,6 +229,29 @@ export default function SelectCar() {
                 </span>{" "}
                 {tripData.returnDistance?.toFixed(2)} mi
               </p>
+              <p>
+                <span className="text-[#D4AF37] font-semibold">
+                  Return Date:
+                </span>{" "}
+                {format(tripData.returnDate)}
+              </p>
+
+              {tripData.flightNumber && (
+                <p>
+                  <span className="text-[#D4AF37] font-semibold">
+                    Flight:
+                  </span>{" "}
+                  {tripData.flightNumber}
+                </p>
+              )}
+              {tripData.returnFlightNumber && (
+                <p>
+                  <span className="text-[#D4AF37] font-semibold">
+                    Return Flight:
+                  </span>{" "}
+                  {tripData.returnFlightNumber}
+                </p>
+              )}
             </>
           )}
         </div>
