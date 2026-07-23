@@ -144,6 +144,13 @@ export const createBooking = async (req, res) => {
 
       console.log("pricing received:");
       console.log(JSON.stringify(pricing, null, 2));
+      console.log("===== REQUEST BODY =====");
+console.log({
+  pickupIsAirport: req.body.pickupIsAirport,
+  dropoffIsAirport: req.body.dropoffIsAirport,
+  flightNumber: req.body.flightNumber,
+  returnTrip: req.body.returnTrip,
+});
       const [booking] = await Booking.create(
 
         [
