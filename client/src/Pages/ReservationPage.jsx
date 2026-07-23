@@ -164,6 +164,9 @@ export default function ReservationPage() {
 
         flightNumber: isAirport ? s.flightNumber : "",
       }));
+
+
+
     });
 
 
@@ -187,6 +190,10 @@ export default function ReservationPage() {
           : place.formatted_address,
 
         dropoffIsAirport: isAirport,
+        flightNumber:
+          (s.pickupIsAirport || isAirport)
+            ? s.flightNumber
+            : "",
       }));
     });
 
@@ -458,7 +465,7 @@ export default function ReservationPage() {
 
       distance: Number(tripData.distance.toFixed(2)),
 
-      totalDistance:Number(totalDistance.toFixed(2)),
+      totalDistance: Number(totalDistance.toFixed(2)),
 
       returnDistance:
         tripData.returnDistance
@@ -635,6 +642,24 @@ export default function ReservationPage() {
                   />
                 </div>
 
+              )}
+              {tripData.dropoffIsAirport && (
+                <div>
+                  <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">
+                    Departure Flight Number (Optional)
+                  </label>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Helps our driver track your departing flight time.
+                  </p>
+
+                  <input
+                    name="flightNumber"
+                    value={tripData.flightNumber || ""}
+                    onChange={handleInputChange}
+                    placeholder="e.g. AA432"
+                    className="w-full mt-2 bg-transparent border border-[#2D2D2D] p-3 rounded-lg"
+                  />
+                </div>
               )}
 
               {/* 
@@ -820,6 +845,25 @@ export default function ReservationPage() {
 
 
                     {returnPickupIsAirport && (
+                      <div>
+                        <label>
+                          Arrival Flight Number (Optional)
+                        </label>
+
+                        <p className="text-xs text-gray-400 mt-1">
+                          Helps our driver track your arriving flight time.
+                        </p >
+
+                        <input
+                          name="returnFlightNumber"
+                          value={tripData.returnFlightNumber}
+                          onChange={handleInputChange}
+                          placeholder="e.g. AA432"
+                          className="w-full mt-2 bg-transparent border border-[#2D2D2D] p-3 rounded-lg"
+                        />
+                      </div>
+                    )}
+                    {returnDropoffIsAirport && (
                       <div>
                         <label>
                           Departure Flight Number (Optional)
