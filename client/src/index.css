@@ -281,7 +281,7 @@ nav {
   background-image: url("/images/logoiz.png"), var(--hero-bg);
   background-repeat: no-repeat, no-repeat;
   background-size: 500px, cover;
-  background-position: 32% 10%, 72% 50%;
+  background-position: 90% 10%, 72% 50%;
 
   filter: contrast(1.08) saturate(0.96) brightness(0.98);
   transform: scale(1.06);
