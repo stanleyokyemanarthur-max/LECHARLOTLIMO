@@ -76,6 +76,9 @@ function Index() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.4, ease: "easeOut" }}
             >
+              <div className="hero-watermark">
+                <img src="/images/logoiz.png" alt="Logo" />
+              </div>
               <div className="hero-inner">
                 <div className="hero-content">
                   <span className="hero-eyebrow">COMFORT · CLASS · PRECISION</span>
@@ -129,6 +132,9 @@ function Index() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.4, ease: "easeOut" }}
             >
+              <div className="hero-watermark">
+                <img src="/images/logoiz.png" alt="Logo" />
+              </div>
               <div className="hero-inner">
                 <div className="hero-content">
                   <span className="hero-eyebrow">COMFORT · CLASS · PRECISION</span>
@@ -186,6 +192,9 @@ function Index() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.4, ease: "easeOut" }}
             >
+              <div className="hero-watermark">
+                <img src="/images/logoiz.png" alt="Logo" />
+              </div>
               <div className="hero-inner">
                 <div className="hero-content">
                   <span className="hero-eyebrow">COMFORT · CLASS · PRECISION</span>

@@ -278,14 +278,29 @@ nav {
   inset: 0;
   z-index: 0;
 
-  background-image: url("/images/logoiz.png"), var(--hero-bg);
+  background-image: var(--hero-bg);
   background-repeat: no-repeat, no-repeat;
   background-size: 500px, cover;
-  background-position: 90% 10%, 72% 50%;
+  background-position: 90% 25%, 72% 50%;
 
   filter: contrast(1.08) saturate(0.96) brightness(0.98);
   transform: scale(1.06);
   transition: transform 7s ease;
+}
+
+.hero-watermark {
+  position: absolute;
+  z-index: 1;
+  right: 5%;
+  top: 25%;
+  width: 500px;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.hero-watermark img {
+  width: 100%;
+  height: auto;
 }
 
 /* Zoom on active slide */
