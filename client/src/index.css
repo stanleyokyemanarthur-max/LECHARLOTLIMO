@@ -294,7 +294,7 @@ nav {
 .hero-watermark {
   position: absolute;
 
-  right: -100px;
+  right: -80px;
   top: 50%;
   transform: translateY(-50%);
 
