@@ -10,7 +10,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";// Flatpickr
 import { useDispatch, useSelector } from "react-redux";
 import { setTripData } from "../slices/bookingSlice";
 import { GoogleMap, DirectionsRenderer, useJsApiLoader } from "@react-google-maps/api";
-
+import { Clock3 } from "lucide-react";
 const MAP_CONTAINER_STYLE = {
   width: "100%",
   height: "100%"
