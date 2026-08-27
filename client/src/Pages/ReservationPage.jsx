@@ -607,6 +607,32 @@ export default function ReservationPage() {
                 </label>
 
               </div>
+              {/* Hourly Booking Notice */}
+              <div className="rounded-xl border border-[#D4AF37]/40 bg-[#D4AF37]/5 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 text-[#D4AF37]">
+                    <Clock3 size={20} />
+                  </div>
+
+                  <div>
+                    <h3 className="text-white font-semibold">
+                      Need an hourly booking?
+                    </h3>
+
+                    <p className="text-sm text-gray-400 mt-1">
+                      Hourly bookings are available by phone.
+                    </p>
+
+                    <a
+                      href="tel:4044053738"
+                      className="inline-flex items-center mt-2 text-[#D4AF37] font-semibold hover:underline"
+                    >
+                      Call (404) 405-3738
+                    </a>
+                  </div>
+                </div>
+              </div>
+
 
               {[{ label: "Pickup Location", name: "pickupLocation", ref: pickupRef, placeholder: "e.g. Raleigh Convention Center" },
               { label: "Drop-off Location", name: "dropoffLocation", ref: dropoffRef, placeholder: "e.g. Crown Complex, Fayetteville" }].map((f) => (
