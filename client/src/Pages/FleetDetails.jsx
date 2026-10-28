@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import fleetData from "../data/fleetData";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import {
   ChevronRight,
   Plus,
@@ -17,10 +17,12 @@ import {
 } from "lucide-react";
 
 // --- Auto-slide gallery ---
-function AutoSlideGallery({ images }) {
+function AutoSlideGallery({ images, vehicleName }) {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % images.length);
     }, 4000);
@@ -30,10 +32,12 @@ function AutoSlideGallery({ images }) {
   return (
     <div className="relative mt-0 w-full h-[320px] md:h-[420px] overflow-hidden rounded-2xl">
       <AnimatePresence mode="wait">
-        <motion.img
+        <Motion.img
           key={images[current]}
           src={images[current]}
-          alt="fleet interior/exterior"
+          alt={`${vehicleName} photo ${current + 1} of ${images.length}`}
+          loading="lazy"
+          decoding="async"
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -100 }}
@@ -47,11 +51,16 @@ function AutoSlideGallery({ images }) {
         {images.map((_, idx) => (
           <button
             key={idx}
+            type="button"
             onClick={() => setCurrent(idx)}
-            className={`w-2.5 h-2.5 rounded-full transition-all ${
+            aria-label={`Show vehicle image ${idx + 1} of ${images.length}`}
+            aria-pressed={idx === current}
+            className={`flex min-h-11 min-w-11 items-center justify-center rounded-full transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4AF37] ${
               idx === current ? "bg-[#D4AF37]" : "bg-gray-400"
             }`}
-          />
+          >
+            <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-[#111111]" />
+          </button>
         ))}
       </div>
     </div>
@@ -69,14 +78,18 @@ const FAQAccordion = ({ faqs }) => {
         {faqs.map((faq, index) => {
           const isOpen = openIndex === index;
           return (
-            <motion.div
+            <Motion.div
               key={index}
               layout
               initial={false}
               className="bg-[#111] border border-gray-800 rounded-xl overflow-hidden"
             >
               <button
+                type="button"
                 onClick={() => setOpenIndex(isOpen ? null : index)}
+                id={`faq-question-${index}`}
+                aria-expanded={isOpen}
+                aria-controls={`faq-answer-${index}`}
                 className="w-full flex justify-between items-center p-5 text-left  transition-colors group"
               >
                 <div className="flex items-center gap-3">
@@ -97,7 +110,10 @@ const FAQAccordion = ({ faqs }) => {
               </button>
 
               {isOpen && (
-                <motion.div
+                <Motion.div
+                  id={`faq-answer-${index}`}
+                  role="region"
+                  aria-labelledby={`faq-question-${index}`}
                   layout
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -106,9 +122,9 @@ const FAQAccordion = ({ faqs }) => {
                   className="px-5 pb-5 text-gray-400 leading-relaxed"
                 >
                   {faq.answer}
-                </motion.div>
+                </Motion.div>
               )}
-            </motion.div>
+            </Motion.div>
           );
         })}
       </div>
@@ -140,7 +156,7 @@ export default function FleetDetails() {
     {
       question: "Can I request a specific vehicle color?",
       answer:
-      "No, all our vehecles are black luxury SUV vehicles.",
+        "Please contact us to confirm available vehicle colors.",
     },
     {
       question: "Is there Wi-Fi available in the vehicle?",
@@ -157,46 +173,52 @@ export default function FleetDetails() {
   const iconMap = [Users, Armchair, Music, GlassWater, Sparkles, Briefcase, Radio];
 
   return (
-    <section className="mt-12 min-h-screen bg-[#0a0a0a] text-gray-300 py-16 px-6 md:px-12">
+    <main className="lc-vehicle-detail min-h-screen text-gray-300">
       <button
+        type="button"
         onClick={() => navigate("/fleet")}
-        className="flex items-center gap-2 mb-10 text-gray-400 hover:text-[#D4AF37] transition"
+        className="lc-vehicle-back flex items-center gap-2"
       >
         <ArrowLeft className="w-5 h-5" />
         Back to Fleet
       </button>
 
       {/* Top Layout: Car + Gallery */}
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-10 max-w-6xl mx-auto mb-20">
-        <motion.img
+      <div className="lc-vehicle-gallery flex flex-col md:flex-row items-center md:items-start gap-10">
+        <Motion.img
           src={fleet.mainImage}
           alt={fleet.name}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="w-full md:w-1/2 object-contain rounded-2xl shadow-xl"
+          loading="eager"
+          decoding="async"
+          className="lc-vehicle-main-image w-full md:w-1/2 object-contain"
         />
         <div className="w-full md:w-1/2">
-          <AutoSlideGallery images={fleet.gallery} />
+          <AutoSlideGallery images={fleet.gallery} vehicleName={fleet.name} />
         </div>
       </div>
-        {/* Book Now Button */}
-        <button onClick={() => navigate("/reserve")} className="btn btn-gold text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
-          Go To Bookings
+      <div className="mx-auto max-w-7xl">
+        <button
+          type="button"
+          onClick={() => navigate("/reserve")}
+          className="lc-button"
+        >
+          Reserve this vehicle <span aria-hidden="true">↗</span>
         </button>
+      </div>
 
       {/* Vehicle Details */}
-      <div className="max-w-5xl mx-auto p-8 md:p-12">
-        <h1 className="text-3xl md:text-[34px] font-semibold text-white mb-2">
+      <div className="lc-vehicle-copy">
+        <p className="lc-kicker">{fleet.category}</p>
+        <h1 className="mb-4 text-4xl font-semibold text-white md:text-5xl">
           {fleet.name}
         </h1>
-        <p className="text-[#D4AF37] font-medium mb-6 uppercase tracking-wide">
-          {fleet.category}
-        </p>
 
-        <p className="text-gray-400 leading-relaxed mb-10">{fleet.description}</p>
+        <p className="mb-10 max-w-3xl text-gray-400 leading-relaxed">{fleet.description}</p>
 
-        <div className="grid md:grid-cols-2 gap-10 mb-12">
+        <div className="lc-vehicle-specs grid md:grid-cols-2 gap-10 mb-12">
           <div>
             <h3 className="text-lg font-semibold text-white mb-3">
               Capacity & Luggage
@@ -233,22 +255,24 @@ export default function FleetDetails() {
       <div className="max-w-6xl mx-auto mt-24 flex flex-col md:flex-row items-center gap-10">
         <div className="flex-1">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Our Premium Luxury Sedan Chauffeur Services for Every Occasion
+            Chauffeur Services for Every Occasion
           </h2>
           <p className="text-gray-400 leading-relaxed mb-6">
             Whether you’re heading to a business meeting, airport, wedding, or night out,
             our professional chauffeurs ensure a seamless, comfortable, and stylish
             journey. Experience exceptional service and unmatched luxury in every mile.
           </p>
-          <button onClick={() => navigate("/reservation-form")} className="btn btn-gold text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105">
+          <button onClick={() => navigate("/reserve")} className="btn btn-gold min-h-12 text-black font-semibold py-3 px-8 rounded-md transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4AF37]">
             Book Your Ride
           </button>
         </div>
 
         <div className="flex-1">
-          <motion.img
+          <Motion.img
             src="/images/Flying.jpg"
             alt="Chauffeur service airport"
+            loading="lazy"
+            decoding="async"
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
@@ -256,6 +280,6 @@ export default function FleetDetails() {
           />
         </div>
       </div>
-    </section>
+    </main>
   );
 }

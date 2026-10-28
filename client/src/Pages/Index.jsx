@@ -1,15 +1,10 @@
-import React, { useState, useRef, useEffect, } from 'react';
+import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';  // ✅ FIXED
 import 'swiper/css';
 import 'swiper/css/autoplay';
-import { motion, AnimatePresence } from "framer-motion";
-import { EffectFade } from "swiper/modules";
-import { Pagination, Autoplay } from 'swiper/modules';
+import { motion as Motion, useReducedMotion } from "framer-motion";
+import { Autoplay, EffectFade } from "swiper/modules";
 import "react-datepicker/dist/react-datepicker.css";
-import { useLoadScript, Autocomplete } from "@react-google-maps/api";
-import blogdata from '../Blog.json'
-import BookingForm from '../Components/BookingForm';
-import Spinner from '../Components/Spinner';
 import { useNavigate } from 'react-router-dom';
 import LandingFleetSection from '../Components/LandingFleetSection';
 import "swiper/css/effect-fade";
@@ -17,68 +12,29 @@ import ChauffeurServices from '../Components/ChauffeurServices';
 import EliteMembership from '../Components/EliteMembership';
 import { Car, Clock, Zap, Droplet, CreditCard, UserCheck } from "lucide-react";
 function Index() {
-  const [pickUpDate, setPickUpDate] = useState(null);
-  const datePickerRef = useRef(null);
-
   const navigate = useNavigate();
-
-
-  // ✅ Page loading spinner
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate page preloading (e.g. images, content, etc.)
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000); // show spinner for ~2 seconds
-    return () => clearTimeout(timer);
-  }, []);
-
-
-
-  // ✅ Google Places setup
-  const libraries = ["places"];
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY, // use env key
-    libraries,
-  });
-
-  const [pickup, setPickup] = useState("");
-  const [dropoff, setDropoff] = useState("");
-
-  if (!isLoaded || loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-black">
-        <Spinner />
-      </div>
-    );
-  }
+  const prefersReducedMotion = useReducedMotion();
 
   return (
-    <>
-      <div className="hero pt-[env(safe-area-inset-top)] mt-24 md:mt-12 xl:mt-8 min-h-[100svh] flex items-center">
-        {loading && <Spinner />}
-
+    <main className="lc-home">
+      <div className="hero pt-[env(safe-area-inset-top)] min-h-[100svh] flex items-center">
         <Swiper
           modules={[Autoplay, EffectFade]}
           slidesPerView={1}
           effect="fade"
           loop
-          autoplay={{ delay: 6000, disableOnInteraction: false }}
-          speed={2200}
+          autoplay={prefersReducedMotion ? false : { delay: 6000, disableOnInteraction: false }}
+          speed={prefersReducedMotion ? 0 : 900}
           className="hero-swiper"
         >
           <SwiperSlide>
-            <motion.div
+            <Motion.div
               className="hero-slide"
               style={{ "--hero-bg": "url('/images/glovs.jpeg')" }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.4, ease: "easeOut" }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: "easeOut" }}
             >
-              <div className="hero-watermark">
-                <img src="/images/logoiz.png" alt="Logo" />
-              </div>
               <div className="hero-inner">
                 <div className="hero-content">
                   <span className="hero-eyebrow">COMFORT · CLASS · PRECISION</span>
@@ -96,7 +52,7 @@ function Index() {
 
                   <div className="hero-actions">
                     <button
-                      onClick={() => navigate("/reservation-form")}
+                      onClick={() => navigate("/reserve")}
                       className="btn btn-gold btn--hero flex items-center justify-center gap-2 text-sm sm:text-base"
                     >
                       <span>Reserve Your Chauffeur</span>
@@ -122,41 +78,34 @@ function Index() {
                 <span>↓</span>
                 <span>Discover the Experience</span>
               </div>
-            </motion.div>
+            </Motion.div>
           </SwiperSlide>
           <SwiperSlide>
-            <motion.div
+            <Motion.div
               className="hero-slide"
               style={{ "--hero-bg": "url('/images/gloves.png')" }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.4, ease: "easeOut" }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: "easeOut" }}
             >
-              <div className="hero-watermark">
-                <img src="/images/logoiz.png" alt="Logo" />
-              </div>
               <div className="hero-inner">
                 <div className="hero-content">
                   <span className="hero-eyebrow">COMFORT · CLASS · PRECISION</span>
 
-                  <h1 className="hero-title">
-                    Drive in Style <br />Arrive Distinguished.
-                  </h1>
+                  <h2 className="hero-title">
+                    Drive in Style. <br />Arrive Distinguished.
+                  </h2>
 
                   <p className="hero-subcopy">
-                    Chauffeur-driven luxury crafted for those who value discretion, comfort, and impeccable service.
-                  </p>
-                  <p className="hero-subcopy">
-                    Premium airport and corporate transportation across
-                    Atlanta and its metro areas.
-
+                    Chauffeur-driven airport and corporate transportation across Atlanta and its metro
+                    areas, for those who value discretion, comfort, and thoughtful service.
                   </p>
 
                   <p className="hero-italic">Discretion. Presence. Confidence.</p>
 
                   <div className="hero-actions">
                     <button
-                      onClick={() => navigate("/reservation-form")}
+                      onClick={() => navigate("/reserve")}
                       className="btn btn-gold btn--hero"
                     >
                       Reserve Your Chauffeur ↗
@@ -182,26 +131,23 @@ function Index() {
                 <span>↓</span>
                 <span>Discover the Experience</span>
               </div>
-            </motion.div>
+            </Motion.div>
           </SwiperSlide>
           <SwiperSlide>
-            <motion.div
+            <Motion.div
               className="hero-slide"
               style={{ "--hero-bg": "url('/images/chau.jpg')" }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.4, ease: "easeOut" }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: "easeOut" }}
             >
-              <div className="hero-watermark">
-                <img src="/images/logoiz.png" alt="Logo" />
-              </div>
               <div className="hero-inner">
                 <div className="hero-content">
                   <span className="hero-eyebrow">COMFORT · CLASS · PRECISION</span>
 
-                  <h1 className="hero-title">
+                  <h2 className="hero-title">
                     A Seamless Journey, <br />Defined by Excellence
-                  </h1>
+                  </h2>
 
                   <p className="hero-subcopy">
                     From airport transfers to corporate engagements, every detail is curated to exceed expectations.
@@ -211,7 +157,7 @@ function Index() {
 
                   <div className="hero-actions">
                     <button
-                      onClick={() => navigate("/reservation-form")}
+                      onClick={() => navigate("/reserve")}
                       className="btn btn-gold btn--hero"
                     >
                       Reserve Your Chauffeur ↗
@@ -237,14 +183,14 @@ function Index() {
                 <span>↓</span>
                 <span>Discover the Experience</span>
               </div>
-            </motion.div>
+            </Motion.div>
           </SwiperSlide>
 
           {/* Add more slides by changing only --hero-bg */}
         </Swiper>
       </div>
 
-      <div>
+      <div className="lc-membership-section">
         <EliteMembership />
       </div>
 
@@ -314,8 +260,10 @@ function Index() {
             <div className="rounded-2xl overflow-hidden border border-[#D4AF37]/20 shadow-[0_0_40px_rgba(212,175,55,0.15)]">
               <img
                 src="/images/headmug.jpeg"
-                alt="Founder - Pierre Charlot"
+                  alt="Pierre Charlot, founder of Le Charlot Limousine"
                 className="w-full h-[500px] object-cover object-top"
+                  loading="lazy"
+                  decoding="async"
               />
             </div>
 
@@ -379,14 +327,14 @@ function Index() {
         <div className="mt-10 flex flex-col md:flex-col md:items-center md:justify-center gap-4">
           <div className="text-center mb-7 md:text-left">
             <p className="text-sm tracking-wide text-white"></p>
-            <a href="tel:4044053738" className="text-xl md:text-xl font-medium text-white btn  transition-colors">
+            <a href="tel:+14044053738" className="inline-flex min-h-11 items-center text-xl font-medium text-white transition-colors hover:text-[#F5E7B8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4AF37]">
               <span className='text-md'>Immediate Assistance:</span>
               404-405-3738
             </a>
           </div>
 
           <button
-            onClick={() => navigate("/reservation-form")}
+            onClick={() => navigate("/reserve")}
             className="mt-4 md:mt-4 inline-flex items-center justify-center gap-3 rounded-full border btn-gold px-10 py-4 text-xs tracking-widest uppercase  hover:text-black transition-all duration-300"
           >
             Begin Reservation
@@ -547,13 +495,13 @@ function Index() {
       </div> */}
 
       {/* Vision, Mission, Values Section */}
-      <div className="our-service lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]">
+      <div className="our-service lc-values-section lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]">
         <div className="our-service-content mb-20 text-center text-white">
           <p className="uppercase text-sm tracking-[5px] rolex-gold-text mb-2">
             Our Philosophy
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-3 font-bricolage">
-            Our Mision & Values
+            Our Mission & Values
           </h2>
         </div>
 
@@ -599,260 +547,34 @@ function Index() {
 
 
 
-      {/* Testimonials */}
-      <section className='testimonials lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]'>
-        <div className="testimonials-content mb-20 text-center text-white">
-          <p className="uppercase text-3xl md:text-4xl tracking-[5px] rolex-gold-text mb-2">
-            What Our Clients Say
+      {/* Reviews */}
+      <section
+        className="testimonials lc-testimonials lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]"
+        aria-labelledby="client-reviews-title"
+      >
+        <div className="testimonials-content mb-12 text-center text-white">
+          <p className="uppercase text-sm tracking-[0.3em] rolex-gold-text mb-3">
+            Client feedback
           </p>
-          <h2 className="text-sm font-bold mb-3 font-bricolage">
-            Trusted by Atlanta Clients
+          <h2 id="client-reviews-title" className="text-3xl md:text-4xl font-medium">
+            Reviews, shared with care
           </h2>
         </div>
-        <Swiper
-          modules={[Pagination, Autoplay]}
-          spaceBetween={30}
-          pagination={{ clickable: true }}
-          loop={true}
-          autoplay={{ delay: 3000 }}
-          breakpoints={{
-            1399: { slidesPerView: 3 },
-            991: { slidesPerView: 2 },
-            0: { slidesPerView: 1 },
-          }}
-        >
-          <SwiperSlide>
-            <div className="rounded-[38px] bg-[#222] text-left p-8 shadow-md flex flex-col justify-between">
-              {/* Quote + Stars */}
-              <div className="flex items-start justify-between mb-6">
-                {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
-
-                {/* Stars */}
-                <div className="flex space-x-1">
-                  {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
-                  ))}
-                </div>
-              </div>
-
-              {/* Review Text with Closing Quote */}
-              <div className="text-white text-lg mb-6 font-bricolage italic relative">
-                Le Charlot Limousine is the gold standard. Discreet, punctual, and always immaculate — I trust them with every executive arrival.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
-              </div>
-
-              {/* User Info */}
-              <div className="flex items-center mt-10">
-                <div className="curv">
-                  <div>
-                    <img
-                      src="/images/india.jpeg"
-                      alt="user"
-                      className="rounded-full h-16 w-16 object-cover mr-4"
-                    />
-                  </div>
-                </div>
-                <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl rolex-gold-text">Abhinav, Private Wealth Advisor</p>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="rounded-[38px] bg-[#222] text-left p-8 shadow-md flex flex-col justify-between">
-              {/* Quote + Stars */}
-              <div className="flex items-start justify-between mb-6">
-                {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
-
-                {/* Stars */}
-                <div className="flex space-x-1">
-                  {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
-                  ))}
-                </div>
-              </div>
-
-              {/* Review Text with Closing Quote */}
-              <div className="text-white text-lg mb-6 font-bricolage italic relative">
-                From the first call to the final drop-off, the experience was flawless. My clients were impressed — and so was I.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
-              </div>
-
-              {/* User Info */}
-              <div className="flex items-center mt-10">
-                <div className="curv">
-                  <div>
-                    <img
-                      src="/images/japan.jpeg"
-                      alt="user"
-                      className="rounded-full h-16 w-16 object-cover mr-4"
-                    />
-                  </div>
-                </div>
-                <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl rolex-gold-text">Lee M., Event Planner</p>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="rounded-[38px] bg-[#222] text-left p-8 shadow-md flex flex-col justify-between">
-              {/* Quote + Stars */}
-              <div className="flex items-start justify-between mb-6">
-                {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
-
-                {/* Stars */}
-                <div className="flex space-x-1">
-                  {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
-                  ))}
-                </div>
-              </div>
-
-              {/* Review Text with Closing Quote */}
-              <div className="text-white text-lg mb-6 font-bricolage italic relative">
-                Pierre&apos;s French accent and warm personality make every trip unforgettable. He dresses sharply, the vehicle is immaculate, and he even stocked the refreshments I asked for. Truly a five-star experience.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
-              </div>
-
-              {/* User Info */}
-              <div className="flex items-center mt-10">
-                <div className="curv">
-                  <div>
-                    <img
-                      src="/images/blaq.jpeg"
-                      alt="user"
-                      className="rounded-full h-16 w-16 object-cover mr-4"
-                    />
-                  </div>
-                </div>
-                <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl rolex-gold-text">Olivia H., Atlanta</p>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="rounded-[38px] bg-[#222] text-left p-8 shadow-md flex flex-col justify-between">
-              {/* Quote + Stars */}
-              <div className="flex items-start justify-between mb-6">
-                {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
-
-                {/* Stars */}
-                <div className="flex space-x-1">
-                  {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
-                  ))}
-                </div>
-              </div>
-
-              {/* Review Text with Closing Quote */}
-              <div className="text-white text-lg mb-6 font-bricolage italic relative">
-                I&apos;ve never experienced such class in Georgia. Pierre monitors flights, offers wake-up calls, and even had a warm latte ready for me at pickup. His professionalism and bedside manner are unmatched.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
-              </div>
-
-              {/* User Info */}
-              <div className="flex items-center mt-10">
-                <div className="curv">
-                  <div>
-                    <img
-                      src="/images/birace.jpeg"
-                      alt="user"
-                      className="rounded-full h-16 w-16 object-cover mr-4"
-                    />
-                  </div>
-                </div>
-                <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl rolex-gold-text">Daniella ,Alpharetta </p>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="rounded-[38px] bg-[#222] text-left p-8 shadow-md flex flex-col justify-between">
-              {/* Quote + Stars */}
-              <div className="flex items-start justify-between mb-6">
-                {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
-
-                {/* Stars */}
-                <div className="flex space-x-1">
-                  {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
-                  ))}
-                </div>
-              </div>
-
-              {/* Review Text with Closing Quote */}
-              <div className="text-white text-lg mb-6 font-bricolage italic relative">
-                We love the smooth ride, the music selection, and the elegance Pierre brings. He even let us choose the refreshments ahead of time. Hands down the best black-car service we&apos;ve ever used.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
-              </div>
-
-              {/* User Info */}
-              <div className="flex items-center mt-10">
-                <div className="curv">
-                  <div>
-                    <img
-                      src="/images/ceo.jpeg"
-                      alt="user"
-                      className="rounded-full h-16 w-16 object-cover mr-4"
-                    />
-                  </div>
-                </div>
-                <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl rolex-gold-text">Raymond M., Buckhead </p>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="rounded-[38px] bg-[#222] text-left p-8 shadow-md flex flex-col justify-between">
-              {/* Quote + Stars */}
-              <div className="flex items-start justify-between mb-6">
-                {/* Opening Quote */}
-                <i className="fa-solid fa-quote-left text-4xl rolex-gold-text mr-4"></i>
-
-                {/* Stars */}
-                <div className="flex space-x-1">
-                  {Array(5).fill().map((_, i) => (
-                    <i key={i} className="fa-solid fa-star text-xl rolex-gold-text"></i>
-                  ))}
-                </div>
-              </div>
-
-              {/* Review Text with Closing Quote */}
-              <div className="text-white text-lg mb-6 font-bricolage italic relative">
-                Pierre&apos;s service is refined, respectful, and incredibly polished. His French accent, sharp attire, and kindness set the tone for a luxurious experience. Highly recommended.
-                <i className="fa-solid fa-quote-right absolute -bottom-4 right-2 text-3xl rolex-gold-text"></i>
-              </div>
-
-              {/* User Info */}
-              <div className="flex items-center mt-10">
-                <div className="curv">
-                  <div>
-                    <img
-                      src="/images/nigeri.jpeg"
-                      alt="user"
-                      className="rounded-full h-16 w-16 object-cover mr-4"
-                    />
-                  </div>
-                </div>
-                <div className="ps-[100px]">
-                  <p className="font-bricolage text-xl rolex-gold-text">Robert P., Midtown </p>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-        </Swiper>
-
+        <div className="lc-review-placeholder">
+          <h3>Verified reviews are not connected yet</h3>
+          <p>
+            We do not currently have a verified review source connected to this page. Customer
+            feedback will be shared here only when its source and attribution can be confirmed.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/contact")}
+            className="btn btn-gold btn--hero mt-6 min-h-12 px-6 text-sm"
+          >
+            Contact our team
+          </button>
+        </div>
       </section>
-
       {/* <div className="blog lg:px-[12%] px-[8%] py-[50px] lg:py-[90px]">
      
         <div className="blog-content mb-20 text-center text-white">
@@ -900,7 +622,7 @@ function Index() {
         </div>
       </div> */}
 
-    </>
+    </main>
 
   );
 }

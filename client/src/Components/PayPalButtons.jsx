@@ -1,8 +1,14 @@
 import { PayPalButtons, FUNDING } from "@paypal/react-paypal-js";
+import { API_ORIGIN } from "../config/api";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function PayPalButton({ amount, bookingId, token }) {
+export default function PayPalButton({
+  amount,
+  bookingId,
+  token,
+  onAuthExpired,
+}) {
   const navigate = useNavigate();
 
   const headers = token
@@ -20,18 +26,22 @@ export default function PayPalButton({ amount, bookingId, token }) {
         height: 50,
       }}
       createOrder={async () => {
-        const res = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/paypal/create-order`,
-          { bookingId, amount },
-          { headers }
-        );
-
-        return res.data.id;
+        try {
+          const res = await axios.post(
+            `${API_ORIGIN}/api/paypal/create-order`,
+            { bookingId, amount },
+            { headers },
+          );
+          return res.data.id;
+        } catch (error) {
+          if (error.response?.status === 401) onAuthExpired?.();
+          throw error;
+        }
       }}
       onApprove={async (data) => {
         try {
           const res = await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/paypal/capture-order`,
+            `${API_ORIGIN}/api/paypal/capture-order`,
             {
               orderID: data.orderID,
               bookingId,
@@ -40,12 +50,14 @@ export default function PayPalButton({ amount, bookingId, token }) {
           );
 
           if (res.data.success) {
-            navigate("/booking-success?source=paypal", {
-              replace: true,
-            });
+            navigate(
+              `/booking-success?source=paypal&bookingId=${encodeURIComponent(bookingId)}`,
+              { replace: true },
+            );
           }
         } catch (err) {
           console.error("Capture failed:", err);
+          if (err.response?.status === 401) onAuthExpired?.();
         }
       }}
     />

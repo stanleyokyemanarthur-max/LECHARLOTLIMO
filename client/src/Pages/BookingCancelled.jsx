@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { API_ORIGIN } from "../config/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { XCircle, ArrowLeft } from "lucide-react";
@@ -10,7 +11,7 @@ function BookingCancelled() {
 
   useEffect(() => {
     if (sessionId) {
-      fetch(`https://lecharlotlimo-aucd.onrender.com/api/payments/cancel?session_id=${sessionId}`).catch(() =>
+      fetch(`${API_ORIGIN}/api/payments/cancel?session_id=${sessionId}`).catch(() =>
         console.warn("Failed to update booking status")
       );
     }

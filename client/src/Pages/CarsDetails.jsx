@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { API_ORIGIN } from "../config/api";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useParams, useNavigate } from "react-router-dom";
@@ -46,7 +47,7 @@ function CarsDetails() {
   useEffect(() => {
     const fetchCar = async () => {
       try {
-        const res = await fetch(`https://lecharlotlimo-aucd.onrender.com/api/cars/${id}`);
+        const res = await fetch(`${API_ORIGIN}/api/cars/${id}`);
         if (!res.ok) throw new Error("Failed to fetch car");
         const data = await res.json();
         setCar(data);
@@ -66,7 +67,7 @@ function CarsDetails() {
         setLoadingEstimate(true);
         try {
           const res = await fetch(
-            `https://lecharlotlimo-aucd.onrender.com/api/bookings/estimate?pickup=${encodeURIComponent(
+            `${API_ORIGIN}/api/bookings/estimate?pickup=${encodeURIComponent(
               pickUpLocation
             )}&dropoff=${encodeURIComponent(dropOffLocation)}&carId=${car._id}`
           );
@@ -108,7 +109,7 @@ function CarsDetails() {
     try {
       setCheckoutLoading(true);
       // Step 1 — Create booking
-      const bookingRes = await fetch("https://lecharlotlimo-aucd.onrender.com/api/bookings", {
+      const bookingRes = await fetch(`${API_ORIGIN}/api/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,14 +127,19 @@ function CarsDetails() {
       const bookingData = await bookingRes.json();
 
       if (!bookingRes.ok) {
-        console.error("Booking creation failed:", bookingData);
-        alert(bookingData.message || "Booking failed.");
+        console.error("Booking creation failed:", bookingData.error || bookingData.message);
+        alert(bookingData.error || bookingData.message || "Booking failed.");
+        return;
+      }
+      const createdBooking = bookingData.booking;
+      if (!createdBooking?._id) {
+        alert("The booking could not be confirmed. Please try again.");
         return;
       }
 
       // Step 2 — Create Stripe checkout session
       const stripeRes = await fetch(
-        "https://lecharlotlimo-aucd.onrender.com/api/payments/create-checkout-session",
+        `${API_ORIGIN}/api/payments/create-checkout-session`,
         {
           method: "POST",
           headers: {
@@ -141,7 +147,7 @@ function CarsDetails() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            bookingId: bookingData._id,
+            bookingId: createdBooking._id,
             amount: estimatedPrice,
           }),
         }
@@ -176,7 +182,7 @@ function CarsDetails() {
           ? { email: authEmail, password: authPassword }
           : { name: authName, email: authEmail, password: authPassword };
 
-      const res = await fetch(`https://lecharlotlimo-aucd.onrender.com${endpoint}`, {
+      const res = await fetch(`${API_ORIGIN}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { API_ORIGIN } from "../config/api";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const API_BASE = import.meta.env.VITE_API_URL;
+const API_BASE = API_ORIGIN;
 
 function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -12,8 +13,7 @@ function MyBookings() {
   const [cancelingId, setCancelingId] = useState(null);
   const navigate = useNavigate();
 
-  const { userInfo } = useSelector((state) => state.auth);
-  const token = userInfo?.token;
+  const { token } = useSelector((state) => state.auth);
 
   const fetchBookings = async () => {
     try {

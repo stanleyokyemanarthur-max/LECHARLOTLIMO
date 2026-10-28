@@ -1,8 +1,10 @@
 // Pages/VerifyTOTPLogin.jsx
+import { API_ORIGIN } from "../config/api";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch,useSelector } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
+import { getBookingResumePath } from "../utils/bookingDraft";
 
 
 export default function VerifyTOTPLogin() {
@@ -39,7 +41,7 @@ const initialEmail = location.state?.email || userInfo?.email || JSON.parse(loca
 
     setLoading(true);
     try {
-      const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/auth/verify-totp-login", {
+      const res = await fetch(`${API_ORIGIN}/api/auth/verify-totp-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code: String(code).trim() }),
@@ -54,7 +56,11 @@ dispatch(setCredentials({ user: data.user || data, token: data.token }));
       switch (data.user.role) {
         case "admin": return navigate("/admin/dashboard", { replace: true });
         case "driver": return navigate("/driver/dashboard", { replace: true });
-        default: return navigate("/mybookings", { replace: true });
+        default:
+          return navigate(
+            getBookingResumePath(data.user?.role || data.role) || "/mybookings",
+            { replace: true },
+          );
       }
     } catch (err) {
       setError(err.message || "Verification failed");

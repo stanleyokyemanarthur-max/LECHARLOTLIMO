@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { API_ORIGIN } from "../config/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials, logout } from "../slices/authSlice";
 
@@ -11,7 +12,7 @@ function AuthLoader() {
       if (!token) return;
 
       try {
-        const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/auth/me", {
+        const res = await fetch(`${API_ORIGIN}/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -6,7 +6,7 @@ import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import { CalendarCheck, PhoneCall } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 
 function About() {
@@ -56,7 +56,7 @@ function About() {
     <div className="text-white font-poppins bg-[#0a0a0a]">
       {/* Hero Banner */}
       <section
-        className="relative h-[85vh] flex items-end overflow-hidden"
+        className="lc-about-hero"
         style={{
           backgroundImage: "url('/images/cinema.png')",
           backgroundSize: "cover",
@@ -64,52 +64,26 @@ function About() {
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/30 sm:bg-black/30"></div>
-
-        {/* Hero Content */}
-        <div
-          className="relative z-10 w-full text-center px-4
-               pb-16 sm:pb-20 lg:pb-2
-               animate-heroFloat"
-        >
-          {/* <h1 className="uppercase text-xs sm:text-sm lg:text-xl tracking-widest text-white mb-2 font-bricolage">
-            Le Charlot <span className="text-[#D4AF37]">Limousine</span>
-          </h1>
-
-          <h2 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold leading-tight">
-            <span className="text-white">Executive Chauffeur Service</span>
-            <span className="block sm:inline"> in Atlanta.</span>
-          </h2>
-
-          <p className="text-gray-300 mt-4 text-sm sm:text-base lg:text-xl max-w-3xl mx-auto">
-            From airport transfers to corporate arrivals, Le Charlot Limousine delivers
-            precision, privacy, and prestige — every mile, every moment.
+        <div className="lc-about-hero__content">
+          <p className="lc-kicker">About Le Charlot</p>
+          <h1>Considered service. Thoughtful journeys.</h1>
+          <p>
+            A more personal approach to chauffeur-driven travel, grounded in
+            professionalism, comfort, and care across Atlanta.
           </p>
-
-          <p className="mt-3 text-[10px] sm:text-xs lg:text-sm uppercase tracking-[0.35em] text-[#B08D57]">
-            Serving Atlanta • Buckhead • Alpharetta • Sandy Springs
-          </p> */}
-
-          <div className="mt-6 flex justify-center gap-4 flex-wrap">
+          <div className="flex flex-wrap gap-3">
             <button
-              onClick={() => navigate("/reservation-form")}
-              className="px-7 py-3 sm:px-8 sm:py-4
-              btn-gold btn text-black
-                   rounded-full font-medium shadow-lg
-                   hover:opacity-90 transition"
+              onClick={() => navigate("/reserve")}
+              className="lc-button"
             >
-              Reserve Your Ride
+              Begin a reservation <span aria-hidden="true">↗</span>
             </button>
 
             <button
               onClick={() => navigate("/fleet")}
-              className="px-7 py-3 sm:px-8 sm:py-4
-                   border btn text-[#B08D57]
-                   rounded-full font-medium
-                   btn-gold  hover:text-black transition"
+              className="lc-button lc-button--outline"
             >
-              View Our Fleet
+              Explore the fleet
             </button>
           </div>
         </div>
@@ -119,7 +93,7 @@ function About() {
       {/* Our Story */}
       <section className="py-20 lg:py-32 px-8 lg:px-[10%] grid lg:grid-cols-2 gap-12 items-center">
         <div className="rounded-3xl overflow-hidden transform hover:scale-105 transition-transform duration-700">
-          <img src="/images/3ec.jpg" alt="Luxury Fleet" className="w-full h-full object-cover" />
+          <img src="/images/3ec.jpg" alt="Le Charlot Limousine vehicle" loading="lazy" decoding="async" className="w-full h-full object-cover" />
         </div>
         <div>
           <p className="uppercase text-xs md:text-sm tracking-widest rolex-gold-text mb-2">Our Story</p>
@@ -147,7 +121,7 @@ function About() {
             </li>
           </ul>
           <button
-            onClick={() => navigate("/reservation-form")}
+            onClick={() => navigate("/reserve")}
             className="mt-6 px-8 py-4 btn-gold btn  transition-all rounded-full font-medium text-lg shadow-lg"
           >
             Make Reservation
@@ -156,7 +130,7 @@ function About() {
       </section>
 
       {/* The Le Charlot Experience (replaces Fleet Teaser) */}
-      <motion.section
+      <Motion.section
         className="py-20 lg:py-32 px-8 lg:px-[10%] bg-[#0a0a0a]"
         variants={sectionVariants}
         initial="hidden"
@@ -164,7 +138,7 @@ function About() {
         viewport={{ once: true, amount: 0.18 }}
       >
         {/* Header */}
-        <motion.div className="text-center mb-14" variants={itemUp}>
+        <Motion.div className="text-center mb-14" variants={itemUp}>
           <p className="uppercase text-xs md:text-sm tracking-widest rolex-gold-text mb-2">
             The Le Charlot Experience
           </p>
@@ -175,10 +149,10 @@ function About() {
             We focus on precision, privacy, and comfort. From your first click to your final drop-off,
             everything is curated to feel effortless, polished, and premium.
           </p>
-        </motion.div>
+        </Motion.div>
 
         {/* Experience Cards */}
-        <motion.div className="grid lg:grid-cols-3 gap-8" variants={sectionVariants}>
+        <Motion.div className="grid lg:grid-cols-3 gap-8" variants={sectionVariants}>
           {[
             {
               tag: "Precision",
@@ -196,7 +170,7 @@ function About() {
               desc: "Every ride is prepared and inspected so you step into a clean, elegant space that feels first-class.",
             },
           ].map((c, i) => (
-            <motion.div
+            <Motion.div
               key={i}
               variants={itemUp}
               whileHover={{ y: -6, scale: 1.01 }}
@@ -208,14 +182,14 @@ function About() {
               <p className="text-[#B08D57] uppercase text-xs tracking-[0.25em] mb-3">{c.tag}</p>
               <h3 className="text-2xl font-bold mb-3 font-bricolage">{c.title}</h3>
               <p className="text-gray-400 leading-relaxed">{c.desc}</p>
-            </motion.div>
+            </Motion.div>
           ))}
-        </motion.div>
+        </Motion.div>
 
         {/* How it Works + Moments */}
         <div className="mt-16 grid lg:grid-cols-2 gap-10 items-start">
           {/* How it Works */}
-          <motion.div
+          <Motion.div
             variants={itemLeft}
             className="bg-[#111] rounded-3xl p-10 border border-[#2a2a2a]"
             whileHover={{ scale: 1.01 }}
@@ -235,7 +209,7 @@ function About() {
                 { n: 3, t: "Dispatch confirmation", d: "We confirm the ride and you receive your final confirmation email." },
                 { n: 4, t: "Chauffeur arrives", d: "Professional pickup, smooth transport, and a premium arrival." },
               ].map((s, i) => (
-                <motion.div
+                <Motion.div
                   key={i}
                   variants={itemUp}
                   className="flex gap-4"
@@ -249,13 +223,13 @@ function About() {
                     <p className="font-semibold text-white">{s.t}</p>
                     <p className="text-gray-400 text-sm">{s.d}</p>
                   </div>
-                </motion.div>
+                </Motion.div>
               ))}
             </div>
-          </motion.div>
+          </Motion.div>
 
           {/* Moments / Occasions */}
-          <motion.div
+          <Motion.div
             variants={itemRight}
             className="bg-[#111] rounded-3xl p-10 border border-[#2a2a2a]"
             whileHover={{ scale: 1.01 }}
@@ -268,7 +242,7 @@ function About() {
               Built for your occasion
             </h3>
 
-            <motion.div className="grid sm:grid-cols-2 gap-4" variants={sectionVariants}>
+            <Motion.div className="grid sm:grid-cols-2 gap-4" variants={sectionVariants}>
               {[
                 { title: "Airport Transfers", desc: "Reliable pickups and smooth arrivals." },
                 { title: "Corporate Travel", desc: "Quiet, polished, executive-ready." },
@@ -277,7 +251,7 @@ function About() {
                 { title: "Hourly Charters", desc: "Flexible time blocks for your plans." },
                 { title: "Group Transport", desc: "Comfort for guests and teams." },
               ].map((item, i) => (
-                <motion.div
+                <Motion.div
                   key={i}
                   variants={itemUp}
                   whileHover={{ y: -4 }}
@@ -287,16 +261,16 @@ function About() {
                 >
                   <p className="font-semibold text-white">{item.title}</p>
                   <p className="text-gray-400 text-sm mt-1">{item.desc}</p>
-                </motion.div>
+                </Motion.div>
               ))}
-            </motion.div>
+            </Motion.div>
 
-            <motion.div
+            <Motion.div
               className="mt-8 flex flex-wrap gap-3"
               variants={itemUp}
             >
-              <motion.button
-                onClick={() => navigate("/reservation-form")}
+              <Motion.button
+                onClick={() => navigate("/reserve")}
                 whileTap={{ scale: 0.98 }}
                 whileHover={{ y: -2 }}
                 className="inline-flex items-center gap-2 px-7 py-3 btn-gold btn
@@ -304,10 +278,10 @@ function About() {
               >
                 <CalendarCheck size={18} />
                 Make a Reservation
-              </motion.button>
+              </Motion.button>
 
-              <motion.a
-                href="tel:4044053738"
+              <Motion.a
+                href="tel:+14044053738"
                 whileTap={{ scale: 0.98 }}
                 whileHover={{ y: -2 }}
                 className="inline-flex items-center gap-2 px-7 py-3 rounded-full border border-[#D4AF37]
@@ -315,11 +289,11 @@ function About() {
               >
                 <PhoneCall size={18} />
                 Call Us
-              </motion.a>
-            </motion.div>
-          </motion.div>
+              </Motion.a>
+            </Motion.div>
+          </Motion.div>
         </div>
-      </motion.section>
+      </Motion.section>
 
 
 
@@ -428,13 +402,13 @@ function About() {
         </h2>
         <p className="text-gray-400 mb-8">Your private chauffeur in Atlanta is just a click away.</p>
         <button
-          onClick={() => navigate("/reservation-form")}
+          onClick={() => navigate("/reserve")}
           className="px-10 py-4 btn-gold btn transition-all rounded-full font-bold text-lg shadow-xl"
         >
           Reserve Your Ride
         </button>
         <a
-          href="tel:4044053738"
+          href="tel:+14044053738"
           className="inline-flex  items-center gap-3 mt-8 px-8 py-4 rounded-full btn btn-gold  text-[#B08D57] text-xs tracking-widest uppercase hover:bg-[#B08D57] hover:text-black transition-all duration-300"
         >
           <PhoneCall size={18} />

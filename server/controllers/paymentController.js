@@ -6,10 +6,6 @@ import Reward from "../models/Reward.js";
 import User from "../models/User.js";
 import { evaluateMilestonesForUser } from "../services/milestone.service.js";
 import { calculateTripEstimate } from "../services/pricingEngine.js";
-// Load dotenv locally if not production
-if (process.env.NODE_ENV !== "production") {
-  import('dotenv').then(dotenv => dotenv.config());
-}
 
 // Ensure Stripe key exists
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -19,6 +15,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const STRIPE_CURRENCY = "usd";
 
 /**
  * 💳 Create Stripe Checkout Session
@@ -42,6 +39,11 @@ export const createCheckoutSession = async (req, res) => {
         .session(mongoSession);
 
       if (!booking) throw new Error("Booking not found");
+      if (booking.user?.toString() !== req.user?._id?.toString()) {
+        throw Object.assign(new Error("Not authorized to pay for this booking"), {
+          statusCode: 403,
+        });
+      }
 
       if (booking.paymentStatus === "paid") {
         throw new Error("Booking already paid");
@@ -57,30 +59,44 @@ export const createCheckoutSession = async (req, res) => {
 
     const amount = booking.totalPrice;
 
-    if (!amount || amount <= 0) {
+    if (!Number.isFinite(amount) || amount <= 0) {
       return res.status(400).json({ error: "Invalid booking amount" });
     }
+    const amountInCents = Math.round(amount * 100);
 
-    // 🔁 2. RESUME PAYMENT FLOW (CRITICAL FIX)
+    // Resume only a provider session that still matches the trusted booking.
     if (booking.stripeSessionId) {
-      try {
-        const existing = await stripe.checkout.sessions.retrieve(
-          booking.stripeSessionId
-        );
+      const existing = await stripe.checkout.sessions.retrieve(
+        booking.stripeSessionId
+      );
 
-        if (existing && existing.status === "open") {
-          return res.json({
-            url: existing.url,
-            sessionId: existing.id,
-            resumed: true
+      if (existing?.status === "open") {
+        const matchesBooking =
+          existing.id === booking.stripeSessionId &&
+          existing.metadata?.bookingId === booking._id.toString() &&
+          existing.currency === STRIPE_CURRENCY &&
+          existing.amount_total === amountInCents;
+
+        if (!matchesBooking) {
+          return res.status(409).json({
+            error: "Existing payment session does not match this booking",
           });
         }
-      } catch (err) {
-        console.log("♻️ Old session invalid, creating new one");
+
+        return res.json({
+          url: existing.url,
+          sessionId: existing.id,
+          resumed: true,
+        });
+      }
+
+      if (existing?.status !== "expired") {
+        return res.status(409).json({
+          error: "Existing payment session is still being processed",
+        });
       }
     }
 
-    // 🧠 3. CREATE NEW SESSION
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
@@ -88,12 +104,12 @@ export const createCheckoutSession = async (req, res) => {
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: STRIPE_CURRENCY,
             product_data: {
               name: `Booking - ${booking.carSnapshot?.name || "Luxury Ride"}`,
               description: `${booking.pickupLocation} → ${booking.dropoffLocation}`,
             },
-            unit_amount: Math.round(amount * 100),
+            unit_amount: amountInCents,
           },
           quantity: 1,
         },
@@ -105,6 +121,9 @@ export const createCheckoutSession = async (req, res) => {
       metadata: {
         bookingId: booking._id.toString(),
       },
+      client_reference_id: booking._id.toString(),
+    }, {
+      idempotencyKey: `booking-${booking._id}-session-${booking.stripeSessionId || "initial"}`,
     });
 
     // 🔒 4. SAFE SAVE (NO RACE CONDITION)
@@ -121,7 +140,7 @@ export const createCheckoutSession = async (req, res) => {
 
   } catch (err) {
     console.error("❌ Stripe session error:", err);
-    return res.status(500).json({
+    return res.status(err.statusCode || 500).json({
       error: err.message || "Failed to create Stripe session",
     });
 
@@ -130,44 +149,13 @@ export const createCheckoutSession = async (req, res) => {
   }
 };
 /**
- * ❌ Handle Cancelled Payments
+ * Public Stripe return endpoint. Booking and payment state are updated only
+ * by the verified webhook, never by a visitor-provided session ID.
  */
-export const handleCancelledPayment = async (req, res) => {
-  const session = await mongoose.startSession();
-  try {
-    const { session_id } = req.query;
-    if (!session_id) return res.status(400).json({ message: "Missing session ID" });
-
-    await session.withTransaction(async () => {
-      const booking = await Booking.findOne({ stripeSessionId: session_id }).session(session);
-      if (!booking) throw new Error("Booking not found");
-
-      if (booking.status === "confirmed") {
-        return res.status(200).json({ message: "Booking already confirmed" });
-      }
-
-      booking.status = "cancelled";
-      booking.paymentStatus = "cancelled";
-      await booking.save({ session });
-
-      if (booking.reward) {
-        const reward = await Reward.findById(booking.reward).session(session);
-        reward.status = "AVAILABLE";
-        reward.lockedAt = null;
-        reward.booking = null;
-        reward.isSlotFull = false;
-        await reward.save({ session });
-      }
-
-      res.status(200).json({ message: "Booking cancelled and reward released", booking });
-    });
-  } catch (err) {
-    console.error("❌ Handle cancelled payment error:", err);
-    res.status(500).json({ message: err.message || "Server error cancelling booking" });
-  } finally {
-    session.endSession();
-  }
-};
+export const handleCancelledPayment = (_req, res) =>
+  res.status(200).json({
+    message: "Payment return received. Booking status follows verified payment events.",
+  });
 
 
 /**
@@ -216,4 +204,3 @@ export const verifyPaymentStatus = async (req, res) => {
     return res.status(500).json({ success: false, message: err.message || "Server error verifying payment" });
   }
 };
-

@@ -222,7 +222,7 @@ function Services() {
   };
 
   return (
-    <div className="bg-black text-white">
+    <main className="lc-service-detail bg-black text-white">
       {/* ✅ HERO */}
       <section className="relative bg-[#0a0a0a] mt-10 py-20 px-[8%] lg:px-[12%]">
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-10">
@@ -254,15 +254,15 @@ function Services() {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                to="/booking"
-                className="btn btn-gold btn--hero text-black font-semibold px-7 py-3 rounded-full"
+                  to="/reserve"
+                  className="lc-button"
               >
                 Book Now
               </Link>
 
               <Link
                 to="/fleet"
-                className="border border-[#B08D57] text-[#B08D57] hover:bg-[#B08D57] hover:text-black transition px-7 py-3 rounded-full font-semibold"
+                className="lc-button lc-button--outline"
               >
                 View Fleet
               </Link>
@@ -296,7 +296,7 @@ function Services() {
           ← Back to All Services
         </Link>
       </div>
-    </div>
+    </main>
   );
 }
 

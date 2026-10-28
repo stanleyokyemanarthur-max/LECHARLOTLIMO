@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { API_ORIGIN } from "../config/api";
 import { motion, AnimatePresence, } from "framer-motion";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setSelectedCar } from "../slices/bookingSlice";
+import { setEstimate, setSelectedCar, setTripData } from "../slices/bookingSlice";
 import axios from "axios";
 import dayjs from "dayjs";
+import {
+  findAvailableDraftVehicle,
+  isBookingTripComplete,
+  loadBookingDraft,
+  saveBookingDraft,
+} from "../utils/bookingDraft";
 import {
   Car,
   MapPin,
@@ -27,12 +34,17 @@ export default function SelectCar() {
   const [loadingCarId, setLoadingCarId] = useState(null);
   const [estimates, setEstimates] = useState({});
   const [readyCarId, setReadyCarId] = useState(null);
+  const restoreAttempted = useRef(false);
 
-  // redirect safety
   useEffect(() => {
-    if (!tripData) navigate("/reserve");
-  }, [tripData, navigate]);
-  console.log("TRIP DATA:", tripData);
+    if (tripData) return;
+    const draft = loadBookingDraft();
+    if (!draft || !isBookingTripComplete(draft.tripData)) {
+      navigate("/reserve", { replace: true });
+      return;
+    }
+    dispatch(setTripData(draft.tripData));
+  }, [dispatch, tripData, navigate]);
 
   // reset UI on trip change
   useEffect(() => {
@@ -48,17 +60,8 @@ export default function SelectCar() {
     const fetchCars = async () => {
       try {
         setLoading(true);
-        console.log("FROM", tripData?.pickupDate);
-        console.log("TO", tripData?.dropoffDate);
-        console.log("AVAILABILITY REQUEST",
-          {
-            from: tripData.pickupDate,
-            to: tripData.dropoffDate,
-
-          });
-
         const res = await axios.get(
-          "https://lecharlotlimo-aucd.onrender.com/api/fleet/availability",
+          `${API_ORIGIN}/api/fleet/availability`,
           {
             params: {
               from: new Date(tripData.pickupDate).toISOString(),
@@ -66,12 +69,9 @@ export default function SelectCar() {
             },
           }
         );
-        console.log("AVAILABILITY RESPONSE", res.data);
-        console.log("FETCH CARS EFFECT RUNNING");
-
         setCars(res.data);
       } catch (err) {
-        console.error(err);
+        console.error("Vehicle availability request failed:", err.message);
         setError("Unable to fetch vehicles.");
       } finally {
         setLoading(false);
@@ -88,22 +88,11 @@ export default function SelectCar() {
     try {
       setActiveCarId(car._id);
       setLoadingCarId(car._id);
-      console.log("========== TRIP DATA FROM REDUX ==========");
-      console.log(tripData);
-
-      console.log("========== SENDING ESTIMATE ==========");
-      console.log({
-        pickup: tripData.pickupLocation,
-        dropoff: tripData.dropoffLocation,
-        tripType: tripData.tripType,
-        returnPickup: tripData.returnPickupLocation,
-        returnDropoff: tripData.returnDropoffLocation,
-        returnDistance: tripData.returnDistance,
-      });
+      setError("");
 
       const res = await axios.post(
 
-        "https://lecharlotlimo-aucd.onrender.com/api/bookings/estimate",
+        `${API_ORIGIN}/api/bookings/estimate`,
         {
           pickup: tripData.pickupLocation,
           dropoff: tripData.dropoffLocation,
@@ -131,26 +120,30 @@ export default function SelectCar() {
         }
       );
 
-      console.log("========== ESTIMATE RESPONSE ==========");
-      console.log(res.data);
-
-
-
+      const estimate = { ...res.data, car };
       setEstimates((prev) => ({
         ...prev,
-        [car._id]: {
-          ...res.data,
-          car,
-        },
+        [car._id]: estimate,
       }));
 
       setReadyCarId(car._id);
+      if (loadBookingDraft()?.step === "final-details") {
+        dispatch(setSelectedCar(car));
+        dispatch(setEstimate(estimate));
+        saveBookingDraft({
+          tripData,
+          step: "final-details",
+          selectedCarId: car._id,
+          estimate,
+        });
+        navigate("/final-details", {
+          state: { rideInfo: tripData, selectedCar: car, estimate },
+          replace: true,
+        });
+      }
 
     } catch (err) {
-      console.error(
-        "ESTIMATE ERROR:",
-        err?.response?.data || err.message
-      );
+      console.error("Vehicle estimate request failed:", err.message);
 
       setError(
         err?.response?.data?.error ||
@@ -164,7 +157,19 @@ export default function SelectCar() {
 
 
   const proceedToBooking = (car, estimate) => {
+    try {
+      saveBookingDraft({
+        tripData,
+        step: "final-details",
+        selectedCarId: car._id,
+        estimate,
+      });
+    } catch (draftError) {
+      setError(draftError.message || "Booking details could not be saved.");
+      return;
+    }
     dispatch(setSelectedCar(car));
+    dispatch(setEstimate(estimate));
 
     navigate("/final-details", {
       state: {
@@ -174,6 +179,31 @@ export default function SelectCar() {
       },
     });
   };
+
+  useEffect(() => {
+    if (!tripData || loading || error || restoreAttempted.current) return;
+    const draft = loadBookingDraft();
+    if (draft?.step !== "final-details" || !draft.selectedCarId) return;
+
+    restoreAttempted.current = true;
+    const availableCar = findAvailableDraftVehicle(cars, draft.selectedCarId);
+    if (!availableCar) {
+      try {
+        saveBookingDraft({
+          tripData,
+          step: "select-car",
+        });
+      } catch (draftError) {
+        setError(draftError.message || "Booking details could not be saved.");
+        return;
+      }
+      setError(
+        "Your previous vehicle is no longer available for these trip dates. Select another vehicle.",
+      );
+      return;
+    }
+    handleSelect(availableCar);
+  }, [cars, error, loading, tripData]);
 
   if (!tripData) return null;
 

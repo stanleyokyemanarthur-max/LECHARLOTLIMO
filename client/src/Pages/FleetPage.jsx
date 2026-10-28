@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import PageHero from "../Components/PageHero";
 import {
   Users,
   Briefcase,
@@ -71,46 +72,44 @@ function FleetPage() {
   const navigate = useNavigate();
 
   return (
-    <section className="bg-[#0a0a0a] mt-12 min-h-screen py-28 px-6 md:px-12 text-white">
-      {/* Title */}
-      <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-bricolage font-bold mb-3 rolex-gold-text">
-          Our Luxurious Fleet
-        </h1>
-        <p className="text-gray-300 max-w-2xl mx-auto">
-          Explore our premium fleet, crafted to deliver unmatched comfort, elegance, and reliability.
-        </p>
-      </div>
+    <main className="lc-page">
+      <PageHero
+        eyebrow="The fleet"
+        title="A considered collection."
+        description="Explore the vehicles available for your journey, with capacity and comfort details to help you choose."
+      />
 
       {/* Grid */}
-      <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+      <div className="lc-fleet-grid">
         {fleetData.map((car) => (
-          <div
+          <article
             key={car.id}
-            className="relative bg-gradient-to-tr from-[#111] to-[#1a1a1a] rounded-3xl shadow-2xl overflow-hidden group hover:scale-105 transition-transform duration-500"
+            className="lc-fleet-card group"
           >
-            <div className="relative h-72 overflow-hidden">
+            <div className="lc-fleet-card__image">
               <img
                 src={car.image}
-                alt={car.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                alt={`${car.title} chauffeur vehicle`}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035] motion-reduce:transform-none"
               />
-              <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+              <span className="lc-fleet-card__index" aria-hidden="true">
+                {String(car.id).padStart(2, "0")}
+              </span>
             </div>
 
-            <div className="p-6 flex flex-col justify-between flex-grow">
+            <div className="lc-fleet-card__body">
               <div>
-                <h2 className="text-2xl font-bold mb-1 uppercase">{car.title}</h2>
-                <p className="rolex-gold-text font-semibold mb-4 uppercase tracking-wide">
-                  {car.subtitle}
-                </p>
+                <p className="lc-kicker">{car.subtitle}</p>
+                <h2 className="lc-fleet-card__title">{car.title}</h2>
 
-                <ul className="text-gray-300 text-sm space-y-2 mb-6">
+                <ul className="lc-fleet-card__specs">
                   {car.specs.map((item, idx) => {
                     const Icon = item.icon;
                     return (
                       <li key={idx} className="flex items-center gap-2">
-                        <Icon className="w-5 h-5 text-[#B08D57]" />
+                        <Icon className="h-4 w-4 shrink-0 text-[#D4AF37]" aria-hidden="true" />
                         <span>{item.text}</span>
                       </li>
                     );
@@ -119,16 +118,17 @@ function FleetPage() {
               </div>
 
               <button
+                type="button"
                 onClick={() => navigate(`/fleet/${car.slug}`)}
-                className="btn btn-gold btn--hero  text-black font-bold py-3 rounded-full shadow-lg transition-all"
+                className="lc-button lc-button--outline mt-7 w-full"
               >
-                VIEW DETAILS
+                Explore vehicle <span aria-hidden="true">↗</span>
               </button>
             </div>
-          </div>
+          </article>
         ))}
       </div>
-    </section>
+    </main>
   );
 }
 

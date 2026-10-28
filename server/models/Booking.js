@@ -259,6 +259,27 @@ const bookingSchema = new mongoose.Schema(
       index: true,
     },
 
+    paypalOrderId: {
+      type: String,
+      default: null,
+      index: true,
+    },
+
+    paypalCaptureAttemptId: {
+      type: String,
+      default: null,
+    },
+
+    paypalCaptureStartedAt: {
+      type: Date,
+      default: null,
+    },
+
+    paypalCaptureRequestId: {
+      type: String,
+      default: null,
+    },
+
     // =========================
     // REWARDS
     // =========================

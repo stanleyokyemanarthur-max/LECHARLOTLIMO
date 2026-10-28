@@ -31,3 +31,8 @@ export const adminOnly = (req, res, next) => {
   if (req.user && req.user.role === "admin") next();
   else res.status(403).json({ message: "Not authorized as admin" });
 };
+
+export const customerOnly = (req, res, next) => {
+  if (req.user && req.user.role === "customer") return next();
+  return res.status(403).json({ message: "Customer account required" });
+};

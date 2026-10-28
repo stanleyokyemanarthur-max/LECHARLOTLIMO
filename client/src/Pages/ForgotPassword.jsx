@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_ORIGIN } from "../config/api";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ export default function ForgotPassword() {
 
     try {
       const res = await fetch(
-        "https://lecharlotlimo-aucd.onrender.com/api/auth/request-password-reset",
+        `${API_ORIGIN}/api/auth/request-password-reset`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

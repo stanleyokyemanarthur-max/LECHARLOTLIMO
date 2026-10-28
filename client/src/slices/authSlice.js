@@ -1,4 +1,5 @@
 // slices/authSlice.js
+import { API_ORIGIN } from "../config/api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // Load from localStorage
@@ -11,7 +12,7 @@ export const fetchUserFromToken = createAsyncThunk(
     try {
       if (!token) return rejectWithValue("No token provided");
 
-      const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/auth/me", {
+      const res = await fetch(`${API_ORIGIN}/api/auth/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

@@ -1,4 +1,5 @@
 // ResetAuthenticator.jsx
+import { API_ORIGIN } from "../config/api";
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -19,14 +20,14 @@ export default function ResetAuthenticator() {
     const resetTOTP = async () => {
       try {
         // Reset TOTP
-        const res = await fetch(`https://lecharlotlimo-aucd.onrender.com/api/auth/reset-totp/${token}`, { method: "POST" });
+        const res = await fetch(`${API_ORIGIN}/api/auth/reset-totp/${token}`, { method: "POST" });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to reset TOTP");
 
         setTempToken(data.tempToken || ""); // optional token for setup verification
 
         // Fetch QR and secret from backend
-        const qrRes = await fetch("https://lecharlotlimo-aucd.onrender.com/api/auth/enable-totp", {
+        const qrRes = await fetch(`${API_ORIGIN}/api/auth/enable-totp`, {
           headers: { Authorization: `Bearer ${data.tempToken || ""}` },
         });
         const qrData = await qrRes.json();
@@ -85,7 +86,7 @@ export default function ResetAuthenticator() {
     setMessage("");
 
     try {
-      const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/auth/verify-totp-setup", {
+      const res = await fetch(`${API_ORIGIN}/api/auth/verify-totp-setup`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${tempToken}` },
         body: JSON.stringify({ code }),

@@ -1,114 +1,105 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { Phone, Mail, Edit, CalendarCheck } from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
+import { ArrowUpRight, Mail, Phone } from "lucide-react";
+
+const navigationLinks = [
+  { label: "Home", to: "/" },
+  { label: "About", to: "/about" },
+  { label: "Fleet", to: "/fleet" },
+  { label: "Services", to: "/services" },
+  { label: "Contact", to: "/contact" },
+];
+
+const serviceLinks = [
+  { label: "Airport services", to: "/service/airport-services" },
+  { label: "FBO chauffeur service", to: "/service/fbo-executive-chauffeur-service" },
+  { label: "Wedding transportation", to: "/service/wedding-limousine-service" },
+  { label: "Prom transportation", to: "/service/prom-limousine-service" },
+];
 
 function Footer() {
   return (
-    <>
-     <footer className="bg-[#0c0c0c] text-white px-[8%] lg:px-[12%] pt-24">
-  <div className="max-w-7xl mx-auto">
-
-    {/* Top section */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-14 pb-16 border-b border-white/10">
-
-      {/* BRAND */}
-      <div>
-        <div className="relative h-14 w-60 mb-6">
-          <img
-            src="/images/logoiz.png"
-            alt="Le Charlot Logo"
-            className="absolute -top-10 left-0 w-40 h-auto object-contain cursor-pointer"
-            onClick={() => navigate("/")}
-          />
-        </div>
-
-        <p className="text-sm leading-relaxed text-white/60 max-w-sm">
-          Chauffeur-driven luxury designed for discerning clients.
-          Airport transfers, executive travels, and special occasions —
-          delivered with precision and discretion.
-        </p>
-
-        {/* Social */}
-        <div className="flex gap-4 mt-8">
-          {["instagram-line", "twitter-x-fill", "facebook-fill"].map((icon, i) => (
-            <a
-              key={i}
-              href="#"
-              className="w-10 h-10 flex items-center justify-center rounded-full border border-white/20 text-white/70 hover:border-[#D4AF37] hover:text-[#B08D57] transition-all duration-300"
+    <footer className="lc-site-footer px-6 text-white sm:px-8 lg:px-[8%]">
+      <div className="mx-auto max-w-7xl">
+        <div className="lc-site-footer__main">
+          <div className="lc-site-footer__brand">
+            <Link
+              to="/"
+              aria-label="Le Charlot Limousine home"
+              className="mb-4 inline-flex rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4AF37]"
             >
-              <i className={`ri-${icon}`}></i>
-            </a>
-          ))}
-        </div>
-      </div>
+              <img
+                src="/images/logoiz.png"
+                alt="Le Charlot Limousine"
+                loading="lazy"
+                decoding="async"
+              />
+            </Link>
+            <p className="lc-site-footer__description">
+              Chauffeur-driven airport transfers, executive travel, and special-occasion
+              transportation across Metro Atlanta.
+            </p>
+          </div>
 
-      {/* CONTACT */}
-      <div>
-        <h4 className="text-sm tracking-[0.3em] uppercase text-[#B08D57] mb-8">
-          Contact
-        </h4>
+          <nav aria-label="Footer navigation">
+            <h2 className="lc-site-footer__heading">Explore</h2>
+            <ul className="lc-site-footer__links">
+              {navigationLinks.map(({ label, to }) => (
+                <li key={to}>
+                  <Link className="lc-site-footer__link focus-visible:outline" to={to}>
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <div className="space-y-4 text-sm text-white/70">
-          <a href="tel:+14049009088" className="flex items-center gap-3 hover:text-white transition">
-            <Phone size={18} className="text-[#B08D57]" />
-            (404) 405-3738
-          </a>
+          <nav aria-label="Chauffeur services">
+            <h2 className="lc-site-footer__heading">Chauffeur services</h2>
+            <ul className="lc-site-footer__links">
+              {serviceLinks.map(({ label, to }) => (
+                <li key={to}>
+                  <Link className="lc-site-footer__link focus-visible:outline" to={to}>
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-          <a href="mailto:info@LeCharlotLimousine.com" className="flex items-center gap-3 hover:text-white transition">
-            <Mail size={18} className="text-[#B08D57]" />
-            info@LeCharlotLimousine.com
-          </a>
-
-          <Link to="/contact" className="flex items-center gap-3 hover:text-white transition">
-            <Edit size={18} className="text-[#B08D57]" />
-            Contact Form
-          </Link>
-        </div>
-
-        {/* <Link
-          to="/reservation-form"
-          className="inline-flex items-center gap-3 mt-8 px-8 py-4 rounded-full border btn btn-gold btn--hero text-xs tracking-widest uppercase hover:text-black transition-all duration-300"
-        >
-          <CalendarCheck size={18} />
-          Schedule a Ride
-        </Link> */}
-      </div>
-
-      {/* LINKS */}
-      <div>
-        <h4 className="text-sm tracking-[0.3em] uppercase text-[#B08D57] mb-8">
-          Quick Links
-        </h4>
-
-        <ul className="space-y-3 text-sm text-white/60">
-          {["About", "Services", "Fleet", "Contact"].map((item) => (
-            <li key={item}>
-              <Link
-                to={`/${item.toLowerCase()}`}
-                className="hover:text-[#B08D57] transition"
+          <div>
+            <h2 className="lc-site-footer__heading">Contact &amp; reservations</h2>
+            <div className="lc-site-footer__contact">
+              <a
+                href="tel:+14044053738"
+                className="lc-site-footer__link gap-3 focus-visible:outline"
               >
-                {item}
+                <Phone size={16} className="text-[#D4AF37]" aria-hidden="true" />
+                (404) 405-3738
+              </a>
+              <a
+                href="mailto:info@lecharlotlimousine.com"
+                className="lc-site-footer__link gap-3 focus-visible:outline"
+              >
+                <Mail size={16} className="text-[#D4AF37]" aria-hidden="true" />
+                info@lecharlotlimousine.com
+              </a>
+              <Link
+                to="/reserve"
+                className="lc-site-footer__booking rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4AF37]"
+              >
+                Begin a reservation <ArrowUpRight size={16} aria-hidden="true" />
               </Link>
-            </li>
-          ))}
-        </ul>
+            </div>
+          </div>
+        </div>
+
+        <p className="lc-site-footer__bottom">
+          © {new Date().getFullYear()} Le Charlot Limousine. All rights reserved.
+        </p>
       </div>
-
-    </div>
-
-    {/* Bottom */}
-    <div className="py-8 text-center text-xs text-white/40 tracking-wide">
-  © {new Date().getFullYear()} Le Charlot{" "}
-  <span className="text-[#B08D57]">Limousine</span>. All rights reserved.
-</div>
-
-
-  </div>
-</footer>
-
-    </>
-
-  )
+    </footer>
+  );
 }
 
-export default Footer
+export default Footer;

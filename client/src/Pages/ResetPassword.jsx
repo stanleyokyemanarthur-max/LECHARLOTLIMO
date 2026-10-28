@@ -1,4 +1,5 @@
 // Pages/ResetPassword.jsx
+import { API_ORIGIN } from "../config/api";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -34,7 +35,7 @@ export default function ResetPassword() {
 
     try {
       const res = await fetch(
-        "https://lecharlotlimo-aucd.onrender.com/api/auth/reset-password",
+        `${API_ORIGIN}/api/auth/reset-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

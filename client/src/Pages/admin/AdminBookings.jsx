@@ -2,8 +2,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { API_ORIGIN } from "../../config/api";
 
-const API_BASE = "https://lecharlotlimo-aucd.onrender.com";
+const API_BASE = API_ORIGIN;
 
 export default function AdminBookings() {
   const [bookings, setBookings] = useState([]);

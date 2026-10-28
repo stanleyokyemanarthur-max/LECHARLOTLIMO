@@ -1,4 +1,5 @@
 // src/pages/driver/DriverDashboard.jsx
+import { API_ORIGIN } from "../../config/api";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -17,7 +18,7 @@ function DriverDashboard() {
     const fetchBookings = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/bookings/driver`,
+          `${API_ORIGIN}/api/bookings/driver`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -39,7 +40,7 @@ function DriverDashboard() {
   const handleStatusChange = async (id, newStatus) => {
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/bookings/${id}/status`,
+        `${API_ORIGIN}/api/bookings/${id}/status`,
         { status: newStatus },
         {
           headers: {

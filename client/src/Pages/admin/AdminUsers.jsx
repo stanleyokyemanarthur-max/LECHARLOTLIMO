@@ -1,4 +1,5 @@
 // src/pages/admin/AdminUsers.jsx
+import { API_ORIGIN } from "../../config/api";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -14,7 +15,7 @@ export default function AdminUsers() {
     const fetchUsers = async () => {
       try {
         const res = await axios.get(
-          "https://lecharlotlimo-aucd.onrender.com/api/users",
+          `${API_ORIGIN}/api/users`,
           {
             headers: { Authorization: `Bearer ${userInfo?.token}` },
           }

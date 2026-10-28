@@ -17,6 +17,7 @@ import MyBookings from "./Pages/MyBookings";
 import AdminDashboard from "./Pages/admin/AdminDashboard";
 import DriverDashboard from "./Pages/driver/DriverDashboard";
 import ProtectedRoute from "./Components/ProtectedRoute";
+import BookingAuthGate from "./Components/BookingAuthGate";
 import AdminLayout from "./Pages/admin/AdminLayout";
 import DriverLayout from "./Pages/driver/DriverLayout";
 import AdminRoute from "./Components/AdminRoute";
@@ -26,7 +27,6 @@ import AdminCars from "./Pages/admin/AdminCars";
 import BookingSuccess from "./Pages/BookingSuccess"; // ✅ fixed capitalization
 import ReservationForm from "./Pages/ReservationForm";
 import ReservationPage from "./Pages/ReservationPage";
-import CarDetails from "./Pages/CarDetails";
 import SelectCar from "./Pages/SelectCar";
 import FleetPage from "./Pages/FleetPage";
 import FleetDetails from "./Pages/FleetDetails.jsx";
@@ -54,7 +54,6 @@ function App() {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const userInfo = useSelector((state) => state.auth.userInfo);
-  const status = useSelector((s) => s.auth.status)
 
 
   useEffect(() => {
@@ -96,10 +95,23 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/reservation-form" element={<ReservationForm />} />
             <Route path="/reserve" element={<ReservationPage />} />
-            <Route path="/car/:id" element={<CarDetails />} />
-            <Route path="/select-car" element={<SelectCar />} />
+            <Route
+              path="/select-car"
+              element={
+                <BookingAuthGate>
+                  <SelectCar />
+                </BookingAuthGate>
+              }
+            />
             <Route path="/service/:slug" element={<ServiceDetails />} />
-            <Route path="/final-details" element={<FinalDetails />} />
+            <Route
+              path="/final-details"
+              element={
+                <BookingAuthGate>
+                  <FinalDetails />
+                </BookingAuthGate>
+              }
+            />
             <Route path="/fleet" element={<FleetPage />} />
             <Route path="/fleet/:slug" element={<FleetDetails />} />
             <Route path="/verify-otp" element={<VerifyOtp />} />

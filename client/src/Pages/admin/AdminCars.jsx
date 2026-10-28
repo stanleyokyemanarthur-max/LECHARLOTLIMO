@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { API_ORIGIN } from "../../config/api";
 
 const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL ||
-    "https://lecharlotlimo-aucd.onrender.com",
+  baseURL: API_ORIGIN,
 });
 
 export default function AdminCars() {

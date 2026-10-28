@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_ORIGIN } from "../../config/api";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -17,7 +18,7 @@ export default function AdminBroadcast() {
       setLoading(true);
 
       await axios.post(
-        "https://lecharlotlimo-aucd.onrender.com/api/admin/broadcast",
+        `${API_ORIGIN}/api/admin/broadcast`,
         { channel, subject, message },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );

@@ -1,4 +1,5 @@
 // src/pages/CarDetails.jsx
+import { API_ORIGIN } from "../config/api";
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -61,7 +62,7 @@ function CarDetails() {
         return;
       }
       try {
-        const res = await fetch(`https://lecharlotlimo.onrender.com/api/cars/${id}`);
+        const res = await fetch(`${API_ORIGIN}/api/cars/${id}`);
         if (!res.ok) throw new Error("Failed to fetch car");
         const data = await res.json();
         setCar(data);
@@ -131,7 +132,7 @@ function CarDetails() {
 
     try {
       // create booking on server
-      const bookingRes = await fetch("https://lecharlotlimo-aucd.onrender.com/api/bookings", {
+      const bookingRes = await fetch(`${API_ORIGIN}/api/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -148,14 +149,19 @@ function CarDetails() {
 
       const bookingData = await bookingRes.json();
       if (!bookingRes.ok) {
-        console.error("Booking creation failed:", bookingData);
-        alert(bookingData.message || "Booking failed.");
+        console.error("Booking creation failed:", bookingData.error || bookingData.message);
+        alert(bookingData.error || bookingData.message || "Booking failed.");
+        return;
+      }
+      const createdBooking = bookingData.booking;
+      if (!createdBooking?._id) {
+        alert("The booking could not be confirmed. Please try again.");
         return;
       }
 
       // create stripe session
       const stripeRes = await fetch(
-        "https://lecharlotlimo-aucd.onrender.com/api/payments/create-checkout-session",
+        `${API_ORIGIN}/api/payments/create-checkout-session`,
         {
           method: "POST",
           headers: {
@@ -163,7 +169,7 @@ function CarDetails() {
             Authorization: `Bearer ${userToken}`,
           },
           body: JSON.stringify({
-            bookingId: bookingData._id,
+            bookingId: createdBooking._id,
             amount: estimatedPrice,
           }),
         }
@@ -194,7 +200,7 @@ function CarDetails() {
           ? { email: authEmail, password: authPassword }
           : { name: authName, email: authEmail, password: authPassword };
 
-      const res = await fetch(`https://lecharlotlimo-aucd.onrender.com${endpoint}`, {
+      const res = await fetch(`${API_ORIGIN}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -1,25 +1,35 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { API_ORIGIN } from "../config/api";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
 import PayPalButton from "../Components/PayPalButtons";
+import { logout } from "../slices/authSlice";
+import {
+  loadBookingDraft,
+  saveBookingDraft,
+} from "../utils/bookingDraft";
 
 function FinalDetails() {
   const [bookingId, setBookingId] = useState(null);
   const [bookingReady, setBookingReady] = useState(false);
   const location = useLocation();
-  const { rideInfo, selectedCar, estimate } = location.state || {};
-  console.log("RIDE INFO");
-  console.log(rideInfo);
-  console.log("Flight Number:", rideInfo?.flightNumber);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const bookingFlow = useSelector((state) => state.bookings);
+  const rideInfo = location.state?.rideInfo || bookingFlow.tripData;
+  const selectedCar = location.state?.selectedCar || bookingFlow.selectedCar;
+  const estimate = location.state?.estimate || bookingFlow.estimate;
 
   const outboundEstimate = estimate?.outbound || {};
   const returnEstimate = estimate?.return || {};
   const outboundFare = Number(outboundEstimate.estimatedPrice || 0);
   const returnFare = Number(returnEstimate.estimatedPrice || 0);
 
-  const user = useSelector((state) => state.auth.userInfo);
+  const { userInfo: user, token: authToken } = useSelector(
+    (state) => state.auth,
+  );
   const [loading, setLoading] = useState(false);
   const [finalQuote, setFinalQuote] = useState(null);
   const totalDistance =
@@ -34,11 +44,23 @@ function FinalDetails() {
     estimate?.tripType === "roundTrip" ||
     rideInfo?.tripType === "roundTrip";
 
+  useEffect(() => {
+    if (rideInfo && selectedCar) return;
+    navigate(
+      bookingFlow.tripData || loadBookingDraft()
+        ? "/select-car"
+        : "/reserve",
+      {
+      replace: true,
+      },
+    );
+  }, [bookingFlow.tripData, navigate, rideInfo, selectedCar]);
+
 
   if (!rideInfo || !selectedCar) {
     return (
       <div className="text-white flex items-center justify-center h-screen bg-black text-center p-4">
-        <p>No booking details found. Please start your reservation again.</p>
+        <p>Restoring your reservation details…</p>
       </div>
     );
   }
@@ -49,9 +71,41 @@ function FinalDetails() {
 
   const displayTotal =
     Number(finalQuote?.pricing?.totalFare) || estimatedTotal;
+  const displayOutboundFare = Number(
+    finalQuote?.pricing?.outboundFare ?? outboundFare
+  );
+  const displayReturnFare = Number(
+    finalQuote?.pricing?.returnFare ?? returnFare
+  );
+  const displayOutboundDistance = Number(
+    finalQuote?.pricing?.outboundDistance ?? outboundEstimate.distanceMiles ?? 0
+  );
+  const displayReturnDistance = Number(
+    finalQuote?.pricing?.returnDistance ?? returnEstimate.distanceMiles ?? 0
+  );
+  const displayDistance = Number(finalQuote?.totalDistance ?? totalDistance);
+
+  const resumeAfterExpiredAuth = () => {
+    try {
+      saveBookingDraft({
+        tripData: rideInfo,
+        step: "final-details",
+        selectedCarId: selectedCar?._id,
+        estimate,
+      });
+    } catch (draftError) {
+      toast.error(draftError.message || "Booking details could not be saved.");
+      return;
+    }
+    dispatch(logout());
+    navigate("/login", {
+      replace: true,
+      state: { bookingAuthRequired: true },
+    });
+  };
 
   // 🔹 Save booking & redirect to Stripe checkout
-  const handleBookingConfirm = async (guestInfo = null) => {
+  const handleBookingConfirm = async () => {
     try {
       setLoading(true);
 
@@ -70,19 +124,8 @@ function FinalDetails() {
       }
 
       const bookingPayload = {
-        user: user?._id || undefined,
-        guest: guestInfo || undefined,
-
         car: selectedCar._id,
 
-        carSnapshot: {
-          name: selectedCar.name,
-          type: selectedCar.type || "",
-          pricePerMile: Number(selectedCar.perMileRate) || 0,
-          rateMultiplier: Number(selectedCar.rateMultiplier) || 1,
-          totalUnits: Number(selectedCar.totalUnits) || 1,
-          fleetKey: selectedCar.fleetKey || null,
-        },
         pickupIsAirport: rideInfo.pickupIsAirport || false,
         dropoffIsAirport: rideInfo.dropoffIsAirport || false,
 
@@ -102,27 +145,6 @@ function FinalDetails() {
         passengers: rideInfo.passengers || 1,
         luggage: rideInfo.luggage || 0,
 
-        distance:
-          isRoundTrip
-            ? Number(outboundEstimate.distanceMiles || 0) +
-            Number(returnEstimate.distanceMiles || 0)
-            : Number(outboundEstimate.distanceMiles || 0),
-
-        status: "pending",
-
-        pricing: {
-          outboundFare,
-          returnFare,
-          totalFare: estimatedTotal,
-
-          outboundDistance: Number(outboundEstimate.distanceMiles || 0),
-
-          returnDistance:
-            isRoundTrip
-              ? Number(returnEstimate.distanceMiles || 0)
-              : 0,
-        },
-
         tripType: rideInfo.tripType || "oneWay",
         returnTrip: isRoundTrip
           ? {
@@ -141,26 +163,18 @@ function FinalDetails() {
               ).toISOString()
               : null,
 
-            distance: Number(returnEstimate.distanceMiles || 0),
-
             flightNumber: rideInfo.returnFlightNumber || null,
           }
           : null,
       };
 
 
-      const headers = user?.token
-        ? {
-          Authorization: `Bearer ${user.token}`,
-        }
-        : {};
+      const headers = { Authorization: `Bearer ${authToken}` };
 
-      console.log("BOOKING PAYLOAD");
-      console.log(JSON.stringify(bookingPayload, null, 2));
       // CREATE BOOKING
       const bookingRes = await axios.post(
 
-        `${import.meta.env.VITE_API_URL}/api/bookings`,
+        `${API_ORIGIN}/api/bookings`,
         bookingPayload,
         { headers }
 
@@ -173,7 +187,7 @@ function FinalDetails() {
 
       // FINALIZE BACKEND PRICE
       const quoteRes = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
+        `${API_ORIGIN}/api/bookings/finalize-quote`,
         {
           bookingId: booking._id,
         },
@@ -193,10 +207,12 @@ function FinalDetails() {
 
     } catch (err) {
 
-      console.error(
-        err.response?.data || err.message
-      );
+      console.error("Booking request failed:", err.message);
 
+      if (err.response?.status === 401) {
+        resumeAfterExpiredAuth();
+        return;
+      }
 
       // EXISTING PAYMENT / BOOKING RESUME
       if (err.response?.data?.resumePayment) {
@@ -206,15 +222,11 @@ function FinalDetails() {
           const booking = err.response.data.booking;
 
 
-          const headers = user?.token
-            ? {
-              Authorization: `Bearer ${user.token}`,
-            }
-            : {};
+          const headers = { Authorization: `Bearer ${authToken}` };
 
 
           const quoteRes = await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/bookings/finalize-quote`,
+            `${API_ORIGIN}/api/bookings/finalize-quote`,
             {
               bookingId: booking._id,
             },
@@ -237,7 +249,12 @@ function FinalDetails() {
 
         } catch (paymentErr) {
 
-          console.error(paymentErr);
+          console.error("Booking quote could not be resumed:", paymentErr.message);
+
+          if (paymentErr.response?.status === 401) {
+            resumeAfterExpiredAuth();
+            return;
+          }
 
           toast.error(
             "Unable to resume payment."
@@ -275,14 +292,10 @@ function FinalDetails() {
   };
   const handleStripePayment = async () => {
     try {
-      const headers = user?.token
-        ? {
-          Authorization: `Bearer ${user.token}`,
-        }
-        : {};
+      const headers = { Authorization: `Bearer ${authToken}` };
 
       const stripeRes = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/payments/create-checkout-session`,
+        `${API_ORIGIN}/api/payments/create-checkout-session`,
         {
           bookingId,
         },
@@ -291,30 +304,24 @@ function FinalDetails() {
 
       window.location.href = stripeRes.data.url;
     } catch (err) {
-      console.error(err);
+      console.error("Stripe checkout request failed:", err.message);
+      if (err.response?.status === 401) {
+        resumeAfterExpiredAuth();
+        return;
+      }
       toast.error("Unable to start Stripe checkout.");
     }
   };
 
-  const handleGuestSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const guestInfo = {
-      firstName: formData.get("firstName"),
-      lastName: formData.get("lastName"),
-      phone: formData.get("phone"),
-      email: formData.get("email"),
-    };
-    handleBookingConfirm(guestInfo);
-  };
-
   return (
-    <div className="min-h-screen bg-black mt-10 text-white px-[8%] pt-12 py-12">
-      <h2 className="text-3xl font-semibold">
+    <main className="lc-booking-page min-h-screen text-white">
+      <div className="mx-auto max-w-7xl">
+      <p className="lc-kicker">Final step · Secure checkout</p>
+      <h1 className="lc-booking-intro !w-auto mb-2 text-3xl font-semibold">
         Final Details
-      </h2>
+      </h1>
 
-      <p className="text-gray-400 mt-1 mb-6">
+      <p className="mb-6 text-gray-400">
         {isRoundTrip
           ? "Round Trip Reservation"
           : "One Way Reservation"}
@@ -322,12 +329,15 @@ function FinalDetails() {
 
       <div className="grid lg:grid-cols-2 gap-10">
         {/* Ride Summary */}
-        <div className="bg-[#0f0f0f] rounded-3xl overflow-hidden border border-[#2a2a2a] shadow-[0_0_60px_rgba(212,175,55,0.12)]">
+        <div className="overflow-hidden border border-white/10 border-t-2 border-t-[#c8a86a] bg-[#121211]">
 
           {/* CAR IMAGE HERO */}
           <div className="relative h-[420px] w-full">
             <img
               src={selectedCar.image}
+              alt={`${selectedCar.name} selected for your reservation`}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover scale-105"
             />
 
@@ -372,14 +382,14 @@ function FinalDetails() {
                   <div className="flex justify-between gap-10">
                     <span>Outbound</span>
                     <span className="text-white">
-                      ${Number(outboundFare || 0).toFixed(2)}
+                      ${displayOutboundFare.toFixed(2)}
                     </span>
                   </div>
 
                   <div className="flex justify-between gap-10">
                     <span>Return</span>
                     <span className="text-white">
-                      ${Number(returnFare || 0).toFixed(2)}
+                      ${displayReturnFare.toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -392,7 +402,7 @@ function FinalDetails() {
                 <p className="text-[#D4AF37] font-semibold">Outbound</p>
 
                 <p>
-                  Distance: {Number(outboundEstimate.distanceMiles || 0).toFixed(2)} mi
+                  Distance: {displayOutboundDistance.toFixed(2)} mi
                 </p>
 
                 <p>
@@ -410,7 +420,7 @@ function FinalDetails() {
 
                 <p className="text-white font-semibold">
                   Total: $
-                  {Number(outboundFare || 0).toFixed(2)}
+                  {displayOutboundFare.toFixed(2)}
                 </p>
               </div>
 
@@ -423,13 +433,13 @@ function FinalDetails() {
 
                   <p>
                     <strong>Return Distance:</strong>{" "}
-                    {Number(returnEstimate.distanceMiles || 0).toFixed(2)} mi
+                    {displayReturnDistance.toFixed(2)} mi
                   </p>
 
                   <hr className="border-[#2a2a2a] my-3" />
                   <p>
                     <strong>Total Distance:</strong>{" "}
-                    {Number(totalDistance || 0).toFixed(2)} mi
+                    {displayDistance.toFixed(2)} mi
                   </p>
 
                   <p>
@@ -453,7 +463,7 @@ function FinalDetails() {
 
                   <p className="text-white font-semibold">
                     Total: $
-                    {Number(returnFare || 0).toFixed(2)}
+                    {displayReturnFare.toFixed(2)}
                   </p>
 
                 </div>
@@ -506,7 +516,7 @@ function FinalDetails() {
 
                   <p>
                     <strong>Return Distance:</strong>{" "}
-                    {Number(returnEstimate.distanceMiles || 0).toFixed(2)} mi
+                    {displayReturnDistance.toFixed(2)} mi
                   </p>
                 </>
               )}
@@ -524,7 +534,7 @@ function FinalDetails() {
                 <strong>
                   {isRoundTrip ? "Outbound Distance" : "Trip Distance"}:
                 </strong>{" "}
-                {Number(outboundEstimate.distanceMiles || 0).toFixed(2)} mi
+                {displayOutboundDistance.toFixed(2)} mi
               </p>
 
             </div>
@@ -544,7 +554,7 @@ function FinalDetails() {
               </div>
             ) : (
               <p className="text-gray-400 text-sm">
-                Guest checkout available below
+                Sign in to your customer account to complete this booking.
               </p>
             )}
           </div>
@@ -552,9 +562,11 @@ function FinalDetails() {
           {/* Confirm Booking Button */}
           {!bookingReady && (
             <button
+              type="button"
               onClick={() => handleBookingConfirm()}
               disabled={loading}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#b58a2a] via-[#D4AF37] to-[#8a6a1f] text-black font-bold text-lg shadow-lg hover:scale-[1.02] transition"
+              aria-busy={loading}
+              className="lc-button min-h-14 w-full rounded-sm disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Finalizing Payment..." : "Confirm Booking"}
             </button>
@@ -568,8 +580,9 @@ function FinalDetails() {
               </h3>
 
               <button
+                type="button"
                 onClick={handleStripePayment}
-                className="w-full py-4 pb-5 rounded-2xl bg-[#635BFF] text-white font-bold hover:opacity-90 transition"
+                className="min-h-14 w-full rounded-sm border border-[#635BFF] bg-[#635BFF] px-5 py-4 font-semibold text-white transition hover:bg-[#5149e6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 Pay with Stripe
               </button>
@@ -577,7 +590,8 @@ function FinalDetails() {
                 <PayPalButton
                   amount={displayTotal}
                   bookingId={bookingId}
-                  token={user?.token}
+                  token={authToken}
+                  onAuthExpired={resumeAfterExpiredAuth}
                 />
               </div>
             </div>
@@ -588,7 +602,8 @@ function FinalDetails() {
 
 
       </div>
-    </div>
+      </div>
+    </main>
   );
 }
 

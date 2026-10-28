@@ -3,11 +3,11 @@ import {
   createPayPalOrder,
   capturePayPalOrder,
 } from "../controllers/paypalController.js";
-import { protect } from "../middleware/authMiddleware.js";
+import { protect, customerOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/create-order", protect, createPayPalOrder);
-router.post("/capture-order", protect, capturePayPalOrder);
+router.post("/create-order", protect, customerOnly, createPayPalOrder);
+router.post("/capture-order", protect, customerOnly, capturePayPalOrder);
 
 export default router;

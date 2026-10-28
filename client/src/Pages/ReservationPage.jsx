@@ -1,7 +1,7 @@
 // src/pages/ReservationPage.jsx
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { motion as Motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -11,6 +11,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { setTripData } from "../slices/bookingSlice";
 import { GoogleMap, DirectionsRenderer, useJsApiLoader } from "@react-google-maps/api";
 import { Clock3 } from "lucide-react";
+import {
+  getMapsLoadState,
+  loadBookingDraft,
+  saveBookingDraft,
+} from "../utils/bookingDraft";
+
+const MAP_LIBRARIES = ["places"];
 const MAP_CONTAINER_STYLE = {
   width: "100%",
   height: "100%"
@@ -22,46 +29,58 @@ export default function ReservationPage() {
   const dispatch = useDispatch();
 
   // Get login state from Redux
-  const isLoggedIn = useSelector((state) => !!state.auth?.token);
+  const isLoggedIn = useSelector(
+    (state) =>
+      Boolean(state.auth?.token) &&
+      state.auth?.userInfo?.role === "customer",
+  );
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    libraries: ["places"],
+    libraries: MAP_LIBRARIES,
   });
 
-  const [tripData, setTripDataState] = useState({
-    tripType: "oneWay",
-    pickupLocation: "",
-    dropoffLocation: "",
-    pickupIsAirport: false,
-    dropoffIsAirport: false,
-    flightNumber: "",
-
-    pickupDate: null,
-    returnDate: null,
-    returnFlightNumber: "",
-    passengers: "",
-    luggage: "",
-
-    distance: null,
-
-    durationMinutes: null,
-    durationText: "",
-
-    trafficMinutes: null,
-    trafficDurationText: "",
-    returnDistance: null,
-    returnDurationMinutes: null,
-    returnDurationText: "",
-
-    trafficDelayPercent: 0,
+  const [tripData, setTripDataState] = useState(() => {
+    const savedTrip = loadBookingDraft()?.tripData;
+    const defaults = {
+      tripType: "oneWay",
+      pickupLocation: "",
+      dropoffLocation: "",
+      pickupIsAirport: false,
+      dropoffIsAirport: false,
+      flightNumber: "",
+      pickupDate: null,
+      returnDate: null,
+      returnFlightNumber: "",
+      passengers: "",
+      luggage: "",
+      distance: null,
+      durationMinutes: null,
+      durationText: "",
+      trafficMinutes: null,
+      trafficDurationText: "",
+      returnDistance: null,
+      returnDurationMinutes: null,
+      returnDurationText: "",
+      trafficDelayPercent: 0,
+    };
+    return {
+      ...defaults,
+      ...savedTrip,
+      pickupDate: savedTrip?.pickupDate ? new Date(savedTrip.pickupDate) : null,
+      returnDate: savedTrip?.returnDate ? new Date(savedTrip.returnDate) : null,
+    };
   });
 
   const [outboundDirections, setOutboundDirections] = useState(null);
   const [returnDirections, setReturnDirections] = useState(null);
   const [loadingRoute, setLoadingRoute] = useState(false);
   const [error, setError] = useState("");
+  const [routeError, setRouteError] = useState("");
+  const [routeAttempt, setRouteAttempt] = useState(0);
 
   const mapRef = useRef(null);
+  const routeRequestId = useRef(0);
+  const returnRequestId = useRef(0);
 
   const pickupRef = useRef(null);
   const dropoffRef = useRef(null);
@@ -144,8 +163,6 @@ export default function ReservationPage() {
     const pickupListener = pickupAutocomplete.addListener("place_changed", () => {
       const place = pickupAutocomplete.getPlace();
 
-      console.log(place);
-
       if (!place?.formatted_address) return;
 
       const isAirport =
@@ -172,8 +189,6 @@ export default function ReservationPage() {
 
     const dropoffListener = dropoffAutocomplete.addListener("place_changed", () => {
       const place = dropoffAutocomplete.getPlace();
-
-      console.log("Dropoff place changed:", place);
 
       if (!place?.formatted_address) return;
 
@@ -235,68 +250,90 @@ export default function ReservationPage() {
       ? (tripData.distance || 0) + (tripData.returnDistance || 0)
       : tripData.distance || 0;
 
-  // Auto draw route
   useEffect(() => {
-    const autoDrawRoute = async () => {
-      if (!tripData.pickupLocation || !tripData.dropoffLocation) return;
-      if (!isLoaded) return;
+    const requestId = ++routeRequestId.current;
+    setRouteError("");
+    setOutboundDirections(null);
+    setReturnDirections(null);
+    setTripDataState((prev) => ({
+      ...prev,
+      distance: null,
+      durationMinutes: null,
+      durationText: "",
+      trafficMinutes: null,
+      trafficDurationText: "",
+      returnDistance: null,
+      returnDurationMinutes: null,
+      returnDurationText: "",
+    }));
 
-      setLoadingRoute(true);
+    if (!tripData.pickupLocation || !tripData.dropoffLocation) {
+      setLoadingRoute(false);
       setError("");
-      try {
-        const directionsService = new window.google.maps.DirectionsService();
-        directionsService.route(
-          {
-            origin: tripData.pickupLocation,
-            destination: tripData.dropoffLocation,
-            travelMode: window.google.maps.TravelMode.DRIVING,
-          },
-          (result, status) => {
-            if (status === "OK" && result.routes?.length) {
-              const leg = result.routes[0].legs[0];
+      return;
+    }
+    if (loadError) {
+      setLoadingRoute(false);
+      const message = "Maps could not load. Retry to calculate and verify your route.";
+      setError(message);
+      setRouteError(message);
+      return;
+    }
+    if (!isLoaded) {
+      setLoadingRoute(false);
+      return;
+    }
 
-              const distanceMiles =
-                leg.distance.value / 1609.344;
-
-              const durationMinutes =
-                Math.round(leg.duration.value / 60);
-
-              const durationText =
-                leg.duration.text;
-
-              setOutboundDirections(result);
-
-              setTripDataState((prev) => {
-                return {
-                  ...prev,
-
-                  distance: distanceMiles,
-
-                  durationMinutes,
-                  durationText,
-
-                  trafficMinutes: durationMinutes,
-                  trafficDurationText: durationText,
-
-                  trafficDelayPercent: 0,
-                };
-              });
-            } else {
-              setOutboundDirections(null);
-              setReturnDirections(null);
-              setError("Could not draw route. Please check the locations.");
-            }
-            setLoadingRoute(false);
+    setLoadingRoute(true);
+    setError("");
+    try {
+      const directionsService = new window.google.maps.DirectionsService();
+      directionsService.route(
+        {
+          origin: tripData.pickupLocation,
+          destination: tripData.dropoffLocation,
+          travelMode: window.google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+          if (requestId !== routeRequestId.current) return;
+          const leg = result?.routes?.[0]?.legs?.[0];
+          if (status === "OK" && leg?.distance?.value && leg?.duration?.value) {
+            const distanceMiles = leg.distance.value / 1609.344;
+            const durationMinutes = Math.round(leg.duration.value / 60);
+            setOutboundDirections(result);
+            setTripDataState((prev) => ({
+              ...prev,
+              distance: distanceMiles,
+              durationMinutes,
+              durationText: leg.duration.text,
+              trafficMinutes: durationMinutes,
+              trafficDurationText: leg.duration.text,
+              trafficDelayPercent: 0,
+            }));
+          } else {
+            const message = "Could not verify this route. Check the locations and retry.";
+            setError(message);
+            setRouteError(message);
           }
-        );
-      } catch (err) {
-        console.error("Route drawing failed:", err);
-        setError("Could not draw route. Try again.");
+          setLoadingRoute(false);
+        },
+      );
+    } catch (routeError) {
+      if (requestId === routeRequestId.current) {
+        console.error("Route drawing failed:", routeError);
+        const message = "Could not verify this route. Check the locations and retry.";
+        setError(message);
+        setRouteError(message);
         setLoadingRoute(false);
       }
-    };
-    autoDrawRoute();
-  }, [tripData.pickupLocation, tripData.dropoffLocation]);
+    }
+  }, [
+    isLoaded,
+    loadError,
+    routeAttempt,
+    tripData.pickupLocation,
+    tripData.dropoffLocation,
+  ]);
 
   useEffect(() => {
     if (!mapRef.current || !outboundDirections) return;
@@ -324,8 +361,10 @@ export default function ReservationPage() {
   ]);
 
   useEffect(() => {
+    const requestId = ++returnRequestId.current;
     if (
       !isLoaded ||
+      loadError ||
       tripData.tripType !== "roundTrip" ||
       !tripData.pickupLocation ||
       !tripData.dropoffLocation
@@ -338,57 +377,65 @@ export default function ReservationPage() {
         returnDurationMinutes: null,
         returnDurationText: "",
       }));
-
+      if (tripData.tripType === "roundTrip" && loadError) {
+        const message = "Maps could not load the return route. Retry Maps before continuing.";
+        setError(message);
+        setRouteError(message);
+      }
       return;
     }
 
     const directionsService =
       new window.google.maps.DirectionsService();
 
-    directionsService.route(
-      {
-        origin: tripData.dropoffLocation,
-        destination: tripData.pickupLocation,
-        travelMode: window.google.maps.TravelMode.DRIVING,
-      },
+    try {
+      directionsService.route(
+        {
+          origin: tripData.dropoffLocation,
+          destination: tripData.pickupLocation,
+          travelMode: window.google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+          if (requestId !== returnRequestId.current) return;
 
-      (result, status) => {
-
-        if (status === "OK" && result.routes?.length) {
-
-          const leg = result.routes[0].legs[0];
-
-          const returnDistance =
-            leg.distance.value / 1609.344;
-
-          const returnDurationMinutes =
-            Math.round(leg.duration.value / 60);
-
-
-          setReturnDirections(result);
-
-
-          setTripDataState(prev => ({
-            ...prev,
-
-            returnDistance,
-
-            returnDurationMinutes,
-
-            returnDurationText:
-              leg.duration.text,
-          }));
-
-        } else {
-
-          setReturnDirections(null);
-
-        }
+          if (status === "OK" && result.routes?.length) {
+            const leg = result.routes[0].legs[0];
+            const returnDistance = leg.distance.value / 1609.344;
+            const returnDurationMinutes = Math.round(leg.duration.value / 60);
+            setReturnDirections(result);
+            setTripDataState((prev) => ({
+              ...prev,
+              returnDistance,
+              returnDurationMinutes,
+              returnDurationText: leg.duration.text,
+            }));
+            setRouteError("");
+          } else {
+            setReturnDirections(null);
+            setTripDataState((prev) => ({
+              ...prev,
+              returnDistance: null,
+              returnDurationMinutes: null,
+              returnDurationText: "",
+            }));
+            const message = "Could not verify the return route. Check the locations and retry.";
+            setError(message);
+            setRouteError(message);
+          }
+        },
+      );
+    } catch (routeError) {
+      if (requestId === returnRequestId.current) {
+        console.error("Return route calculation failed:", routeError);
+        const message = "Could not verify the return route. Check the locations and retry.";
+        setError(message);
+        setRouteError(message);
       }
-    );
+    }
 
   }, [
     isLoaded,
+    loadError,
     tripData.tripType,
     tripData.pickupLocation,
     tripData.dropoffLocation,
@@ -400,7 +447,7 @@ export default function ReservationPage() {
     setError("");
 
     if (!isLoggedIn) {
-      navigate("/login");
+      preserveDraftAndNavigate("/login");
       return;
     }
 
@@ -427,8 +474,13 @@ export default function ReservationPage() {
       return;
     }
 
-    if (!tripData.distance) {
-      setError("Please wait for the route to load before continuing.");
+    if (getMapsLoadState(isLoaded, loadError) !== "ready") {
+      setError("Route calculation is unavailable. Retry Maps before continuing.");
+      return;
+    }
+
+    if (!tripData.distance || error) {
+      setError("Please verify the route before continuing.");
       return;
     }
 
@@ -479,27 +531,51 @@ export default function ReservationPage() {
         tripData.returnDurationText || "",
     };
 
-    console.log("PAYLOAD BEFORE DISPATCH", payload);
-    console.log("Flight Number:", payload.flightNumber);
+    try {
+      saveBookingDraft({ tripData: payload, step: "select-car" });
+    } catch (draftError) {
+      setError(draftError.message);
+      return;
+    }
     dispatch(setTripData(payload));
     navigate("/select-car");
   };
 
-  if (loadError) {
-    return <div style={{ color: "red", padding: "20px" }}>Map failed to load</div>;
-  }
+  const preserveDraftAndNavigate = (path) => {
+    try {
+      saveBookingDraft({ tripData, step: "reserve" });
+      navigate(path);
+    } catch (draftError) {
+      setError(draftError.message || "Booking details could not be saved.");
+    }
+  };
 
-  if (!isLoaded) {
-    return <div style={{ color: "white", padding: "20px" }}>Loading map...</div>;
-  }
+  const retryMaps = () => {
+    try {
+      saveBookingDraft({ tripData, step: "reserve" });
+      window.location.reload();
+    } catch (draftError) {
+      setError(draftError.message || "Booking details could not be saved.");
+    }
+  };
 
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] flex flex-col items-center mt-18 py-16 md:py-28 px-4 sm:px-6 font-[Poppins]">
-      <motion.div
+    <main className="lc-booking-page min-h-screen flex flex-col items-center font-[Poppins]">
+      <header className="lc-booking-intro">
+        <p className="lc-kicker">Private car service · Atlanta</p>
+        <h1>Plan your journey.</h1>
+        <p>Share your trip details to see available vehicles and a route-based quote.</p>
+      </header>
+      <ol className="lc-booking-steps" aria-label="Reservation steps">
+        <li aria-current="step"><span>01</span> Trip details</li>
+        <li><span>02</span> Choose a vehicle</li>
+        <li><span>03</span> Confirm &amp; pay</li>
+      </ol>
+      <Motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-6xl w-full bg-[#121212] shadow-[0_0_25px_rgba(212,175,55,0.15)] rounded-2xl p-10 grid md:grid-cols-2 gap-10 items-stretch"
+        className="lc-booking-card grid items-stretch gap-8 md:grid-cols-2"
       >
         {/* Left: Form */}
         {/* form */}
@@ -514,7 +590,7 @@ export default function ReservationPage() {
                 {/* One Way */}
                 <label
                   className={`
-      relative cursor-pointer rounded-xl border p-5 transition-all duration-300
+      relative cursor-pointer rounded-xl border p-5 transition-all duration-300 focus-within:ring-2 focus-within:ring-[#F5E7B8]
       ${tripData.tripType === "oneWay"
                       ? "border-[#D4AF37] bg-[#D4AF37]/10 shadow-[0_0_20px_rgba(212,175,55,0.25)]"
                       : "border-[#2D2D2D] bg-[#181818] hover:border-[#D4AF37]/50"
@@ -527,7 +603,7 @@ export default function ReservationPage() {
                     value="oneWay"
                     checked={tripData.tripType === "oneWay"}
                     onChange={handleInputChange}
-                    className="hidden"
+                    className="sr-only peer"
                   />
 
                   <div className="flex items-center gap-4">
@@ -562,7 +638,7 @@ export default function ReservationPage() {
                 {/* Round Trip */}
                 <label
                   className={`
-      relative cursor-pointer rounded-xl border p-5 transition-all duration-300
+      relative cursor-pointer rounded-xl border p-5 transition-all duration-300 focus-within:ring-2 focus-within:ring-[#F5E7B8]
       ${tripData.tripType === "roundTrip"
                       ? "border-[#D4AF37] bg-[#D4AF37]/10 shadow-[0_0_20px_rgba(212,175,55,0.25)]"
                       : "border-[#2D2D2D] bg-[#181818] hover:border-[#D4AF37]/50"
@@ -575,7 +651,7 @@ export default function ReservationPage() {
                     value="roundTrip"
                     checked={tripData.tripType === "roundTrip"}
                     onChange={handleInputChange}
-                    className="hidden"
+                    className="sr-only peer"
                   />
 
                   <div className="flex items-center gap-4">
@@ -624,7 +700,7 @@ export default function ReservationPage() {
                     </p>
 
                     <a
-                      href="tel:4044053738"
+                      href="tel:+14044053738"
                       className="inline-flex items-center mt-2 text-[#D4AF37] font-semibold hover:underline"
                     >
                       Call (404) 405-3738
@@ -634,12 +710,13 @@ export default function ReservationPage() {
               </div>
 
 
-              {[{ label: "Pickup Location", name: "pickupLocation", ref: pickupRef, placeholder: "e.g. Raleigh Convention Center" },
-              { label: "Drop-off Location", name: "dropoffLocation", ref: dropoffRef, placeholder: "e.g. Crown Complex, Fayetteville" }].map((f) => (
+              {[{ label: "Pickup Location", name: "pickupLocation", ref: pickupRef, placeholder: "Enter an Atlanta-area pickup location" },
+              { label: "Drop-off Location", name: "dropoffLocation", ref: dropoffRef, placeholder: "Enter an Atlanta-area destination" }].map((f) => (
                 <div key={f.name}>
-                  <label className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">{f.label}</label>
+                  <label htmlFor={`reservation-${f.name}`} className="text-sm uppercase text-[#C0C0C0] font-semibold tracking-wider">{f.label}</label>
                   <input
                     ref={f.ref}
+                    id={`reservation-${f.name}`}
                     name={f.name}
                     value={tripData[f.name]}
                     onChange={(e) => setTripDataState((s) => ({ ...s, [f.name]: e.target.value }))}
@@ -932,24 +1009,79 @@ export default function ReservationPage() {
                 ))}
               </div>
 
-              {error && <p className="text-[#FF6B6B] text-sm">{error}</p>}
+              {error && <p role="alert" className="rounded border border-red-400/30 bg-red-950/30 p-3 text-sm text-red-200">{error}</p>}
 
               {/* Conditional Button */}
               <button
-                type="submit"
-                disabled={loadingRoute || !isLoggedIn}
-                onClick={() => !isLoggedIn && navigate("/login")}
-                className="w-full btn btn-gold btn--hero text-black py-3 rounded-lg font-semibold hover:brightness-110 transition disabled:opacity-60 shadow-[0_0_10px_rgba(212,175,55,0.4)]"
+                type={isLoggedIn ? "submit" : "button"}
+                onClick={
+                  isLoggedIn
+                    ? undefined
+                    : () => preserveDraftAndNavigate("/login")
+                }
+                disabled={isLoggedIn && loadingRoute}
+                className="lc-button w-full disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isLoggedIn ? (loadingRoute ? "Drawing route..." : "Submit Booking") : "Login to Book"}
+                {isLoggedIn
+                  ? loadingRoute
+                    ? "Verifying route..."
+                    : "Continue to Vehicle Selection"
+                  : "Log in to Continue"}
               </button>
+              {!isLoggedIn && (
+                <p className="text-center text-sm text-gray-300">
+                  New to Le Charlot?{" "}
+                  <Link
+                    to="/signup"
+                    className="text-[#D4AF37] underline"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      preserveDraftAndNavigate("/signup");
+                    }}
+                  >
+                    Create an account
+                  </Link>
+                  {" · "}
+                  <Link
+                    to="/login"
+                    className="text-[#D4AF37] underline"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      preserveDraftAndNavigate("/login");
+                    }}
+                  >
+                    Existing customer login
+                  </Link>
+                </p>
+              )}
             </form>
           </LocalizationProvider>
         </ThemeProvider>
 
         {/* Google Map */}
-        <div className="rounded-xl overflow-hidden border border-[#2A2A2A] h-full min-h-[400px]">
-          {isLoaded && (
+        <div className="overflow-hidden border border-white/10 h-full min-h-[400px] bg-[#0d0d0c]">
+          {getMapsLoadState(isLoaded, loadError) === "error" ? (
+            <div className="flex h-full min-h-[400px] flex-col items-center justify-center gap-4 bg-[#101010] p-6 text-center">
+              <p role="alert" className="text-[#EDEDED]">
+                Maps are unavailable. Your reservation form is still available,
+                but a verified route is required before vehicle selection.
+              </p>
+              <button
+                type="button"
+                onClick={retryMaps}
+                className="rounded-lg border border-[#D4AF37] px-5 py-2 text-[#D4AF37]"
+              >
+                Retry Maps
+              </button>
+            </div>
+          ) : !isLoaded ? (
+            <div
+              role="status"
+              className="flex h-full min-h-[400px] items-center justify-center bg-[#101010] p-6 text-center text-gray-300"
+            >
+              Loading Maps. You can complete the trip details while it loads.
+            </div>
+          ) : (
             <GoogleMap
               mapContainerStyle={MAP_CONTAINER_STYLE}
               center={outboundDirections ? undefined : DEFAULT_CENTER}
@@ -986,9 +1118,21 @@ export default function ReservationPage() {
               )}
             </GoogleMap>
           )}
+          {isLoaded && routeError && tripData.pickupLocation && tripData.dropoffLocation && (
+            <div className="flex items-center justify-between gap-3 bg-[#101010] p-3 text-sm text-[#FFB4A9]">
+              <span>{routeError}</span>
+              <button
+                type="button"
+                onClick={() => setRouteAttempt((attempt) => attempt + 1)}
+                className="shrink-0 underline"
+              >
+                Retry route
+              </button>
+            </div>
+          )}
         </div>
-      </motion.div>
-    </div>
+      </Motion.div>
+    </main>
   );
 }
 

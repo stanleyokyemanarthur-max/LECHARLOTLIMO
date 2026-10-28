@@ -1,4 +1,5 @@
 // src/pages/admin/AdminDashboard.jsx
+import { API_ORIGIN } from "../../config/api";
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -22,7 +23,7 @@ export default function AdminDashboard() {
     const fetchStats = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/admin/stats`,
+          `${API_ORIGIN}/api/admin/stats`,
           {
             headers: {
               Authorization: `Bearer ${userInfo?.token}`,

@@ -7,7 +7,7 @@ import Reward from "../models/Reward.js";
 import { evaluateMilestonesForUser } from "../services/milestone.service.js";
 import mongoose from "mongoose";
 import { sendEmail } from "../lib/sendEmail.js"; // ✅ adjust path if needed
-import { calculateTripEstimate } from "../services/pricingEngine.js"; // ✅ new pricing engine
+import { calculateBookingPricing } from "../services/bookingPricing.js";
 import { emailShell } from "../lib/emailShell.js";
 /* 
 ==============================
@@ -27,7 +27,6 @@ export const createBooking = async (req, res) => {
       flightNumber,
       tripType,
       returnTrip,
-      pricing,
       passengers,
       luggage,
       rewardId,
@@ -68,19 +67,13 @@ export const createBooking = async (req, res) => {
       return res.status(400).json({ error: "Missing fleetKey" });
     }
 
-    if (!pricing?.outboundFare) {
-      return res.status(400).json({
-        error: "Missing booking pricing",
-      });
-    }
-    const outboundFare = Number(pricing.outboundFare);
-
-    const returnFare = Number(
-      pricing.returnFare || 0
-    );
-
-    const totalPrice =
-      outboundFare + returnFare;
+    const bookingPricing = await calculateBookingPricing({
+      pickup: pickupLocation,
+      dropoff: dropoffLocation,
+      tripType: tripType || "oneWay",
+      returnTrip,
+      carData,
+    });
 
     let createdBooking;
 
@@ -101,21 +94,9 @@ export const createBooking = async (req, res) => {
 
       const rate = Number(carData.perMileRate);
       const multiplier = Number(carData.rateMultiplier || 1);
-      const outboundDistance = Number(pricing.outboundDistance || 0);
-      const returnDistance = Number(pricing.returnDistance || 0);
-
-      const totalDistance =
-        outboundDistance + returnDistance;
 
       if (!Number.isFinite(rate) || rate <= 0) {
         throw new Error("INVALID_CAR_PRICING");
-      }
-
-      if (
-        !Number.isFinite(outboundDistance) ||
-        outboundDistance <= 0
-      ) {
-        throw new Error("INVALID_OUTBOUND_DISTANCE");
       }
 
       console.log("BOOKING MODEL CHECK");
@@ -142,8 +123,6 @@ export const createBooking = async (req, res) => {
       console.log("returnTrip received:");
       console.log(JSON.stringify(returnTrip, null, 2));
 
-      console.log("pricing received:");
-      console.log(JSON.stringify(pricing, null, 2));
       console.log("===== REQUEST BODY =====");
 console.log({
   pickupIsAirport: req.body.pickupIsAirport,
@@ -178,36 +157,25 @@ console.log({
             luggage: Number(luggage || 0),
             pickupDate: start,
             dropoffDate: end,
-            tripType: tripType || "oneWay",
+            tripType: bookingPricing.tripType,
             returnTrip:
-              tripType === "roundTrip"
+              bookingPricing.tripType === "roundTrip"
                 ? returnTrip
                 : null,
 
-            distance: Number(pricing.outboundDistance || 0),
+            distance: bookingPricing.outboundDistance,
 
-            returnDistance:
-              tripType === "roundTrip"
-                ? Number(pricing.returnDistance || 0)
-                : 0,
+            returnDistance: bookingPricing.returnDistance,
 
-            totalDistance:
-              Number(pricing.outboundDistance || 0) +
-              Number(pricing.returnDistance || 0),
+            totalDistance: bookingPricing.totalDistance,
 
-            totalPrice,
+            totalPrice: bookingPricing.totalPrice,
 
             pricing: {
-              outboundFare,
-              returnFare,
-
-              outboundDistance:
-                Number(pricing.outboundDistance || 0),
-
-              returnDistance:
-                tripType === "roundTrip"
-                  ? Number(pricing.returnDistance || 0)
-                  : 0,
+              outboundFare: bookingPricing.outboundFare,
+              returnFare: bookingPricing.returnFare,
+              outboundDistance: bookingPricing.outboundDistance,
+              returnDistance: bookingPricing.returnDistance,
             },
             pricingLocked: true,
 
@@ -235,11 +203,12 @@ console.log({
     console.error(err);
 
     return res.status(
-      err.message === "CAR_UNAVAILABLE"
-        ? 409
-        : err.message === "CAR_NOT_FOUND"
-          ? 404
-          : 500
+      err.statusCode ||
+        (err.message === "CAR_UNAVAILABLE"
+          ? 409
+          : err.message === "CAR_NOT_FOUND"
+            ? 404
+            : 500)
     ).json({ error: err.message });
 
   } finally {
@@ -253,13 +222,9 @@ export const estimateBooking = async (req, res) => {
       pickup,
       dropoff,
       carId,
-      distance,
-
       tripType,
-
       returnPickup,
       returnDropoff,
-      returnDistance,
     } = req.body;
 
     if (!pickup || !dropoff || !carId) {
@@ -268,58 +233,40 @@ export const estimateBooking = async (req, res) => {
       });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(carId)) {
+      return res.status(400).json({ error: "Invalid car ID" });
+    }
+
     const carData = await Car.findById(carId);
 
     if (!carData) {
       return res.status(404).json({ error: "Car not found" });
     }
 
-    const outboundEstimate = await calculateTripEstimate({
+    const bookingPricing = await calculateBookingPricing({
       pickup,
       dropoff,
-      carRatePerMile: carData.perMileRate,
-      car: carData,
-      fixedDistance: distance,
+      tripType: tripType || "oneWay",
+      returnTrip: {
+        pickupLocation: returnPickup,
+        dropoffLocation: returnDropoff,
+      },
+      carData,
     });
 
-
-    let returnEstimate = null;
-
-
-    if (
-      tripType === "roundTrip" &&
-      returnPickup &&
-      returnDropoff
-    ) {
-
-      returnEstimate = await calculateTripEstimate({
-        pickup: returnPickup,
-        dropoff: returnDropoff,
-        carRatePerMile: carData.perMileRate,
-        car: carData,
-        fixedDistance: returnDistance,
-      });
-
-    }
-    const totalPrice =
-      outboundEstimate.estimatedPrice +
-      (returnEstimate?.estimatedPrice || 0);
-
     return res.json({
-      tripType: tripType || "oneWay",
-
-      outbound: outboundEstimate,
-
-      return: returnEstimate,
-
-      totalPrice: Number(totalPrice.toFixed(2)),
-
+      tripType: bookingPricing.tripType,
+      outbound: bookingPricing.outboundEstimate,
+      return: bookingPricing.returnEstimate,
+      totalPrice: bookingPricing.totalPrice,
       perMileRate: carData.perMileRate,
     });
   } catch (err) {
     console.error("Estimate booking error:", err);
-    return res.status(500).json({
-      error: "Failed to calculate booking estimate",
+    return res.status(err.statusCode || 500).json({
+      error: err.statusCode
+        ? err.message
+        : "Failed to calculate booking estimate",
     });
   }
 };
@@ -797,36 +744,9 @@ export const cancelBooking = async (req, res) => {
 };
 
 export const confirmPayment = async (req, res) => {
-  try {
-    const booking = await Booking.findById(req.params.id);
-
-    if (!booking) {
-      return res.status(404).json({ error: "Booking not found" });
-    }
-
-    // 💡 ensure price is set BEFORE marking paid
-    if (
-      booking.totalPrice == null &&
-      booking.paymentStatus !== "free"
-    ) {
-      return res.status(400).json({
-        error: "Booking must be priced before payment can be confirmed",
-      });
-    }
-
-
-    booking.paymentStatus = "paid";
-    booking.isPaid = true;
-
-    await booking.save();
-
-    res.json({
-      message: "Payment confirmed",
-      booking,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  return res.status(410).json({
+    error: "Payment confirmation requires verified payment-provider evidence",
+  });
 };
 
 
@@ -838,6 +758,10 @@ export const finalizeBookingQuote = async (req, res) => {
 
     if (!booking)
       return res.status(404).json({ error: "Booking not found" });
+
+    if (booking.user?.toString() !== req.user?._id?.toString()) {
+      return res.status(403).json({ error: "Not authorized to finalize this booking" });
+    }
 
     if (booking.paymentStatus === "paid")
       return res.status(400).json({ error: "Cannot modify paid booking" });
@@ -854,6 +778,8 @@ export const finalizeBookingQuote = async (req, res) => {
           outboundFare: booking.pricing.outboundFare,
           returnFare: booking.pricing.returnFare,
           totalFare: booking.totalPrice,
+          outboundDistance: booking.pricing.outboundDistance,
+          returnDistance: booking.pricing.returnDistance,
         },
         totalDistance: booking.totalDistance,
       },
@@ -866,4 +792,3 @@ export const finalizeBookingQuote = async (req, res) => {
     });
   }
 };
-

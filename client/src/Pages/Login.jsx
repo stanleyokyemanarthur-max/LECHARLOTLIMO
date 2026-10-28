@@ -1,14 +1,23 @@
 import React, { useState } from "react";
+import { API_ORIGIN } from "../config/api";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
 import Spinner from "../Components/Spinner.jsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import {
+  clearBookingDraft,
+  getBookingResumePath,
+  loadBookingDraft,
+} from "../utils/bookingDraft";
 
 function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [hasBookingDraft, setHasBookingDraft] = useState(
+    () => Boolean(loadBookingDraft()),
+  );
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -23,7 +32,7 @@ function Login() {
     setError("");
 
     try {
-      const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/auth/login", {
+      const res = await fetch(`${API_ORIGIN}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -50,7 +59,7 @@ function Login() {
       const role = data.user?.role || data.role;
       if (role === "admin") navigate("/admin/dashboard");
       else if (role === "driver") navigate("/driver/dashboard");
-      else navigate("/");
+      else navigate(getBookingResumePath(role) || "/", { replace: true });
 
     } catch (err) {
       setError(err.message);
@@ -138,6 +147,19 @@ function Login() {
             Sign Up
           </Link>
         </p>
+        {hasBookingDraft && (
+          <button
+            type="button"
+            className="mt-4 block w-full text-center text-sm text-gray-400 underline hover:text-[#D4AF37]"
+            onClick={() => {
+              clearBookingDraft();
+              setHasBookingDraft(false);
+              navigate("/", { replace: true });
+            }}
+          >
+            Cancel and discard this booking
+          </button>
+        )}
       </motion.div>
     </div>
   );

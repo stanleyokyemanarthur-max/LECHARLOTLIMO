@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { API_ORIGIN } from "../config/api";
 import { Link } from "react-router-dom";
 import { LoadScript, Autocomplete } from "@react-google-maps/api";
 
@@ -18,7 +19,7 @@ function Cars() {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/cars"); // 👈 backend endpoint
+        const res = await fetch(`${API_ORIGIN}/api/cars`); // 👈 backend endpoint
         const data = await res.json();
         setCars(data);
       } catch (error) {
@@ -180,8 +181,10 @@ function Cars() {
                     <div className="car-image w-full relative h-[250px] overflow-hidden">
                       <img
                         src={car.image}
-                        alt={car.name}
+                        alt={`${car.name} vehicle`}
                         className="w-full h-full object-contain md:object-center transition-all duration-300 group-hover:scale-110"
+                        loading="lazy"
+                        decoding="async"
                       />
 
                       {/* Car Info */}
@@ -217,10 +220,11 @@ function Cars() {
                       </ul>
 
                       <div className="flex justify-center mt-10">
-                        <Link to={`/cars/${car._id}`}>
-                          <button className="text-white bg-[#D4AF37] px-5 py-2 text-lg md:text-xl rounded-full cursor-pointer transition duration-300 hover:bg-[#3d3f41]">
-                            View Details
-                          </button>
+                        <Link
+                          to={`/car/${car._id}`}
+                          className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#D4AF37] px-5 py-2 text-base font-semibold text-black transition duration-300 hover:bg-[#F5E7B8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4AF37] md:text-lg"
+                        >
+                          View Details
                         </Link>
                       </div>
                     </div>

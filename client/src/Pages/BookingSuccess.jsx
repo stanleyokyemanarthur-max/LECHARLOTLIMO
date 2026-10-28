@@ -2,37 +2,81 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight, Home, XCircle } from "lucide-react";
+import { API_ORIGIN } from "../config/api";
+import { clearBookingDraft } from "../utils/bookingDraft";
+import { findPaidBooking } from "../utils/bookingPayment";
+import { useSelector } from "react-redux";
 
-const API_BASE = "https://lecharlotlimo-aucd.onrender.com";
+const API_BASE = API_ORIGIN;
 
 function BookingSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
   const [verified, setVerified] = useState(null);
   const [bookingStatus, setBookingStatus] = useState(null);
-
-  const sessionId = new URLSearchParams(location.search).get("session_id");
+  const { token } = useSelector((state) => state.auth);
+  const params = new URLSearchParams(location.search);
+  const sessionId = params.get("session_id");
+  const paymentSource = params.get("source");
+  const bookingId = params.get("bookingId");
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    let cancelled = false;
+
+    if (paymentSource === "paypal" && bookingId && token) {
+      fetch(`${API_BASE}/api/bookings/my-bookings`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Unable to verify PayPal booking");
+          return res.json();
+        })
+        .then((bookings) => {
+          if (cancelled) return;
+          const booking = findPaidBooking(bookings, bookingId);
+          if (booking) {
+            clearBookingDraft();
+            setBookingStatus(booking.status || "pending");
+            setVerified(true);
+          } else {
+            setVerified(false);
+          }
+        })
+        .catch(() => {
+          if (!cancelled) setVerified(false);
+        });
+
+      return () => {
+        cancelled = true;
+      };
+    }
 
     if (sessionId) {
       fetch(`${API_BASE}/api/payments/verify?session_id=${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
-          // ✅ FIX: backend returns paid, not success
+          if (cancelled) return;
           if (data?.paid) {
+            clearBookingDraft();
             setVerified(true);
             setBookingStatus(data?.bookingStatus || "pending");
           } else {
             setVerified(false);
           }
         })
-        .catch(() => setVerified(false));
+        .catch(() => {
+          if (!cancelled) setVerified(false);
+        });
     } else {
       setVerified(false);
     }
-  }, [sessionId]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [bookingId, paymentSource, sessionId, token]);
 
   if (verified === null) {
     return (

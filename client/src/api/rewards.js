@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 const API = axios.create({
-  baseURL: "https://lecharlotlimo.onrender.com/api",
+  baseURL: API_BASE_URL,
 });
 
 // 👇 MUST SEND BEARER TOKEN

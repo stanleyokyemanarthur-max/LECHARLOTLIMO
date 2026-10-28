@@ -1,8 +1,8 @@
 // server.js
+import "dotenv/config";
 import express from "express";
 import bodyParser from "body-parser";
 import connectDB from "./config/db.js";
-import dotenv from "dotenv";
 import cors from "cors";
 
 // Routes
@@ -24,8 +24,6 @@ import { expireRewardsJob } from "./jobs/expireRewards.js";
 import { rewardCleanupJob } from "./jobs/rewardCleanup.js";
 import paypalRoutes from "./routes/paypalRoutes.js"; // Import PayPal routes
 import "./jobs/index.js"; // to start the booking expiration job
-// Initialize dotenv
-dotenv.config();
 
 // Start server function
 const startServer = async () => {

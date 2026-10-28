@@ -11,7 +11,6 @@ export const calculateTripEstimate = async ({
   dropoff,
   carRatePerMile,
   car,
-  fixedDistance,
 }) => {
   let distanceMiles = 0;
   let durationText = "";
@@ -39,9 +38,13 @@ export const calculateTripEstimate = async ({
     const element = response.data?.rows?.[0]?.elements?.[0];
 
     if (element?.status === "OK") {
-      distanceMiles = fixedDistance
-        ? Number(fixedDistance)
-        : parseFloat((element.distance?.text || "0").replace(/[^0-9.]/g, "")) || 0;
+      const distanceText = element.distance?.text;
+      distanceMiles = Number.parseFloat(
+        (distanceText || "").replace(/[^0-9.]/g, "")
+      );
+      if (!Number.isFinite(distanceMiles)) {
+        throw new Error("GOOGLE_DISTANCE_INVALID");
+      }
 
       durationMinutes = element.duration?.value
         ? Math.round(element.duration.value / 60)
@@ -82,6 +85,10 @@ export const calculateTripEstimate = async ({
       : 1;
 
   const estimatedPrice = Number((basePrice * trafficMultiplier).toFixed(2));
+
+  if (!Number.isFinite(estimatedPrice)) {
+    throw new Error("Invalid calculated price");
+  }
 
   const trafficDelayPercent =
     durationMinutes > 0

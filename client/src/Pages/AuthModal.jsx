@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
+import { API_ORIGIN } from "../config/api";
 
-const API_URL = "https://lecharlotlimo-aucd.onrender.com/api/auth"; // adjust if needed
+const API_URL = `${API_ORIGIN}/api/auth`;
 
 export default function AuthModal({ onClose, onSuccess }) {
   const [isLogin, setIsLogin] = useState(true);

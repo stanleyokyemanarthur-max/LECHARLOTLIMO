@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_ORIGIN } from "../config/api";
 
 export default function LostAuthenticator() {
   const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ export default function LostAuthenticator() {
     setMessage("");
 
     try {
-      const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/auth/request-totp-reset", {
+      const res = await fetch(`${API_ORIGIN}/api/auth/request-totp-reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

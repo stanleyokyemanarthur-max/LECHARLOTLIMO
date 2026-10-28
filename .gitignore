@@ -12,3 +12,7 @@ server/dist/
 
 # Env files
 *.env
+
+# Local env variants (keep the committed examples)
+.env.*
+!.env.example

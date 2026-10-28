@@ -35,22 +35,31 @@ const emailShell = (content) => `
   </div>
 `;
 
-// Simple in-memory (you can later upgrade to Redis)
-
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-const processedEvents = new Set();
+const STRIPE_CURRENCY = "usd";
+
+const markRewardAsUsed = async (booking) => {
+  if (!booking.reward?._id) return;
+
+  await Reward.findOneAndUpdate(
+    {
+      _id: booking.reward._id,
+      status: { $ne: "USED" },
+    },
+    {
+      status: "USED",
+      usedAt: new Date(),
+      lockedAt: null,
+      booking: booking._id,
+      isSlotFull: false,
+    }
+  );
+};
 
 router.post("/", async (req, res) => {
-  console.log("🔥🔥 WEBHOOK HIT");
-  console.log("Method:", req.method);
-  console.log("Headers:", req.headers);
   const sig = req.headers["stripe-signature"];
-
-  console.log("SIG HEADER:", sig);
-  console.log("RAW BODY TYPE:", typeof req.body);
-  console.log("IS BUFFER:", Buffer.isBuffer(req.body));
 
   let event;
 
@@ -65,73 +74,84 @@ router.post("/", async (req, res) => {
     return res.status(400).send("Webhook Error");
   }
 
-  // 🔒 IDEMPOTENCY GUARD (CRITICAL)
-  if (processedEvents.has(event.id)) {
-    return res.json({ received: true });
-  }
-  processedEvents.add(event.id);
-
   try {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
       const bookingId = session.metadata?.bookingId;
 
-      if (!bookingId) return res.json({ received: true });
+      if (!bookingId) {
+        return res.status(400).json({ error: "Missing booking reference" });
+      }
 
-      const booking = await Booking.findById(bookingId)
+      let booking = await Booking.findById(bookingId)
         .populate("reward")
         .populate("user");
 
-      if (!booking) return res.json({ received: true });
+      if (!booking) {
+        return res.status(400).json({ error: "Booking not found" });
+      }
 
-      // 🔒 SECOND IDEMPOTENCY LAYER (DB SAFE)
+      const expectedAmount = Number.isFinite(booking.totalPrice)
+        ? Math.round(booking.totalPrice * 100)
+        : NaN;
+      const matchesBooking =
+        session.id === booking.stripeSessionId &&
+        (!session.client_reference_id ||
+          session.client_reference_id === booking._id.toString()) &&
+        session.mode === "payment" &&
+        session.payment_status === "paid" &&
+        session.currency === STRIPE_CURRENCY &&
+        Number.isFinite(expectedAmount) &&
+        expectedAmount > 0 &&
+        session.amount_total === expectedAmount;
+
+      if (!matchesBooking) {
+        return res.status(400).json({
+          error: "Stripe payment does not match the booking",
+        });
+      }
+
       if (booking.paymentStatus === "paid") {
+        await markRewardAsUsed(booking);
         return res.json({ received: true });
       }
 
       if (booking.status === "expired") {
-        console.warn(
-          `⚠️ Payment received for expired booking ${booking._id}`
-        );
-
-        return res.json({ received: true });
+        return res.status(400).json({
+          error: "Payment cannot be applied to an expired booking",
+        });
       }
 
-      // ========================
-      // 1. UPDATE DB FIRST (ATOMIC STATE)
-      // ========================
-      booking.paymentStatus = "paid";
-      booking.status = "pending";
-      booking.isPaid = true;
-
-      if (!booking.totalPrice || booking.totalPrice <= 0) {
-        console.error(
-          "❌ Invalid booking price:",
-          booking._id
-        );
-
-        return res.json({ received: true });
-      }
-
-      // update reward FIRST (safe)
-      if (booking.reward?._id) {
-        await Reward.findOneAndUpdate(
-          {
-            _id: booking.reward._id,
-            status: { $ne: "USED" },
+      const paidBooking = await Booking.findOneAndUpdate(
+        {
+          _id: booking._id,
+          stripeSessionId: session.id,
+          paymentStatus: { $ne: "paid" },
+          status: { $ne: "expired" },
+        },
+        {
+          $set: {
+            paymentStatus: "paid",
+            status: "pending",
+            isPaid: true,
           },
-          {
-            status: "USED",
-            usedAt: new Date(),
-            lockedAt: null,
-            booking: booking._id,
-            isSlotFull: false,
-          }
-        );
-      }
+        },
+        { new: true }
+      )
+        .populate("reward")
+        .populate("user");
 
-      // THEN save booking
-      await booking.save();
+      if (!paidBooking) {
+        const currentBooking = await Booking.findById(booking._id).populate("reward");
+        if (currentBooking?.paymentStatus === "paid") {
+          await markRewardAsUsed(currentBooking);
+        }
+        return res.json({ received: true });
+      }
+      booking = paidBooking;
+
+      await markRewardAsUsed(booking);
+
       // ========================
       // 2. SIDE EFFECTS (SAFE AFTER SAVE)
       // ========================
@@ -270,15 +290,42 @@ router.post("/", async (req, res) => {
       const session = event.data.object;
       const bookingId = session.metadata?.bookingId;
 
-      if (!bookingId) return res.json({ received: true });
+      if (!bookingId) {
+        return res.status(400).json({ error: "Missing booking reference" });
+      }
 
-      const booking = await Booking.findById(bookingId).populate("reward");
-      if (!booking) return res.json({ received: true });
+      let booking = await Booking.findById(bookingId).populate("reward");
+      if (!booking) {
+        return res.status(400).json({ error: "Booking not found" });
+      }
 
-      if (booking.paymentStatus !== "paid") {
-        booking.status = "expired";
-        booking.paymentStatus = "expired";
+      if (session.id !== booking.stripeSessionId) {
+        return res.status(400).json({
+          error: "Stripe session does not match the booking",
+        });
+      }
 
+      if (booking.paymentStatus === "paid" || booking.paymentStatus === "expired") {
+        return res.json({ received: true });
+      }
+
+      const expiredBooking = await Booking.findOneAndUpdate(
+        {
+          _id: booking._id,
+          stripeSessionId: session.id,
+          paymentStatus: { $nin: ["paid", "expired"] },
+        },
+        {
+          $set: {
+            status: "expired",
+            paymentStatus: "expired",
+          },
+        },
+        { new: true }
+      ).populate("reward");
+
+      if (expiredBooking) {
+        booking = expiredBooking;
         if (booking.reward?._id) {
           await Reward.findOneAndUpdate(
             {
@@ -294,7 +341,8 @@ router.post("/", async (req, res) => {
           );
         }
 
-        await booking.save();
+      } else {
+        return res.json({ received: true });
       }
 
       console.log(`❌ Booking expired: ${bookingId}`);

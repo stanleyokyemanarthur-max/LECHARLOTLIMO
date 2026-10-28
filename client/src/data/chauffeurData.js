@@ -11,7 +11,7 @@ const ChauffeurData = [
         "Professional chauffeurs ensure a smooth and comfortable journey.",
         "Enjoy a stress-free experience with luggage assistance, flight tracking, and meet & greet service."
       ],
-      cta: { text: "Book Airport Transfer", link: "/reservation-form" }
+      cta: { text: "Book Airport Transfer", link: "/reserve" }
     },
     sections: [
       {
@@ -35,7 +35,7 @@ const ChauffeurData = [
         "Le Charlot Limousine offers immersive, private wine-tour experiences to some of the most celebrated vineyards and hidden-gem wineries in the region. Whether you're planning a romantic getaway, a sophisticated group outing, or a celebratory event, we craft each tour to match your preferences.",
         "From the moment your chauffeur arrives, you can unwind and savor the day—no crowded buses, rigid schedules, or concerns about driving after tastings. We handle the timing, the routes, and the comfort, so you can fully enjoy every pour, every conversation, and every breathtaking view along the way."
       ],
-      cta: { text: "Make a Reservation", link: "/reservation-form" }
+      cta: { text: "Make a Reservation", link: "/reserve" }
     },
     sections: [
       {
@@ -68,7 +68,7 @@ const ChauffeurData = [
         "Arrive Like a VIP: Le Charlot Limousine ensures you make a grand entrance at any concert with unmatched style and professionalism. Forget the stress of parking, traffic, or navigating crowded drop-off zones — your chauffeur handles every detail while you enjoy the anticipation of the show.",
         "Luxury From Door to Door: Our executive-class vehicles are designed to elevate your concert experience long before you arrive at the venue. Whether it's a solo outing, a romantic date, or a group celebration, we deliver a smooth, stylish ride that enhances the excitement of the night."
       ],
-      cta: { text: "Make Reservations", link: "/reservation-form" }
+      cta: { text: "Make Reservations", link: "/reserve" }
     },
     sections: [
       {
@@ -103,7 +103,7 @@ const ChauffeurData = [
         "Make your big day even more special with elegant limousine transportation for the bride and groom as well as the guests.",
         "Le Charlot Limousine coordinates with your event planner to ensure a seamless experience."
       ],
-      cta: { text: "Book Wedding Limousine", link: "/reservation-form" }
+      cta: { text: "Book Wedding Limousine", link: "/reserve" }
     },
     sections: [
       {
@@ -136,7 +136,7 @@ const ChauffeurData = [
         "Experience the city nightlife in safety and style.",
         "Le Charlot Limousine is your designated driver for dinners, shows, concerts, and city tours."
       ],
-      cta: { text: "Book Night Out", link: "/reservation-form" }
+      cta: { text: "Book Night Out", link: "/reserve" }
     },
     sections: [
       {
@@ -169,7 +169,7 @@ const ChauffeurData = [
         "Make your prom night unforgettable with Le Charlot Limousine.",
         "Arrive in style with professional chauffeurs ensuring a safe and glamorous experience."
       ],
-      cta: { text: "Book Prom Limousine", link: "/reservation-form" }
+      cta: { text: "Book Prom Limousine", link: "/reserve" }
     },
     sections: [
       {
@@ -200,7 +200,7 @@ const ChauffeurData = [
         "Celebrate your love story with Le Charlot Limousine. We transform your anniversary into an unforgettable experience with elegant vehicles, exceptional service, and a romantic atmosphere from the moment we pick you up.",
         "Our professional chauffeurs ensure a smooth, intimate, and luxurious ride  allowing you to relax, connect, and enjoy your special day without a single worry."
       ],
-      cta: { text: "Book Prom Limousine", link: "/reservation-form" }
+      cta: { text: "Book Prom Limousine", link: "/reserve" }
     },
     sections: [
       {
@@ -234,7 +234,7 @@ const ChauffeurData = [
         "Experience the thrill of game day without the stress of traffic, parking, or long walks. Le Charlot Limousine ensures that every sporting event you attend starts in style, comfort, and safety.",
         "Our professional chauffeurs provide VIP-level service, handling all logistics so you can focus on the excitement of the game. From pick-up to post-game drop-off, your experience is seamless and memorable."
       ],
-      cta: { text: "Book Prom Limousine", link: "/reservation-form" }
+      cta: { text: "Book Prom Limousine", link: "/reserve" }
     },
     sections: [
       {
@@ -277,7 +277,7 @@ const ChauffeurData = [
         "Experience effortless arrivals and departures defined by privacy, precision, and discretion. Le Charlot Limousine provides elite FBO executive chauffeur service tailored for private aviation clientele. Designed for discerning travelers, executives, entertainers, and UHNW individuals, our service delivers seamless ground transportation directly from private terminals and Fixed-Base Operators worldwide.",
         "From proactive coordination with FBO staff to discreet airside and curbside pickups, our professional chauffeurs ensure a smooth, uninterrupted journey. Every detail is managed with care so your transportation remains private, punctual, and perfectly aligned with your schedule",
       ],
-      cta: { text: "Book Executive Chauffeur ", link: "/reservation-form" }
+      cta: { text: "Book Executive Chauffeur ", link: "/reserve" }
     },
     sections: [
       {

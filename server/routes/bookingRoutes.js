@@ -11,7 +11,11 @@ import {
   confirmPayment,
   finalizeBookingQuote,
 } from "../controllers/bookingController.js";
-import { protect, adminOnly } from "../middleware/authMiddleware.js";
+import {
+  protect,
+  adminOnly,
+  customerOnly,
+} from "../middleware/authMiddleware.js";
 import { bookingValidationRules } from "../validators/bookingValidator.js";
 import { validateRequest } from "../middleware/validateRequest.js";
 
@@ -24,9 +28,16 @@ router.post("/estimate", estimateBooking);
 router.put("/:id/assign-driver", protect, adminOnly, assignDriver);
 router.patch("/bookings/:id/pay", confirmPayment);
 
-router.post("/finalize-quote", protect, finalizeBookingQuote);
+router.post("/finalize-quote", protect, customerOnly, finalizeBookingQuote);
 // 📝 Create booking (customer only, with validation)
-router.post("/", protect, bookingValidationRules, validateRequest, createBooking);
+router.post(
+  "/",
+  protect,
+  customerOnly,
+  bookingValidationRules,
+  validateRequest,
+  createBooking,
+);
 
 // 📌 Get bookings for logged-in user
 router.get("/my-bookings", protect, getUserBookings);

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_ORIGIN } from "../config/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -23,7 +24,7 @@ export default function Confirmation() {
     const verifyPayment = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/payments/verify?session_id=${sessionId}`
+          `${API_ORIGIN}/api/payments/verify?session_id=${sessionId}`
         );
 
         if (res.data.success) {

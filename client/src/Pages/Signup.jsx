@@ -1,4 +1,5 @@
 import React, { useState, forwardRef } from "react";
+import { API_ORIGIN } from "../config/api";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../slices/authSlice"; // Redux slice
@@ -8,10 +9,14 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { AiOutlineEye, AiOutlineEyeInvisible, AiOutlineCalendar } from "react-icons/ai";
+import { clearBookingDraft, loadBookingDraft } from "../utils/bookingDraft";
 
 function Signup() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [hasBookingDraft, setHasBookingDraft] = useState(
+    () => Boolean(loadBookingDraft()),
+  );
 
   const [form, setForm] = useState({
     name: "",
@@ -32,7 +37,7 @@ function Signup() {
     setError("");
 
     try {
-      const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/auth/register", {
+      const res = await fetch(`${API_ORIGIN}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -240,6 +245,19 @@ function Signup() {
             Login here
           </Link>
         </p>
+        {hasBookingDraft && (
+          <button
+            type="button"
+            className="mt-4 block w-full text-center text-sm text-gray-400 underline hover:text-[#D4AF37]"
+            onClick={() => {
+              clearBookingDraft();
+              setHasBookingDraft(false);
+              navigate("/", { replace: true });
+            }}
+          >
+            Cancel and discard this booking
+          </button>
+        )}
       </motion.div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../slices/authSlice";
 import RewardsIcon from "./RewardsIcon";
@@ -33,6 +33,21 @@ function Nav() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const handleResponsiveNavigation = (event) => {
+      if (event.key === "Escape" || window.matchMedia("(min-width: 1024px)").matches) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleResponsiveNavigation);
+    window.addEventListener("resize", handleResponsiveNavigation);
+    return () => {
+      document.removeEventListener("keydown", handleResponsiveNavigation);
+      window.removeEventListener("resize", handleResponsiveNavigation);
+    };
+  }, []);
+
   const handleLogout = () => {
     dispatch(logout());
     setIsDropdownOpen(false);
@@ -47,36 +62,46 @@ function Nav() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-[9999] transition-all duration-300 ${isScrolled ? "bg-[#111111] shadow-md backdrop-blur-md" : "bg-transparent"
+      aria-label="Main navigation"
+      className={`lc-navigation fixed top-0 left-0 w-full z-[9999] transition-all duration-300 ${isScrolled ? "is-scrolled" : ""
         }`}
     >
-      <div className="w-full mx-auto flex justify-between items-center py-4 px-8 lg:px-12 relative">
+      <div className="lc-navigation__inner w-full mx-auto flex justify-between items-center py-3 px-5 sm:px-7 lg:px-10 relative">
         {/* Logo */}
-        <div className="relative h-14 w-40 overflow-visible">
+        <Link
+          to="/"
+          aria-label="Le Charlot Limousine home"
+          onClick={() => {
+            closeMobile();
+            setIsDropdownOpen(false);
+          }}
+          className="flex h-20 w-52 items-center rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4AF37]"
+        >
           <img
             src="/images/logoiz.png"
-            alt="Le Charlot Logo"
-            className="absolute -top-5 right-0 w-40 h-auto object-contain cursor-pointer"
-            onClick={() => {
-              navigate("/");
-              closeMobile();
-              setIsDropdownOpen(false);
-            }}
+            alt=""
+            className="block max-h-20 w-full object-contain"
+            fetchPriority="high"
           />
-        </div>
+        </Link>
 
         {/* Mobile Menu Button */}
         <button
-          className="lg:hidden text-3xl text-[var(--gold-text)]"
+          type="button"
+          className="lc-navigation__toggle lg:hidden text-3xl text-[var(--gold-text)]"
           onClick={() => setIsMobileMenuOpen((v) => !v)}
-          aria-label="Toggle menu"
+          aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="primary-navigation"
         >
-          <i className={isMobileMenuOpen ? "ri-close-line" : "ri-menu-line"}></i>
+          <i aria-hidden="true" className={isMobileMenuOpen ? "ri-close-line" : "ri-menu-line"}></i>
         </button>
 
         {/* Menu */}
         <ul
-          className={`flex flex-col lg:flex-row items-center absolute lg:static left-0 top-full
+          aria-label="Primary"
+          id="primary-navigation"
+          className={`lc-navigation__list flex flex-col lg:flex-row items-center absolute lg:static left-0 top-full
             w-full lg:w-auto 
             bg-[#0B0B0B]/95 lg:bg-transparent 
             backdrop-blur-md
@@ -85,8 +110,8 @@ function Nav() {
             gap-6 lg:gap-10
             border-t border-white/10 lg:border-none
             ${isMobileMenuOpen
-              ? "max-h-screen opacity-100 py-6"
-              : "max-h-0 opacity-0 lg:opacity-100 lg:max-h-none"
+              ? "is-open max-h-screen opacity-100 py-6"
+              : "is-closed max-h-0 opacity-0 lg:opacity-100 lg:max-h-none"
             }`}
         >
           {menuItems.map((item) => (
@@ -122,48 +147,62 @@ function Nav() {
             <li className="relative flex items-center gap-3 mb-2 lg:mb-0" ref={dropdownRef}>
               {userRole !== "admin" && <RewardsIcon />}
 
-              <span
+              <button
+                type="button"
+                aria-expanded={isDropdownOpen}
                 onClick={() => setIsDropdownOpen((v) => !v)}
-                className="cursor-pointer font-semibold text-[var(--gold-text)] hover:opacity-90 flex items-center gap-1"
+                className="flex min-h-11 cursor-pointer items-center gap-1 rounded-sm font-semibold text-[var(--gold-text)] hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4AF37]"
               >
-                {userName} <i className="ri-arrow-down-s-line"></i>
-              </span>
+                {userName} <i className="ri-arrow-down-s-line" aria-hidden="true"></i>
+              </button>
 
               {isDropdownOpen && (
                 <ul className="absolute right-0 top-full mt-2 w-56 bg-[#111111] text-white rounded-xl shadow-lg z-[99999] animate-fadeIn overflow-hidden border border-white/10"
                 >
-                  <div className="absolute -top-2 right-6 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-[#111111]"></div>
+                  <li
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -top-2 right-6 h-0 w-0 border-b-8 border-l-8 border-r-8 border-l-transparent border-r-transparent border-b-[#111111]"
+                  />
 
                   {userRole === "admin" ? (
                     <>
-                      <li
-                        onClick={() => {
-                          navigate("/admin/dashboard");
-                          setIsDropdownOpen(false);
-                          closeMobile();
-                        }}
-                        className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
-                      >
-                        <i className="ri-dashboard-line"></i> Dashboard
+                      <li>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigate("/admin/dashboard");
+                            setIsDropdownOpen(false);
+                            closeMobile();
+                          }}
+                          className="flex min-h-11 w-full items-center gap-2 px-4 py-3 text-left text-sm transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#D4AF37]"
+                        >
+                          <i className="ri-dashboard-line" aria-hidden="true"></i> Dashboard
+                        </button>
                       </li>
-                      <li
-                        onClick={handleLogout}
-                        className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
-                      >
-                        <i className="ri-logout-box-line"></i> Logout
+                      <li>
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="flex min-h-11 w-full items-center gap-2 px-4 py-3 text-left text-sm transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#D4AF37]"
+                        >
+                          <i className="ri-logout-box-line" aria-hidden="true"></i> Logout
+                        </button>
                       </li>
                     </>
                   ) : userRole === "driver" ? (
                     <>
-                      <li
-                        onClick={() => {
-                          navigate("/driver/dashboard");
-                          setIsDropdownOpen(false);
-                          closeMobile();
-                        }}
-                        className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
-                      >
-                        <i className="ri-steering-2-line"></i> Driver Dashboard
+                      <li>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigate("/driver/dashboard");
+                            setIsDropdownOpen(false);
+                            closeMobile();
+                          }}
+                          className="flex min-h-11 w-full items-center gap-2 px-4 py-3 text-left text-sm transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#D4AF37]"
+                        >
+                          <i className="ri-steering-2-line" aria-hidden="true"></i> Driver Dashboard
+                        </button>
                       </li>
 
                       {/* <li
@@ -177,24 +216,30 @@ function Nav() {
                         <i className="ri-shield-keyhole-line"></i> Enable Authenticator
                       </li> */}
 
-                      <li
-                        onClick={handleLogout}
-                        className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
-                      >
-                        <i className="ri-logout-box-line"></i> Logout
+                      <li>
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="flex min-h-11 w-full items-center gap-2 px-4 py-3 text-left text-sm transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#D4AF37]"
+                        >
+                          <i className="ri-logout-box-line" aria-hidden="true"></i> Logout
+                        </button>
                       </li>
                     </>
                   ) : (
                     <>
-                      <li
-                        onClick={() => {
-                          navigate("/mybookings");
-                          setIsDropdownOpen(false);
-                          closeMobile();
-                        }}
-                        className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
-                      >
-                        <i className="ri-calendar-line"></i> My Bookings
+                      <li>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigate("/mybookings");
+                            setIsDropdownOpen(false);
+                            closeMobile();
+                          }}
+                          className="flex min-h-11 w-full items-center gap-2 px-4 py-3 text-left text-sm transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#D4AF37]"
+                        >
+                          <i className="ri-calendar-line" aria-hidden="true"></i> My Bookings
+                        </button>
                       </li>
 
                       {/* <li
@@ -208,11 +253,14 @@ function Nav() {
                         <i className="ri-shield-keyhole-line"></i> Enable Authenticator
                       </li> */}
 
-                      <li
-                        onClick={handleLogout}
-                        className="px-4 py-3 hover:bg-white/10 cursor-pointer text-sm transition-all flex items-center gap-2"
-                      >
-                        <i className="ri-logout-box-line"></i> Logout
+                      <li>
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="flex min-h-11 w-full items-center gap-2 px-4 py-3 text-left text-sm transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#D4AF37]"
+                        >
+                          <i className="ri-logout-box-line" aria-hidden="true"></i> Logout
+                        </button>
                       </li>
                     </>
                   )}

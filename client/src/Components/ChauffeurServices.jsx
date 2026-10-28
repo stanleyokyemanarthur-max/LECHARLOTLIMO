@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const services = [
   {
@@ -78,48 +78,46 @@ const services = [
 
 function ChauffeurServices() {
   return (
-    <section className="py-16 bg-white text-center">
-      <div className="max-w-6xl mx-auto px-4">
+    <section className="lc-home-services py-16 text-center">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
         {/* Title */}
-        <h2 className="text-3xl font-semibold text-gray-900 mb-2">
-          Our Services
-        </h2>
-        <div className="w-16 h-1 bg-[#B08D57] mx-auto mb-8 rounded-full"></div>
+        <p className="lc-kicker">Designed around the occasion</p>
+        <h2 className="lc-section-title mb-3">Chauffeur services</h2>
+        <p className="mx-auto mb-10 max-w-2xl text-sm leading-7 text-white/65">
+          From airport journeys to special occasions, explore the services available across Metro Atlanta.
+        </p>
 
         {/* Services Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="lc-home-services__grid grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {services.map((service) => (
-            <motion.a
+            <Link
               key={service.id}
-              href={`/service/${service.slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.03 }}
-              className="relative group overflow-hidden rounded-lg shadow-lg block"
+              to={`/service/${service.slug}`}
+              className="lc-home-service-card relative group block"
             >
               <img
                 src={service.image}
                 alt={service.title}
-                className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04] motion-reduce:transform-none"
               />
-              <div className="absolute bottom-0 w-full bg-black bg-opacity-80 py-3">
-                <h3 className="text-[#B08D57] font-medium text-lg">{service.title}</h3>
+              <div className="lc-home-service-card__label">
+                <h3>{service.title}</h3>
+                <span aria-hidden="true">↗</span>
               </div>
-            </motion.a>
+            </Link>
           ))}
         </div>
 
         {/* Button */}
-       
-        <div className="mt-10">
-          <a
-            href="/services"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-gold text-black font-medium px-8 py-3 rounded-full  transition"
+        <div className="mt-9">
+          <Link
+            to="/services"
+            className="lc-button lc-button--outline"
           >
             View All Services
-          </a>
+          </Link>
         </div>
       </div>
     </section>

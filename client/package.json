@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "check:api-hosts": "node scripts/check-api-hosts.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -38,7 +39,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.1",
     "react-toastify": "^11.0.5",
-    "swiper": "^12.0.3",
+    "swiper": "^12.1.2",
     "tailwindcss": "^4.1.13"
   },
   "devDependencies": {

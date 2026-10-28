@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_ORIGIN } from "../config/api";
 import { Link } from "react-router-dom";
 
 // ✅ Fetch cars from backend instead of Cars.json
@@ -9,7 +10,7 @@ const CarCategories = ({ selectedCarType }) => {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/cars"); // 👈 change to your backend URL
+        const res = await fetch(`${API_ORIGIN}/api/cars`); // 👈 change to your backend URL
         const data = await res.json();
         setCars(data);
       } catch (error) {

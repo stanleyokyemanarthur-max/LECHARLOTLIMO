@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_ORIGIN } from "../config/api";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function ResetTOTP() {
@@ -10,7 +11,7 @@ export default function ResetTOTP() {
   useEffect(() => {
     const resetTOTP = async () => {
       try {
-        const res = await fetch(`https://lecharlotlimo-aucd.onrender.com/api/auth/reset-totp/${token}`, { method: "POST" });
+        const res = await fetch(`${API_ORIGIN}/api/auth/reset-totp/${token}`, { method: "POST" });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Reset failed");
 

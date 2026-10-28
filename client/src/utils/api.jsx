@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 const API = axios.create({
-  baseURL: "https://lecharlotlimo-aucd.onrender.com/api", // backend base URL
+  baseURL: API_BASE_URL,
 });
 
 // Attach token to requests if exists

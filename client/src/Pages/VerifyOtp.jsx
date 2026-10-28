@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { API_ORIGIN } from "../config/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
+import { getBookingResumePath } from "../utils/bookingDraft";
 import Spinner from "../Components/Spinner";
 
 export default function VerifyOtp() {
@@ -24,7 +26,7 @@ export default function VerifyOtp() {
     setError("");
 
     try {
-      const res = await fetch("https://lecharlotlimo-aucd.onrender.com/api/auth/verify-otp", {
+      const res = await fetch(`${API_ORIGIN}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
@@ -34,9 +36,10 @@ export default function VerifyOtp() {
 
       dispatch(setCredentials({ user: data.user || data, token: data.token }));
 
-      if (data.user?.role === "admin") navigate("/admin/dashboard");
-      else if (data.user?.role === "driver") navigate("/driver/dashboard");
-      else navigate("/");
+      const role = data.user?.role || data.role;
+      if (role === "admin") navigate("/admin/dashboard", { replace: true });
+      else if (role === "driver") navigate("/driver/dashboard", { replace: true });
+      else navigate(getBookingResumePath(role) || "/", { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
