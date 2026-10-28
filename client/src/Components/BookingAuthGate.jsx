@@ -2,9 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { loadBookingDraft, saveBookingDraft } from "../utils/bookingDraft";
+import { normalizeAuthUser } from "../utils/authSession";
 
 export default function BookingAuthGate({ children }) {
-  const { token, userInfo, status } = useSelector((state) => state.auth);
+  const auth = useSelector((state) => state.auth);
+  const { token, status } = auth;
+  const userInfo = normalizeAuthUser(auth.userInfo);
   const { tripData, selectedCar, estimate } = useSelector(
     (state) => state.bookings,
   );

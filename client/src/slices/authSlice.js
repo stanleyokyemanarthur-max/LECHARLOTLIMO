@@ -1,10 +1,13 @@
 // slices/authSlice.js
 import { API_ORIGIN } from "../config/api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { normalizeAuthUser } from "../utils/authSession";
 
 // Load from localStorage
 const storedToken = localStorage.getItem("token");
-const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+const storedUser = normalizeAuthUser(
+  JSON.parse(localStorage.getItem("user") || "null"),
+);
 
 export const fetchUserFromToken = createAsyncThunk(
   "auth/fetchUserFromToken",
@@ -43,14 +46,17 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action) => {
       const { user, token } = action.payload;
+      const normalizedUser = normalizeAuthUser(user);
 
       state.token = token;
-      state.userInfo = user;
+      state.userInfo = normalizedUser;
       state.status = "succeeded";
       state.error = null;
 
       if (token) localStorage.setItem("token", token);
-      if (user) localStorage.setItem("user", JSON.stringify(user));
+      if (normalizedUser) {
+        localStorage.setItem("user", JSON.stringify(normalizedUser));
+      }
     },
     logout: (state) => {
       state.token = null;
@@ -71,10 +77,13 @@ const authSlice = createSlice({
       })
       .addCase(fetchUserFromToken.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.userInfo = action.payload.user;
+        state.userInfo = normalizeAuthUser(action.payload.user);
         state.token = action.payload.token;
 
-        localStorage.setItem("user", JSON.stringify(action.payload.user));
+        localStorage.setItem(
+          "user",
+          JSON.stringify(state.userInfo),
+        );
         localStorage.setItem("token", action.payload.token);
       })
       .addCase(fetchUserFromToken.rejected, (state, action) => {

@@ -9,6 +9,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";// Flatpickr dark theme
 import { useDispatch, useSelector } from "react-redux";
 import { setTripData } from "../slices/bookingSlice";
+import {
+  isCustomerSession,
+  isRestoringAuthSession,
+} from "../utils/authSession";
 import { GoogleMap, DirectionsRenderer, useJsApiLoader } from "@react-google-maps/api";
 import { Clock3 } from "lucide-react";
 import {
@@ -29,11 +33,15 @@ export default function ReservationPage() {
   const dispatch = useDispatch();
 
   // Get login state from Redux
-  const isLoggedIn = useSelector(
-    (state) =>
-      Boolean(state.auth?.token) &&
-      state.auth?.userInfo?.role === "customer",
+  const { token, userInfo, status: authStatus } = useSelector(
+    (state) => state.auth,
   );
+  const isLoggedIn = isCustomerSession({ token, userInfo });
+  const isCheckingAuth = isRestoringAuthSession({
+    token,
+    userInfo,
+    status: authStatus,
+  });
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries: MAP_LIBRARIES,
@@ -1015,20 +1023,22 @@ export default function ReservationPage() {
               <button
                 type={isLoggedIn ? "submit" : "button"}
                 onClick={
-                  isLoggedIn
+                  isLoggedIn || isCheckingAuth
                     ? undefined
                     : () => preserveDraftAndNavigate("/login")
                 }
-                disabled={isLoggedIn && loadingRoute}
+                disabled={isCheckingAuth || (isLoggedIn && loadingRoute)}
                 className="lc-button w-full disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isLoggedIn
+                {isCheckingAuth
+                  ? "Checking your account…"
+                  : isLoggedIn
                   ? loadingRoute
                     ? "Verifying route..."
                     : "Continue to Vehicle Selection"
                   : "Log in to Continue"}
               </button>
-              {!isLoggedIn && (
+              {!isLoggedIn && !isCheckingAuth && (
                 <p className="text-center text-sm text-gray-300">
                   New to Le Charlot?{" "}
                   <Link
